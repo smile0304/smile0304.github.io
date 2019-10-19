@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IoT测试环境搭建 - TT</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="TT smile 0day technology Fuzz,"> 
+    <meta name="description" content="IoT分析环境搭建因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。
+工具列表:
+bi,"> 
+    <meta name="author" content="TT"> 
+    <link rel="alternative" href="atom.xml" title="TT" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link href="/font/Rubik-Bold-kern-latin.woff2" as="font" type="font/woff2" crossorigin="">
+    <link href="/font/Rubik-Regular-kern-latin.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="stylesheet" href="//cdn.bootcss.com/gitalk/1.5.0/gitalk.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1429596_7jr8c7mf4wi.css">
+    <link rel="stylesheet" href="/css/obsidian.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.7.2/animate.min.css">
+</head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">TT</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div class="scrollbar gradient-bg-rev"></div>
+<div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a id="home-icon" class="image-icon icon-home iconfont" href="javascript:;" data-url="http://blog.pwntools.xyz"></a>
+    <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
+    <h3 class="subtitle">IoT测试环境搭建</h3>
+    <div class="social">
+<!--        <div class="like-icon">-->
+<!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <div class="share">-->
+<!--                <a title="Get qrcode" id="qr-icon" href="javascript:;" class="iconfont icon-QRcode-o"></a>-->
+<!--            </div>-->
+<!--            <div id="qr"></div>-->
+<!--        </div>-->
+    </div>
+</div>
+
+    <div class="section">
+        <div class= article-header-wrapper>
+    <div class="article-header">
+        <div class="article-cover animated fadeIn" style="
+            animation-delay: 600ms;
+            animation-duration: 1.2s;
+            background-image: 
+                radial-gradient(ellipse closest-side, rgba(0, 0, 0, 0.65), #100e17),
+                url(http://file.smilehacker.net/welcome-cover.jpg);">
+        </div>
+        <div class="else">
+            <p class="animated fadeInDown">
+                <a href="/categories/安全"><b>「 </b>安全<b> 」</b> </a>
+                十月 18, 2019
+            </p>
+            <h3 class="post-title animated fadeInDown"><a href="/2019/10/18/IoT%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="IoT测试环境搭建" class="">IoT测试环境搭建</a></h3>
+            
+                <p class="post-count animated fadeInDown">
+                    
+                        <span>
+                        <b class="iconfont icon-text2"></b>
+                        4.7k
+                    </span>
+                    
+                    
+                        <span>
+                        <b class="iconfont icon-timer__s"></b>
+                        4 mins.
+                    </span>
+                    
+                    
+                        <span id="/2019/10/18/IoT测试环境搭建/" class="leancloud_visitors" data-flag-title="IoT测试环境搭建">
+                            <b class="iconfont icon-read"></b>
+                            <i class="leancloud-visitors-count">1000000</i>
+                        </span>
+                    
+                </p>
+            
+            
+                <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/IoT/" rel="tag">IoT</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li></ul>
+            
+        </div>
+    </div>
+</div>
+
+<div class="screen-gradient-after">
+    <div class="screen-gradient-content">
+        <div class="screen-gradient-content-inside">
+            <div class="bold-underline-links screen-gradient-sponsor">
+                <p>
+                    <span></span>  
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="article">
+    <div class='main'>
+        <div class="content markdown animated fadeIn slower">
+            <h2 id="IoT分析环境搭建"><a href="#IoT分析环境搭建" class="headerlink" title="IoT分析环境搭建"></a>IoT分析环境搭建</h2><p>因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。</p>
+<h3 id="工具列表"><a href="#工具列表" class="headerlink" title="工具列表:"></a>工具列表:</h3><ul>
+<li>binwalk 固件提取</li>
+<li>qemu 模拟执行</li>
+<li><del>irmadyne 固件模拟工具</del>(这里没有安装)</li>
+<li>buildroot Mips交叉编译环境</li>
+<li>gdb 调试工具(可编译一个<a href="https://blog.csdn.net/zqj6893/article/details/84662579" target="_blank" rel="noopener">mips-linux-gdb</a>)</li>
+<li>IDA</li>
+<li>ghidra</li>
+<li>GDBServer </li>
+</ul>
+<h4 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h4><pre><code class="shell">$ sudo apt-get update  
+$ sudo apt-get install build-essential autoconf git #安装依赖 
+
+# https://github.com/devttys0/binwalk/blob/master/INSTALL.md  
+$ git clone https://github.com/ReFirmLabs/binwalk.git
+$ cd binwalk  
+
+# python2.7 
+$ sudo python setup.py install 
+
+# Python3.x
+$ sudo python3 setup.py install
+
+$ sudo ./deps.sh #debian/Ubuntu可使用脚本自动安装依赖</code></pre>
+<h4 id="Qemu"><a href="#Qemu" class="headerlink" title="Qemu"></a>Qemu</h4><p>Qemu 是纯软件实现的虚拟化模拟器，几乎可以模拟任何硬件设备。 QEMU模拟器主要有两种比较常见的运作模式：</p>
+<ul>
+<li>User Mode（使用者模式） User Mode模式下，用户只需要将各种不同平台的处理编译得到的Linux程序放在QEMU虚拟中运行即可，其他的事情全部由QEMU虚拟机来完成，不需要用户自定义内核和虚拟磁盘等文件；</li>
+<li>System Mode（系统模式）。 System Mode模式下，最明显的特点是用户可以为QEMU虚拟机指定运行的内核或者虚拟硬盘等文件，简单来说系统模式下QEMU虚拟机是可根据用户的要求配置的</li>
+</ul>
+<h5 id="使用源码安装Qemu"><a href="#使用源码安装Qemu" class="headerlink" title="使用源码安装Qemu"></a>使用源码安装Qemu</h5><pre><code class="shell">$ git clone git://git.qemu.org/qemu.git
+
+$ cd qemu
+
+$ git submodule update --recursive
+$ sudo apt install libglib2.0 libglib2.0-dev
+$ sudo apt install autoconf automake libtoolcd 
+
+$ ./configure
+
+$ sudo make &amp;&amp; sudo make install</code></pre>
+<p>ubuntu14.04中用源码方式编译安装qemu时,执行configure步骤提示错误：“ERROR: pixman &gt;= 0.21.8 not present.” 安装如下依赖：</p>
+<pre><code class="shell">$ sudo apt-get install libpixman-1-dev</code></pre>
+<h4 id="firmadyne"><a href="#firmadyne" class="headerlink" title="firmadyne"></a>firmadyne</h4><p>github : <a href="https://github.com/firmadyne/firmadyne" target="_blank" rel="noopener">https://github.com/firmadyne/firmadyne</a></p>
+<h4 id="Buildroot"><a href="#Buildroot" class="headerlink" title="Buildroot"></a>Buildroot</h4><p>下载地址 : <a href="https://buildroot.org/downloads/buildroot-2019.02.6.tar.gz" target="_blank" rel="noopener">https://buildroot.org/downloads/buildroot-2019.02.6.tar.gz</a></p>
+<pre><code class="shell">tar zxvf buildroot-2019.02.6.tar.gz
+
+cd buildroot-2019.02.6
+
+sudo apt-get install libncurses5-dev patch
+
+make clean
+
+make menuconfig</code></pre>
+<p>需要设置以下三个选项<br><img src="http://file.smilehacker.net/buildroot_set1.png" alt="buildroot安装选项"></p>
+<ul>
+<li>Target options -&gt; Target Architecture 设置为Mips (little endian)</li>
+<li>Target options -&gt; Target Architecture Variant 设置为 MIPS32</li>
+<li>Toolchain -&gt; Kernal Headers 设置成机器Kennal版本</li>
+</ul>
+<p>选择Save保存, 之后开始编译,</p>
+<pre><code class="shell">sudo make</code></pre>
+<p>经过一个小时的编译，在目录下产生一个<code>output</code>的目录。编译产生的工具在<code>output/host/usr/bin</code>目录下</p>
+<h4 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h4><p>一般的Linux平台下自带了GDB</p>
+<p>调试MIPS平台的程序，需要安装gdb-multiarch</p>
+<pre><code class="shell">sudo apt install gdb-multiarch</code></pre>
+<p>然后按照正常的GDB使用即可</p>
+<h5 id="Pwndbg"><a href="#Pwndbg" class="headerlink" title="Pwndbg"></a>Pwndbg</h5><p>一个类似于 peda的gdb插件，支持多种架构，pwn最强gdb插件。</p>
+<pre><code class="shell">git clone https://github.com/pwndbg/pwndbg
+cd pwndbg
+./setup.sh</code></pre>
+<h4 id="IDA-Linux"><a href="#IDA-Linux" class="headerlink" title="IDA(Linux)"></a>IDA(Linux)</h4><p>链接：<a href="https://pan.baidu.com/s/1PIh-EK7UOqsWi5kDy5QgCw" target="_blank" rel="noopener">https://pan.baidu.com/s/1PIh-EK7UOqsWi5kDy5QgCw</a><br>提取码：076v </p>
+<pre><code class="shell">$ sudo dpkg --add-architecture i386
+$ sudo apt-get update
+$ sudo apt-get install libc6-i686:i386 libexpat1:i386 libffi6:i386 libfontconfig1:i386 libfreetype6:i386 libgcc1:i386 libglib2.0-0:i386 libice6:i386 libpcre3:i386 libpng12-0:i386 libsm6:i386 libstdc++6:i386 libuuid1:i386 libx11-6:i386 libxau6:i386 libxcb1:i386 libxdmcp6:i386 libxext6:i386 libxrender1:i386 zlib1g:i386 libx11-xcb1:i386 libdbus-1-3:i386 libxi6:i386 libsm6:i386 
+
+
+# 安装IDA插件:
+git clone https://github.com/devttys0/ida.git
+
+cd plugins
+
+python install.py /IDA PATH/ --install </code></pre>
+<h4 id="GDBServer"><a href="#GDBServer" class="headerlink" title="GDBServer"></a>GDBServer</h4><p>各个版本的GDBServer下载地址 <a href="https://github.com/rapid7/embedded-tools/tree/master/binaries/gdbserver" target="_blank" rel="noopener">https://github.com/rapid7/embedded-tools/tree/master/binaries/gdbserver</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="http://file.smilehacker.net/chengdu.mp3">
+            </audio>
+            
+            
+            
+                <div id="vcomments"></div>
+            
+        </div>
+        <div class="sidebar">
+            <div class="box animated fadeInRight">
+                <div class="subbox">
+                    <img src="https://avatars3.githubusercontent.com/u/20963266?s=400&u=0636d08641ebae0dbc68bb1bb17fbcd28ce0b998&v=4" height=300 width=300></img>
+                    <p>TT</p>
+                    <span>念念不忘,必有回响</span>
+                    <dl>
+                        <dd><a href="https://github.com/smile0304" target="_blank"><span class=" iconfont icon-github"></span></a></dd>
+                        <dd><a href="https://twitter.com/SmileKuxiao" target="_blank"><span class=" iconfont icon-twitter"></span></a></dd>
+                        <dd><a href="https://stackoverflow.com/users/9417433/tt-smile" target="_blank"><span class=" iconfont icon-stack-overflow"></span></a></dd>
+                    </dl>
+                </div>
+                <ul>
+                    <li><a href="/">1 <p>文章</p></a></li>
+                    <li><a href="/categories">1 <p>分类</p></a></li>
+                    <li><a href="/tags">2 <p>标签</p></a></li>
+                </ul>
+            </div>
+            
+                
+                
+                    <div class="box sticky animated fadeInRight faster">
+                        <div id="toc" class="subbox">
+                            <h4>目录</h4>
+                            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IoT分析环境搭建"><span class="toc-number">1.</span> <span class="toc-text">IoT分析环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#工具列表"><span class="toc-number">1.1.</span> <span class="toc-text">工具列表:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Binwalk"><span class="toc-number">1.1.1.</span> <span class="toc-text">Binwalk</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Qemu"><span class="toc-number">1.1.2.</span> <span class="toc-text">Qemu</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#使用源码安装Qemu"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">使用源码安装Qemu</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#firmadyne"><span class="toc-number">1.1.3.</span> <span class="toc-text">firmadyne</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Buildroot"><span class="toc-number">1.1.4.</span> <span class="toc-text">Buildroot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDB"><span class="toc-number">1.1.5.</span> <span class="toc-text">GDB</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Pwndbg"><span class="toc-number">1.1.5.1.</span> <span class="toc-text">Pwndbg</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IDA-Linux"><span class="toc-number">1.1.6.</span> <span class="toc-text">IDA(Linux)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDBServer"><span class="toc-number">1.1.7.</span> <span class="toc-text">GDBServer</span></a></li></ol></li></ol></li></ol>
+                        </div>
+                    </div>
+                
+            
+        </div>
+    </div>
+</div>
+
+
+    </div>
+</div>
+    <div id="back-to-top" class="animated fadeIn faster">
+        <div class="flow"></div>
+        <span class="percentage animated fadeIn faster">0%</span>
+        <span class="iconfont icon-top02 animated fadeIn faster"></span>
+    </div>
+</body>
+<footer>
+    <p class="copyright" id="copyright">
+        &copy; 2019
+        <span class="gradient-text">
+            TT
+        </span>.
+        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+        Theme
+        <span class="gradient-text">
+            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
+            <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.3.0" target="_blank" rel="noopener">v1.3.0</a></small>
+        </span>
+    </p>
+</footer>
+<script src="//cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/obsidian.js"></script>
+<script src="/js/jquery.truncate.js"></script>
+<script src="//cdn.bootcss.com/typed.js/2.0.10/typed.min.js"></script>
+
+<link rel="stylesheet" href="//cdn.bootcss.com/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="//cdn.bootcss.com/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="//cdn.bootcss.com/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="//cdn.bootcss.com/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="/css/dracula.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js">
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+
+
+<script>
+    function initialTyped () {
+        var typedTextEl = $('.typed-text');
+        if (typedTextEl && typedTextEl.length > 0) {
+            var typed = new Typed('.typed-text', {
+                strings: ["念念不忘,必有回响", "不忘初心,方得始终"],
+                typeSpeed: 90,
+                loop: true,
+                loopCount: Infinity,
+                backSpeed: 20,
+            });
+        }
+    }
+
+    if ($('.article-header') && $('.article-header').length) {
+        $(document).ready(function () {
+            initialTyped();
+        });
+    }
+</script>
+
+
+    <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+    <script>
+
+        var valine = new Valine();
+
+        function initValine(path) {
+            if (!path) path = window.location.pathname;
+            let language = 'zh-CN';
+            if (!language) {
+                language = 'en';
+            } else {
+                language = language.toLowerCase();
+            }
+            valine.init({
+                el: '#vcomments',
+                appId: 'n0AbSyGdjNFsq5EJpo35XEw8-gzGzoHsz',
+                appKey: 'ExPunrF0qf4zjYVpkEhlUtSn',
+                notify: 'false',
+                verify: 'false',
+                avatar: 'mp',
+                placeholder: 'Leave your throughs behind~',
+                visitor: 'true',
+                path: path,
+                lang: language
+            });
+        }
+
+        $(document).ready(function () {
+            initValine();
+        });
+    </script>
+
+</html>
