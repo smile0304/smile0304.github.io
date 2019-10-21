@@ -1665,6 +1665,8 @@ h1.title {
   background-size: cover;
   background-repeat: no-repeat;
   opacity: 0.85;
+  animation-delay: 800ms;
+  animation-duration: 800ms;
 }
 .else {
   position: relative;
@@ -1769,6 +1771,12 @@ h1.title {
   justify-content: center;
   align-content: center;
   color: #fff;
+}
+.else .post-count span i {
+  margin-right: 5px;
+  color: #7a7a8c;
+  font-weight: 900;
+  font-style: normal;
 }
 .else .post-count span b {
   font-size: 20px;
@@ -2326,6 +2334,9 @@ pre .keyword {
     padding-top: 0;
     grid-gap: 2rem;
   }
+  .article .main .sidebar {
+    display: none;
+  }
   .comment .gt-btn-public .gt-btn-text:after {
     content: "";
   }
@@ -2516,6 +2527,9 @@ pre .keyword {
   .else .post-count {
     margin: 15px 30px 0 0;
   }
+  .else .post-count i {
+    display: none;
+  }
   .screen-gradient-after {
     border-bottom-right-radius: 0;
   }
@@ -2584,9 +2598,9 @@ pre .keyword {
     display: none;
   }
   .article-header .article-cover {
-    width: 100%;
+    width: 90%;
     height: 350px;
-    left: 0;
+    top: 0;
   }
   .article-header .else .post-title {
     margin: 10px 0 10px 0;
