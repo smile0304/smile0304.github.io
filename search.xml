@@ -3,11 +3,14 @@
   <entry>
     <title>GDB调试命令--持续更新</title>
     <url>/2019/10/20/GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</url>
-    <content><![CDATA[<h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
+    <content><![CDATA[<h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><p>记录一些GDB调试的命令,好记性不如烂笔头</p>
+<h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
 <pre><code class="shell">git clone https://github.com/pwndbg/pwndbg
 cd pwndbg
 ./setup.sh</code></pre>
 <p>如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下</p>
+<a id="more"></a>
+
 <p><img src="http://file.smilehacker.net/1570720622109.png" alt="pwndbg界面展示"></p>
 <h2 id="启动GDB"><a href="#启动GDB" class="headerlink" title="启动GDB"></a>启动GDB</h2><p>对C/C++程序的调试，需要在编译前就加上-g选项:</p>
 <pre><code class="bash">$g++ -g hello.cpp -o hello</code></pre>
@@ -128,6 +131,7 @@ run &lt; filename_with_input</code></pre>
 <li>ghidra</li>
 <li>GDBServer </li>
 </ul>
+<a id="more"></a>
 <h2 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h2><pre><code class="shell">$ sudo apt-get update  
 $ sudo apt-get install build-essential autoconf git #安装依赖 
 

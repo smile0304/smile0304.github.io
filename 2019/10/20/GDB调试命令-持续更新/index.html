@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="记录一些GDB调试的命令,好记性不如烂笔头">
+<meta name="description" content="GDB调试命令记录(持续更新)记录一些GDB调试的命令,好记性不如烂笔头 插件安装pwndbg git clone https:&#x2F;&#x2F;github.com&#x2F;pwndbg&#x2F;pwndbg cd pwndbg .&#x2F;setup.sh 如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下">
 <meta name="keywords" content="安全,GDB,调试">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GDB调试命令--持续更新">
 <meta property="og:url" content="http:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;2019&#x2F;10&#x2F;20&#x2F;GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0&#x2F;index.html">
 <meta property="og:site_name" content="TT">
-<meta property="og:description" content="记录一些GDB调试的命令,好记性不如烂笔头">
+<meta property="og:description" content="GDB调试命令记录(持续更新)记录一些GDB调试的命令,好记性不如烂笔头 插件安装pwndbg git clone https:&#x2F;&#x2F;github.com&#x2F;pwndbg&#x2F;pwndbg cd pwndbg .&#x2F;setup.sh 如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570720622109.png">
 <meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570722300144.png">
 <meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571206209216.png">
-<meta property="og:updated_time" content="2019-10-21T05:49:00.736Z">
+<meta property="og:updated_time" content="2019-10-21T08:41:39.845Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570720622109.png">
 
@@ -428,10 +428,6 @@
           
 
           
-              <div class="post-description">
-                  记录一些GDB调试的命令,好记性不如烂笔头
-              </div>
-          
 
         </div>
       </header>
@@ -446,11 +442,14 @@
       
 
       
-        <h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
+        <h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><p>记录一些GDB调试的命令,好记性不如烂笔头</p>
+<h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
 <pre><code class="shell">git clone https://github.com/pwndbg/pwndbg
 cd pwndbg
 ./setup.sh</code></pre>
 <p>如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下</p>
+<a id="more"></a>
+
 <p><img src="http://file.smilehacker.net/1570720622109.png" alt="pwndbg界面展示"></p>
 <h2 id="启动GDB"><a href="#启动GDB" class="headerlink" title="启动GDB"></a>启动GDB</h2><p>对C/C++程序的调试，需要在编译前就加上-g选项:</p>
 <pre><code class="bash">$g++ -g hello.cpp -o hello</code></pre>

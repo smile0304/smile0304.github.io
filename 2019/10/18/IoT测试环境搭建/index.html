@@ -81,16 +81,16 @@
 
 
 
-<meta name="description" content="因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。">
+<meta name="description" content="IoT分析环境搭建因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。 工具列表: binwalk 固件提取 qemu 模拟执行 irmadyne 固件模拟工具(这里没有安装) buildroot Mips交叉编译环境 gdb 调试工具(可编译一个mips-linux-gdb) IDA g">
 <meta name="keywords" content="IoT,安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IoT测试环境搭建">
 <meta property="og:url" content="http:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;2019&#x2F;10&#x2F;18&#x2F;IoT%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA&#x2F;index.html">
 <meta property="og:site_name" content="TT">
-<meta property="og:description" content="因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。">
+<meta property="og:description" content="IoT分析环境搭建因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。 工具列表: binwalk 固件提取 qemu 模拟执行 irmadyne 固件模拟工具(这里没有安装) buildroot Mips交叉编译环境 gdb 调试工具(可编译一个mips-linux-gdb) IDA g">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;buildroot_set1.png">
-<meta property="og:updated_time" content="2019-10-21T05:51:06.334Z">
+<meta property="og:updated_time" content="2019-10-21T08:41:53.922Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;buildroot_set1.png">
 
@@ -415,10 +415,6 @@
           
 
           
-              <div class="post-description">
-                  因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。
-              </div>
-          
 
         </div>
       </header>
@@ -444,6 +440,7 @@
 <li>ghidra</li>
 <li>GDBServer </li>
 </ul>
+<a id="more"></a>
 <h2 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h2><pre><code class="shell">$ sudo apt-get update  
 $ sudo apt-get install build-essential autoconf git #安装依赖 
 
