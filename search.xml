@@ -170,8 +170,8 @@ print &#39; ok!&#39;</code></pre>
         <category>IoT</category>
       </categories>
       <tags>
-        <tag>IoT</tag>
         <tag>调试</tag>
+        <tag>IoT</tag>
         <tag>Debug</tag>
         <tag>Mips</tag>
         <tag>溢出</tag>
@@ -289,9 +289,9 @@ run &lt; filename_with_input</code></pre>
         <category>调试</category>
       </categories>
       <tags>
-        <tag>调试</tag>
         <tag>安全</tag>
         <tag>GDB</tag>
+        <tag>调试</tag>
       </tags>
   </entry>
   <entry>
@@ -387,8 +387,8 @@ python install.py /IDA PATH/ --install </code></pre>
         <category>安全</category>
       </categories>
       <tags>
-        <tag>IoT</tag>
         <tag>安全</tag>
+        <tag>IoT</tag>
       </tags>
   </entry>
 </search>
