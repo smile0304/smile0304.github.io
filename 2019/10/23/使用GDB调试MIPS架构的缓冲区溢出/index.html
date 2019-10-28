@@ -70,7 +70,7 @@
 
 
 
-  <meta name="keywords" content="调试,IoT,Debug,Mips,溢出," />
+  <meta name="keywords" content="IoT,调试,Debug,Mips,溢出," />
 
 
 
@@ -84,10 +84,10 @@
 
 
 <meta name="description" content="使用GDB调试MIPS架构的缓冲区溢出环境介绍和准备工作测试的代码都是来自&amp;lt;&amp;lt;解密家用路由器0day挖掘技术&amp;gt;&amp;gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。 测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：">
-<meta name="keywords" content="调试,IoT,Debug,Mips,溢出">
+<meta name="keywords" content="IoT,调试,Debug,Mips,溢出">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用GDB调试MIPS架构的缓冲区溢出">
-<meta property="og:url" content="http:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;2019&#x2F;10&#x2F;23&#x2F;%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA&#x2F;index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;2019&#x2F;10&#x2F;23&#x2F;%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA&#x2F;index.html">
 <meta property="og:site_name" content="TT">
 <meta property="og:description" content="使用GDB调试MIPS架构的缓冲区溢出环境介绍和准备工作测试的代码都是来自&amp;lt;&amp;lt;解密家用路由器0day挖掘技术&amp;gt;&amp;gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。 测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：">
 <meta property="og:locale" content="zh-Hans">
@@ -135,7 +135,7 @@
 
 
 
-  <link rel="canonical" href="http://blog.pwntools.xyz/2019/10/23/使用GDB调试MIPS架构的缓冲区溢出/"/>
+  <link rel="canonical" href="https://blog.pwntools.xyz/2019/10/23/使用GDB调试MIPS架构的缓冲区溢出/"/>
 
 
 
@@ -331,7 +331,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.pwntools.xyz/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">
+    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="TT">
@@ -631,9 +631,9 @@ print &#39; ok!&#39;</code></pre>
       
         <div class="post-tags">
           
-            <a href="/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
-          
             <a href="/tags/IoT/" rel="tag"># IoT</a>
+          
+            <a href="/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
           
             <a href="/tags/Debug/" rel="tag"># Debug</a>
           
@@ -1024,7 +1024,7 @@ print &#39; ok!&#39;</code></pre>
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://blog.pwntools.xyz/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/';
+          this.page.url = 'https://blog.pwntools.xyz/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/';
           this.page.identifier = '2019/10/23/使用GDB调试MIPS架构的缓冲区溢出/';
           this.page.title = '使用GDB调试MIPS架构的缓冲区溢出';
         };

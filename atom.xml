@@ -5,9 +5,9 @@
   
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://blog.pwntools.xyz/"/>
+  <link href="https://blog.pwntools.xyz/"/>
   <updated>2019-10-23T13:03:29.465Z</updated>
-  <id>http://blog.pwntools.xyz/</id>
+  <id>https://blog.pwntools.xyz/</id>
   
   <author>
     <name>TT</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>使用GDB调试MIPS架构的缓冲区溢出</title>
-    <link href="http://blog.pwntools.xyz/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/"/>
-    <id>http://blog.pwntools.xyz/2019/10/23/使用GDB调试MIPS架构的缓冲区溢出/</id>
+    <link href="https://blog.pwntools.xyz/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/"/>
+    <id>https://blog.pwntools.xyz/2019/10/23/使用GDB调试MIPS架构的缓冲区溢出/</id>
     <published>2019-10-23T12:55:00.000Z</published>
     <updated>2019-10-23T13:03:29.465Z</updated>
     
@@ -33,27 +33,27 @@
     </summary>
     
     
-      <category term="安全" scheme="http://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
+      <category term="安全" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
     
-      <category term="IoT" scheme="http://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/IoT/"/>
+      <category term="IoT" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/IoT/"/>
     
     
-      <category term="调试" scheme="http://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
+      <category term="IoT" scheme="https://blog.pwntools.xyz/tags/IoT/"/>
     
-      <category term="IoT" scheme="http://blog.pwntools.xyz/tags/IoT/"/>
+      <category term="调试" scheme="https://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
     
-      <category term="Debug" scheme="http://blog.pwntools.xyz/tags/Debug/"/>
+      <category term="Debug" scheme="https://blog.pwntools.xyz/tags/Debug/"/>
     
-      <category term="Mips" scheme="http://blog.pwntools.xyz/tags/Mips/"/>
+      <category term="Mips" scheme="https://blog.pwntools.xyz/tags/Mips/"/>
     
-      <category term="溢出" scheme="http://blog.pwntools.xyz/tags/%E6%BA%A2%E5%87%BA/"/>
+      <category term="溢出" scheme="https://blog.pwntools.xyz/tags/%E6%BA%A2%E5%87%BA/"/>
     
   </entry>
   
   <entry>
     <title>GDB调试命令--持续更新</title>
-    <link href="http://blog.pwntools.xyz/2019/10/20/GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/"/>
-    <id>http://blog.pwntools.xyz/2019/10/20/GDB调试命令-持续更新/</id>
+    <link href="https://blog.pwntools.xyz/2019/10/20/GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/"/>
+    <id>https://blog.pwntools.xyz/2019/10/20/GDB调试命令-持续更新/</id>
     <published>2019-10-20T12:50:20.000Z</published>
     <updated>2019-10-21T08:41:39.845Z</updated>
     
@@ -71,23 +71,23 @@ cd pwndbg
     </summary>
     
     
-      <category term="安全" scheme="http://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
+      <category term="安全" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
     
-      <category term="调试" scheme="http://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/%E8%B0%83%E8%AF%95/"/>
+      <category term="调试" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/%E8%B0%83%E8%AF%95/"/>
     
     
-      <category term="安全" scheme="http://blog.pwntools.xyz/tags/%E5%AE%89%E5%85%A8/"/>
+      <category term="安全" scheme="https://blog.pwntools.xyz/tags/%E5%AE%89%E5%85%A8/"/>
     
-      <category term="GDB" scheme="http://blog.pwntools.xyz/tags/GDB/"/>
+      <category term="调试" scheme="https://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
     
-      <category term="调试" scheme="http://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
+      <category term="GDB" scheme="https://blog.pwntools.xyz/tags/GDB/"/>
     
   </entry>
   
   <entry>
     <title>IoT测试环境搭建</title>
-    <link href="http://blog.pwntools.xyz/2019/10/18/IoT%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"/>
-    <id>http://blog.pwntools.xyz/2019/10/18/IoT测试环境搭建/</id>
+    <link href="https://blog.pwntools.xyz/2019/10/18/IoT%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"/>
+    <id>https://blog.pwntools.xyz/2019/10/18/IoT测试环境搭建/</id>
     <published>2019-10-18T14:36:56.000Z</published>
     <updated>2019-10-21T08:41:53.922Z</updated>
     
@@ -110,12 +110,12 @@ cd pwndbg
     </summary>
     
     
-      <category term="安全" scheme="http://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
+      <category term="安全" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="安全" scheme="http://blog.pwntools.xyz/tags/%E5%AE%89%E5%85%A8/"/>
+      <category term="IoT" scheme="https://blog.pwntools.xyz/tags/IoT/"/>
     
-      <category term="IoT" scheme="http://blog.pwntools.xyz/tags/IoT/"/>
+      <category term="安全" scheme="https://blog.pwntools.xyz/tags/%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
