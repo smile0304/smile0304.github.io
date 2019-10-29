@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.pwntools.xyz/2019/10/29/DNSRebind%25E6%25B5%258B%25E8%25AF%2595%25E7%25AC%2594%25E8%25AE%25B0/</loc>
+    
+    <lastmod>2019-10-29T04:46:56.355Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.pwntools.xyz/2019/10/28/Linux-PWN/</loc>
     
     <lastmod>2019-10-28T14:44:25.314Z</lastmod>
