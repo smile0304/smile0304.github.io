@@ -105,9 +105,9 @@
       <category term="IoT" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/IoT/"/>
     
     
-      <category term="IoT" scheme="https://blog.pwntools.xyz/tags/IoT/"/>
-    
       <category term="调试" scheme="https://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
+    
+      <category term="IoT" scheme="https://blog.pwntools.xyz/tags/IoT/"/>
     
       <category term="Debug" scheme="https://blog.pwntools.xyz/tags/Debug/"/>
     
@@ -145,9 +145,9 @@ cd pwndbg
     
       <category term="安全" scheme="https://blog.pwntools.xyz/tags/%E5%AE%89%E5%85%A8/"/>
     
-      <category term="调试" scheme="https://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
-    
       <category term="GDB" scheme="https://blog.pwntools.xyz/tags/GDB/"/>
+    
+      <category term="调试" scheme="https://blog.pwntools.xyz/tags/%E8%B0%83%E8%AF%95/"/>
     
   </entry>
   
@@ -180,9 +180,9 @@ cd pwndbg
       <category term="安全" scheme="https://blog.pwntools.xyz/categories/%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="IoT" scheme="https://blog.pwntools.xyz/tags/IoT/"/>
-    
       <category term="安全" scheme="https://blog.pwntools.xyz/tags/%E5%AE%89%E5%85%A8/"/>
+    
+      <category term="IoT" scheme="https://blog.pwntools.xyz/tags/IoT/"/>
     
   </entry>
   
