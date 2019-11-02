@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="raOM80mJci7Yya3KvZl8RZPEXgx2sjibB7giLewBQv4" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Fuzz,study," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="TT" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="AFL Fuzzing study notes安装本文采用的测试环境是ubuntu 16.04 AFL下载地址: http:&#x2F;&#x2F;lcamtuf.coredump.cx&#x2F;afl&#x2F;  123456tar -zxvf afl-latest.tgz	# 解压代码# 编译安装cd afl-2.52bmake sudo make install  不出意外可以直接编译成功,之后在终端输入afl-,按两下tab">
+<meta name="keywords" content="Fuzz,study">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL Fuzzing study notes">
+<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;2019&#x2F;11&#x2F;02&#x2F;AFL-Fuzzing-study-notes&#x2F;index.html">
+<meta property="og:site_name" content="TT">
+<meta property="og:description" content="AFL Fuzzing study notes安装本文采用的测试环境是ubuntu 16.04 AFL下载地址: http:&#x2F;&#x2F;lcamtuf.coredump.cx&#x2F;afl&#x2F;  123456tar -zxvf afl-latest.tgz	# 解压代码# 编译安装cd afl-2.52bmake sudo make install  不出意外可以直接编译成功,之后在终端输入afl-,按两下tab">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570950620531.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571209319832.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570957117241.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570955956378.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570957526718.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570957848925.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570957969884.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570958012787.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570958072893.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570958118182.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571023550045.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571023823108.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570980361643.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570981177555.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570982707245.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570982887916.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571025845455.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571209606024.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571209574876.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571209819953.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1571209729037.png">
+<meta property="og:updated_time" content="2019-11-02T10:25:51.346Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1570950620531.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://blog.pwntools.xyz/2019/11/02/AFL-Fuzzing-study-notes/"/>
+
+
+
+
+
+  <title>AFL Fuzzing study notes | TT</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-150349942-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?07ea199d328523d206245b8355f15623";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TT</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/2019/11/02/AFL-Fuzzing-study-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AFL Fuzzing study notes</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-02T18:18:57+08:00">
+                2019-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Fuzz/" itemprop="url" rel="index">
+                    <span itemprop="name">Fuzz</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/02/AFL-Fuzzing-study-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2019/11/02/AFL-Fuzzing-study-notes/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/11/02/AFL-Fuzzing-study-notes/" class="leancloud_visitors" data-flag-title="AFL Fuzzing study notes">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="AFL-Fuzzing-study-notes"><a href="#AFL-Fuzzing-study-notes" class="headerlink" title="AFL Fuzzing study notes"></a>AFL Fuzzing study notes</h2><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>本文采用的测试环境是<code>ubuntu 16.04</code></p>
+<p><code>AFL</code>下载地址: <a href="http://lcamtuf.coredump.cx/afl/" target="_blank" rel="noopener">http://lcamtuf.coredump.cx/afl/</a> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf afl-latest.tgz	# 解压代码</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 编译安装</span></span><br><span class="line">cd afl-2.52b</span><br><span class="line">make </span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>不出意外可以直接编译成功,之后在终端输入<code>afl-</code>,按两下<code>tab</code>,会出现一些命令</p>
+<p><img src="http://file.smilehacker.net/1570950620531.png" alt="1570950620531"></p>
+<a id="more"></a>
+
+
+<h2 id="有源码AFL测试-源码插桩"><a href="#有源码AFL测试-源码插桩" class="headerlink" title="有源码AFL测试-源码插桩"></a>有源码AFL测试-源码插桩</h2><p>测试代码如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt; </span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vuln</span><span class="params">(<span class="keyword">char</span> *str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len = <span class="built_in">strlen</span>(str);</span><br><span class="line">    <span class="keyword">if</span>(str[<span class="number">0</span>] == <span class="string">'A'</span> &amp;&amp; len == <span class="number">66</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        raise(SIGSEGV);</span><br><span class="line">        <span class="comment">//如果输入的字符串的首字符为A并且长度为66，则异常退出</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(str[<span class="number">0</span>] == <span class="string">'F'</span> &amp;&amp; len == <span class="number">6</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        raise(SIGSEGV);</span><br><span class="line">        <span class="comment">//如果输入的字符串的首字符为F并且长度为6，则异常退出</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"it is good!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">100</span>]=&#123;<span class="number">0</span>&#125;;</span><br><span class="line">    gets(buf);<span class="comment">//存在栈溢出漏洞</span></span><br><span class="line">    <span class="built_in">printf</span>(buf);<span class="comment">//存在格式化字符串漏洞</span></span><br><span class="line">    vuln(buf);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>afl-fuzz</code>基本流程</p>
+<ul>
+<li>使用<code>afl-gcc</code>对代码进行插桩编译</li>
+<li>生成<code>testcase</code>(输入文件)，最好小于<code>1k</code>，如果大于<code>1k</code>影响效率</li>
+<li>启动<code>afl-fuzz</code>程序，将<code>testcase</code>作为程序的输入执行程序</li>
+<li><code>afl</code>会在<code>testcase</code>的基础上自动变异输入，让程序<code>crash</code>，并记录<code>crash</code>信息</li>
+</ul>
+<h3 id="插桩编译"><a href="#插桩编译" class="headerlink" title="插桩编译"></a>插桩编译</h3><p>将上面的程序用<code>afl-gcc</code>编译</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-gcc -g -o afl_test afl_test.c</span><br></pre></td></tr></table></figure>
+
+<p>如果是编译C++源码，就要将<code>afl-gcc</code>替换成<code>afl-g++</code></p>
+<p>接着建立两个文件<code>afl_in</code>，<code>afl_out</code>用来存放程序的输入和<code>Fuzz</code>输出的结果。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir afl_in afl_out</span><br></pre></td></tr></table></figure>
+
+<p>到此，还需要一个<code>testcase</code>文件，将<code>testcase</code>文件中的内容喂给程序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo "aaa" &gt; afl_in/testcase  # testcase中的内容可以为任意内容</span><br></pre></td></tr></table></figure>
+
+<p><strong>备注:</strong></p>
+<p>目标程序中有<code>makefile</code>文件，分两种情况</p>
+<ol>
+<li><p>程序用<code>autoconf</code>构建</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure CC="afl-gcc" CXX="afl-g++"</span><br></pre></td></tr></table></figure>
+
+<p> 此外，还可以执行如下语句设置<code>LD_LIBRARY_PATH</code>让程序加载经过<code>AFL</code>插桩的<code>.so</code>文件，进行静态构建而不是动态链接 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --disable-shared CC="afl-gcc" CXX="afl-g++"</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>程序不是<code>autoconf</code>构建， 那么直接修改Makefile文件中的编译器为<code>afl-gcc/g++</code>。</p>
+<p> 为了后期更好的分析crash，在此处可以开启<code>Address Sanitizer(ASAN)</code>这个内存检测工具，此工具可以更好的检测出缓存区溢出、<code>UAF</code>等内存漏洞，开启方法如下: </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AFL_USE_ASAN=1 ./configure CC=afl-gcc CXX=afl-g++ LD=afl-gcc--disable-shared</span><br><span class="line">AFL_USE_ASAN=1 make</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<pre><code>不使用 `AFL`编译插桩时，可使用以下方式开启 `Address Sanitizer`</code></pre>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure CC=gcc CXX=g++ CFLAGS=&quot;-g -fsanitize=address&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="开始Fuzz"><a href="#开始Fuzz" class="headerlink" title="开始Fuzz"></a>开始Fuzz</h3><p><code>Fuzz</code>的语法一般有两种</p>
+<ol>
+<li><p>直接从<code>stdin</code>读取输入的目标程序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-fuzz -i testcase_dir -o findings_dir /path/to/program […params…]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从文件读取输入的目标程序，@@就是占位符，表示输入替换的位置 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-fuzz -i testcase_dir -o findings_dir /path/to/program @@</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>常见命令的含义:</p>
+<ul>
+<li>-f参数表示：<code>testcase</code>的内容会作为<code>afl_test</code>的<code>stdin</code></li>
+<li>-m参数表示分配的内存空间</li>
+<li>-i 指定测试样本的路径</li>
+<li>-o 指定输出结果的路径</li>
+<li>/dev/null 使错误信息不输出到屏幕</li>
+<li>-t：设置程序运行超时值，单位为 ms</li>
+<li>-M：运行主(Master) <code>Fuzzer</code></li>
+<li>-S：运行从属(Slave) <code>Fuzzer</code></li>
+</ul>
+<p>运行<code>afl-fuzz</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-fuzz -i afl_in/ -o afl_out/ ./afl_test -f</span><br></pre></td></tr></table></figure>
+
+<p>此处如果第一次运行会报一个错误</p>
+<p><img src="http://file.smilehacker.net/1571209319832.png" alt="1571209319832"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Pipe at the beginning of 'core_pattern'</span><br></pre></td></tr></table></figure>
+
+<p>解决方法如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo su</span><br><span class="line">echo core &gt;/proc/sys/kernel/core_pattern</span><br></pre></td></tr></table></figure>
+
+<h3 id="Fuzz运行界面"><a href="#Fuzz运行界面" class="headerlink" title="Fuzz运行界面"></a>Fuzz运行界面</h3><p><img src="http://file.smilehacker.net/1570957117241.png" alt="1570957117241"></p>
+<p>下面选择界面上几个重要的部分来介绍一下</p>
+<ul>
+<li><p>process timing :</p>
+<ul>
+<li>run time : 当前Fuzz的运行时间</li>
+<li>last new path : 最后一次发现新路径的时间</li>
+<li>last uniq crash : 最后一次崩溃的时间</li>
+<li>last uniq hang : 最后一次超时的时间</li>
+</ul>
+<p>值得注意的是第二项<code>last new path</code>, 最近一次发现新路径的时间。如果由于目标二进制文件或者命令行参数出错，那么其执行路径应该是一直不变的，所以如果从fuzzing开始一直没有发现新的执行路径，那么就要考虑是否有二进制或者命令行参数错误的问题了。对于此状况，<code>AFL</code>也会智能地进行提醒 。</p>
+</li>
+<li><p>overall results:</p>
+<ul>
+<li><p>cycles done : 运行的总周期处</p>
+</li>
+<li><p>total path : 当前发现的总路径数</p>
+</li>
+<li><p>uniq crashes : 当前崩溃测试</p>
+</li>
+<li><p>uniq hangs : 当前程序响应超时次数</p>
+<p><code>total path</code>可以用来作为何时停止fuzzing的参考。随着不断地fuzzing，周期数会不断增大，其颜色也会由洋红色，逐步变为黄色、蓝色、绿色。一般来说，当其变为绿色时，代表可执行的内容已经很少了，继续fuzzing下去也不会有什么新的发现了。此时，我们便可以通过<code>Ctrl-C</code>，中止当前的fuzzing </p>
+</li>
+</ul>
+</li>
+<li><p>stage progress</p>
+<ul>
+<li><p>now trying : 正在测试的<code>Fuzz</code>策略</p>
+</li>
+<li><p>stage execs: 当前测试的进度</p>
+</li>
+<li><p>total execs:目标的执行总次数</p>
+</li>
+<li><p>exec speed : 目标的实行速度</p>
+<p><code>exec speed</code>可以直观地反映当前跑的快不快，如果速度过慢，比如低于500次每秒，那么测试时间就会变得非常漫长。如果发生了这种情况，那么我们需要进一步调整优化我们的fuzzing </p>
+</li>
+</ul>
+</li>
+</ul>
+<p>以上是运行界面常用的关注点, 想要查看具体的介绍请查看<a href="http://lcamtuf.coredump.cx/afl/status_screen.txt" target="_blank" rel="noopener">官方文档</a></p>
+<h3 id="Crash分析"><a href="#Crash分析" class="headerlink" title="Crash分析"></a>Crash分析</h3><p>通过上图，稍微跑了不到一分钟，发现了5个<code>crash</code></p>
+<p>查看<code>afl_out</code>生成的文件:</p>
+<p><img src="http://file.smilehacker.net/1570955956378.png" alt="1570955956378"></p>
+<ul>
+<li><code>crashes</code> : 存放使程序产生<code>crash</code>的样例</li>
+<li><code>hangs</code> : 使程序产生超时的样例</li>
+<li><code>queue</code>: 存放每个不同执行路径的用例</li>
+</ul>
+<p>我们来看看<code>crashes</code> 目录下的几个样例</p>
+<p><img src="http://file.smilehacker.net/1570957526718.png" alt="1570957526718"></p>
+<p>想要具体分析，我们只需要把得到的<code>crash</code>文件作为参数输入到程序中，使用gdb调试分析就可以得到详细的结果。在分析之前先用<code>xxd</code>命令查看下文件内容，对产生的异常做一个初步判断。</p>
+<ul>
+<li><p>可能为缓冲区溢出：</p>
+<p><img src="http://file.smilehacker.net/1570957848925.png" alt="1570957848925"></p>
+</li>
+<li><p>可能为预期内的异常,<code>F</code>开头且长度为6</p>
+<p><img src="http://file.smilehacker.net/1570957969884.png" alt="1570957969884"></p>
+</li>
+<li><p>缓冲区溢出？</p>
+<p><img src="http://file.smilehacker.net/1570958012787.png" alt="1570958012787"></p>
+</li>
+<li><p>根据源代码基本可以确定为格式化字符串漏洞</p>
+<p><img src="http://file.smilehacker.net/1570958072893.png" alt="1570958072893"></p>
+</li>
+<li><p>可能使预料中的异常</p>
+<p><img src="http://file.smilehacker.net/1570958118182.png" alt="1570958118182"></p>
+</li>
+</ul>
+<p>在文末补充具体的异常调试</p>
+<h2 id="有源码AFL测试-LLVM模式"><a href="#有源码AFL测试-LLVM模式" class="headerlink" title="有源码AFL测试-LLVM模式"></a>有源码AFL测试-LLVM模式</h2><p><code>LLVM Mode</code>模式编译程序可以获得更快的Fuzzing速度，因此针对大型项目可以考虑启用</p>
+<h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><p>安装系统依赖包:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install llvm clang</span><br></pre></td></tr></table></figure>
+
+<p>进入<code>AFL</code>源码目录编译<code>afl llvm</code>模块</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd llvm_mode/</span><br><span class="line"></span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后,在<code>AFL</code>跟目录下应该出现了<code>afl-clang-fast</code>,后面编译代码时使用<code>afl-clang-fast</code>构建程序即可。需要添加一下软连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ln -s /home/tt/afl-2.52b/afl-clang-fast[源路径] /usr/local/bin/afl-clang-fast[目标路径]</span><br></pre></td></tr></table></figure>
+
+<h3 id="llvm-model编译代码"><a href="#llvm-model编译代码" class="headerlink" title="llvm model编译代码"></a><code>llvm model</code>编译代码</h3><p>使用<code>afl-clang-fast</code>编译最初存在漏洞的代码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-clang-fast -g afl_test.c -o afl_test</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://file.smilehacker.net/1571023550045.png" alt="1571023550045"></p>
+<h3 id="开始Fuzz-1"><a href="#开始Fuzz-1" class="headerlink" title="开始Fuzz"></a>开始Fuzz</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-fuzz -i afl_in -o afl_out ./afl_test -f</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://file.smilehacker.net/1571023823108.png" alt="1571023823108"></p>
+<h2 id="无源码的AFL测试-Qemu模式"><a href="#无源码的AFL测试-Qemu模式" class="headerlink" title="无源码的AFL测试-Qemu模式"></a>无源码的AFL测试-Qemu模式</h2><h3 id="安装Qemu"><a href="#安装Qemu" class="headerlink" title="安装Qemu"></a>安装<code>Qemu</code></h3><p>还有一些情况我们根本拿不到程序的代码，没有办法对源码进行插桩，不过<code>AFL</code>提供了<code>qemu</code>模式进行测试</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd afl-2.52b/qemu-mode</span><br><span class="line"></span><br><span class="line">./build_qemu_support.sh </span><br><span class="line">cd ..</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<p>有可能在执行<code>./build_qemu_support.sh</code>时出现如下错误</p>
+<p><img src="http://file.smilehacker.net/1570980361643.png" alt="1570980361643"></p>
+<p>执行如下代码即可:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wget http://mirrors.kernel.org/gnu/libtool/libtool-2.2.6b.tar.gz \</span><br><span class="line">&amp;&amp; tar xzvf libtool-2.2.6b.tar.gz \</span><br><span class="line">&amp;&amp; cd libtool-2.2.6b \</span><br><span class="line">&amp;&amp; ./configure –prefix=/usr/local</span><br><span class="line"></span><br><span class="line">make &amp;&amp; sudo make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">##############或者#############</span></span></span><br><span class="line">sudo apt-get install libtool-bin</span><br></pre></td></tr></table></figure>
+
+<p>编译成功:</p>
+<p><img src="http://file.smilehacker.net/1570981177555.png" alt="1570981177555"></p>
+<p>回到代码目录,使用<code>gcc</code>重新编译测试代码，并重新执行<code>afl-fuzz</code>命令(这次加上<code>-Q</code>)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc afl_test.c -o afl_test</span><br><span class="line"></span><br><span class="line">afl-fuzz -i afl_in/ -o afl_out/ -Q ./afl_test -f</span><br></pre></td></tr></table></figure>
+
+<p>有可能碰到如下错误:</p>
+<p><img src="http://file.smilehacker.net/1570982707245.png" alt="1570982707245"></p>
+<p>解决方法:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.bashrc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在文件结尾添加如下内容</span></span><br><span class="line">export AFL_PATH=/home/tt/afl-2.52b #你的afl-qemu-trace所在路径，如果根据文章走下来,那就是你的afl源码目录</span><br><span class="line"></span><br><span class="line">source ~/.bashrc # 重新加载</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://file.smilehacker.net/1570982887916.png" alt="1570982887916"></p>
+<p>重新运行,已经成功运行了,但是对比一下两个模式，会发现在<code>Qemu</code>模式下的速度比源码编译插桩的速度慢了很多。</p>
+<h2 id="AFL-Fuzz结果分析"><a href="#AFL-Fuzz结果分析" class="headerlink" title="AFL Fuzz结果分析"></a>AFL Fuzz结果分析</h2><h3 id="工作状态"><a href="#工作状态" class="headerlink" title="工作状态"></a>工作状态</h3><p> <code>afl-fuzz</code>永远不会停止，所以何时停止测试很多时候就是依靠<code>afl-fuzz</code>提供的状态来决定的。具体的几种方式如下所示: </p>
+<ul>
+<li>状态窗口的<code>cycles done</code>变为绿色;</li>
+<li><code>afl-whatsup</code>查看afl-fuzz状态;</li>
+<li><code>afl-stat</code>得到类似于afl-whatsup的输出结果;</li>
+<li>定制<code>afl-whatsup</code>-&gt;在所有代码外面加个循环就好;</li>
+<li>用<code>afl-plot</code>绘制各种状态指标的直观变化趋势;</li>
+<li><code>pythia</code>估算发现新crash和path概率。</li>
+</ul>
+<h3 id="Fuzzing结果"><a href="#Fuzzing结果" class="headerlink" title="Fuzzing结果"></a>Fuzzing结果</h3><ul>
+<li>状态窗口中”cycles done”字段颜色变为绿色该字段的颜色可以作为何时停止测试的参考;</li>
+<li>距上一次发现新路径（或者崩溃）已经过去很长时间了，至于具体多少时间还是需要自己把握;</li>
+<li>目标程序的代码几乎被测试用例完全覆盖，这种情况好像很少见;</li>
+<li>pythia提供的各种数据中，path covera达到99或者correctness的值达到1e-08(含义: 从上次发现path/uniq crash到下一次发现之间大约需要1亿次执行)</li>
+</ul>
+<h3 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h3><p>在文章中有提到过。</p>
+<ul>
+<li>queue：存放所有具有独特执行路径的测试用例。</li>
+<li>crashes：导致目标接收致命signal而崩溃的独特测试用例。</li>
+<li>crashes/README.txt：保存了目标执行这些crash文件的命令行参数。</li>
+<li>hangs：导致目标超时的独特测试用例。</li>
+<li>fuzzer_stats：afl-fuzz的运行状态。</li>
+<li>plot_data：用于afl-plot绘图。</li>
+</ul>
+<h3 id="对Crash的结果进行简单分析"><a href="#对Crash的结果进行简单分析" class="headerlink" title="对Crash的结果进行简单分析"></a>对Crash的结果进行简单分析</h3><h4 id="crash-exploration-mode"><a href="#crash-exploration-mode" class="headerlink" title="crash exploration mode"></a>crash exploration mode</h4><p> afl-fuzz的一种运行模式，也称为<code>peruvian rabbit mode</code>，用于确定bug的可利用性，其输入的是crash的信息，之后使用<code>-C</code>启用这种模式，afl会自动探索并创造与之相关的crash来帮助你进行分析，比如判断能够控制某块内存地址的长度。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afl-fuzz -m none -C -i ./afl_out/crashes -o ./peruvian-were-rabbit_out -- ./afl_test -f</span><br></pre></td></tr></table></figure>
+
+<h4 id="triage-crashes-sh"><a href="#triage-crashes-sh" class="headerlink" title="triage_crashes.sh"></a>triage_crashes.sh</h4><p> AFL源码的experimental目录中有一个名为triage_crashes.sh的脚本，可以帮助我们触发收集到的crashes。 </p>
+<p>直接使用脚本跟参数的话，我们可以看到相关crash情况的寄存器等信息，但是如果只是大致分类的话，可以使用如下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh /home/tt/afl-2.52b/experimental/crash_triage/triage_crashes.sh ./afl_out ./afl_test  2&gt;&amp;1 | grep SIGNAL</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://file.smilehacker.net/1571025845455.png" alt="1571025845455"></p>
+<p>根据输出的11可以做一个大概的判断，但是具体还是需要手动调试</p>
+<h4 id="推荐两个分析结果的工具"><a href="#推荐两个分析结果的工具" class="headerlink" title="推荐两个分析结果的工具"></a>推荐两个分析结果的工具</h4><ul>
+<li>(afl-content)[ <a href="https://github.com/rc0r/afl-utils" target="_blank" rel="noopener">https://github.com/rc0r/afl-utils</a> ] afl-collect基于exploitable来检查crashes的可利用性。它可以自动删除无效的crash样本、删除重复样本以及自动化样本分类。 </li>
+<li>(crashwalk)[ <a href="https://github.com/bnagy/crashwalk" target="_blank" rel="noopener">https://github.com/bnagy/crashwalk</a> ] 可以显示更详细的信息</li>
+</ul>
+<h3 id="代码覆盖率-afl-cov"><a href="#代码覆盖率-afl-cov" class="headerlink" title="代码覆盖率:  afl-cov"></a>代码覆盖率:  <code>afl-cov</code></h3><p>后面补充，现在有一点问题</p>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>对上面文章做一些补充</p>
+<h3 id="缓冲区溢出分析"><a href="#缓冲区溢出分析" class="headerlink" title="缓冲区溢出分析"></a>缓冲区溢出分析</h3><p>使用<code>GDB</code>对缓冲区进行实际分析，在分析前先来看下猜测为导致缓冲区溢的<code>case</code>:</p>
+<p><img src="http://file.smilehacker.net/1571209606024.png" alt="1571209606024"></p>
+<p>接下来使用<code>GDB</code>加载程序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdb afl_test</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">直接让程序运行，并且在运行时导入AFL输出导致程序crash的<span class="keyword">case</span></span></span><br><span class="line"></span><br><span class="line">run &lt; stackoverflow</span><br></pre></td></tr></table></figure>
+
+<p>这里对文件进行了重命名，不然在<code>gdb</code>中导入会有一点问题。</p>
+<p><img src="http://file.smilehacker.net/1571209574876.png" alt="1571209574876"></p>
+<p>程序运行后,找到产生<code>crash</code>位置,</p>
+<p><img src="http://file.smilehacker.net/1571209819953.png" alt="1571209819953"></p>
+<p> 通过栈回溯信息可以看到，程序发生了栈溢出[启用了 canary ,导致栈检查失败，随后奔溃]： </p>
+<p><img src="http://file.smilehacker.net/1571209729037.png" alt="1571209729037"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Fuzz/" rel="tag"># Fuzz</a>
+          
+            <a href="/tags/study/" rel="tag"># study</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/29/DNSRebind%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/" rel="next" title="DNSRebind测试笔记">
+                <i class="fa fa-chevron-left"></i> DNSRebind测试笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dad56b440a98d03" async = "async" ></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4"
+                alt="TT" />
+            
+              <p class="site-author-name" itemprop="name">TT</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/smile0304" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/SmileKuxiao" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yourname@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://stackoverflow.com/users/9417433/tt-smile" target="_blank" title="StackOverflow">
+                      
+                        <i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+<script type="text/javascript" id="clstr_globe" src="//cdn.clustrmaps.com/globe.js?d=8vf2nFJ6Gn-Da3MWWOlXunOcDzXOvwCA_WMLS81WswM"></script>
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AFL-Fuzzing-study-notes"><span class="nav-number">1.</span> <span class="nav-text">AFL Fuzzing study notes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有源码AFL测试-源码插桩"><span class="nav-number">3.</span> <span class="nav-text">有源码AFL测试-源码插桩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#插桩编译"><span class="nav-number">3.1.</span> <span class="nav-text">插桩编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始Fuzz"><span class="nav-number">3.2.</span> <span class="nav-text">开始Fuzz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fuzz运行界面"><span class="nav-number">3.3.</span> <span class="nav-text">Fuzz运行界面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Crash分析"><span class="nav-number">3.4.</span> <span class="nav-text">Crash分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有源码AFL测试-LLVM模式"><span class="nav-number">4.</span> <span class="nav-text">有源码AFL测试-LLVM模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-1"><span class="nav-number">4.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#llvm-model编译代码"><span class="nav-number">4.2.</span> <span class="nav-text">llvm model编译代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始Fuzz-1"><span class="nav-number">4.3.</span> <span class="nav-text">开始Fuzz</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无源码的AFL测试-Qemu模式"><span class="nav-number">5.</span> <span class="nav-text">无源码的AFL测试-Qemu模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Qemu"><span class="nav-number">5.1.</span> <span class="nav-text">安装Qemu</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AFL-Fuzz结果分析"><span class="nav-number">6.</span> <span class="nav-text">AFL Fuzz结果分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#工作状态"><span class="nav-number">6.1.</span> <span class="nav-text">工作状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fuzzing结果"><span class="nav-number">6.2.</span> <span class="nav-text">Fuzzing结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出结果"><span class="nav-number">6.3.</span> <span class="nav-text">输出结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对Crash的结果进行简单分析"><span class="nav-number">6.4.</span> <span class="nav-text">对Crash的结果进行简单分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#crash-exploration-mode"><span class="nav-number">6.4.1.</span> <span class="nav-text">crash exploration mode</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#triage-crashes-sh"><span class="nav-number">6.4.2.</span> <span class="nav-text">triage_crashes.sh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#推荐两个分析结果的工具"><span class="nav-number">6.4.3.</span> <span class="nav-text">推荐两个分析结果的工具</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码覆盖率-afl-cov"><span class="nav-number">6.5.</span> <span class="nav-text">代码覆盖率:  afl-cov</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补充"><span class="nav-number">7.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓冲区溢出分析"><span class="nav-number">7.1.</span> <span class="nav-text">缓冲区溢出分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TT</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://blog-rvy0h9n8wm.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://blog.pwntools.xyz/2019/11/02/AFL-Fuzzing-study-notes/';
+          this.page.identifier = '2019/11/02/AFL-Fuzzing-study-notes/';
+          this.page.title = 'AFL Fuzzing study notes';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://blog-rvy0h9n8wm.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("n0AbSyGdjNFsq5EJpo35XEw8-gzGzoHsz", "ExPunrF0qf4zjYVpkEhlUtSn");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
