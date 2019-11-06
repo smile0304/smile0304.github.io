@@ -443,49 +443,22 @@
 <li>GDBServer </li>
 </ul>
 <a id="more"></a>
-<h2 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h2><pre><code class="shell">$ sudo apt-get update  
-$ sudo apt-get install build-essential autoconf git #安装依赖 
+<h2 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update  </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install build-essential autoconf git <span class="comment">#安装依赖 </span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> https://github.com/devttys0/binwalk/blob/master/INSTALL.md  </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/ReFirmLabs/binwalk.git</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> binwalk  </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> python2.7 </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo python setup.py install </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Python3.x</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo python3 setup.py install</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo ./deps.sh <span class="comment">#debian/Ubuntu可使用脚本自动安装依赖</span></span></span><br></pre></td></tr></table></figure>
 
-# https://github.com/devttys0/binwalk/blob/master/INSTALL.md  
-$ git clone https://github.com/ReFirmLabs/binwalk.git
-$ cd binwalk  
-
-# python2.7 
-$ sudo python setup.py install 
-
-# Python3.x
-$ sudo python3 setup.py install
-
-$ sudo ./deps.sh #debian/Ubuntu可使用脚本自动安装依赖</code></pre>
 <h2 id="Qemu"><a href="#Qemu" class="headerlink" title="Qemu"></a>Qemu</h2><p>Qemu 是纯软件实现的虚拟化模拟器，几乎可以模拟任何硬件设备。 QEMU模拟器主要有两种比较常见的运作模式：</p>
 <ul>
 <li>User Mode（使用者模式） User Mode模式下，用户只需要将各种不同平台的处理编译得到的Linux程序放在QEMU虚拟中运行即可，其他的事情全部由QEMU虚拟机来完成，不需要用户自定义内核和虚拟磁盘等文件；</li>
 <li>System Mode（系统模式）。 System Mode模式下，最明显的特点是用户可以为QEMU虚拟机指定运行的内核或者虚拟硬盘等文件，简单来说系统模式下QEMU虚拟机是可根据用户的要求配置的</li>
 </ul>
-<h3 id="使用源码安装Qemu"><a href="#使用源码安装Qemu" class="headerlink" title="使用源码安装Qemu"></a>使用源码安装Qemu</h3><pre><code class="shell">$ git clone git://git.qemu.org/qemu.git
+<h3 id="使用源码安装Qemu"><a href="#使用源码安装Qemu" class="headerlink" title="使用源码安装Qemu"></a>使用源码安装Qemu</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> git://git.qemu.org/qemu.git</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> qemu</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> git submodule update --recursive</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install libglib2.0 libglib2.0-dev</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install autoconf automake libtoolcd </span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./configure</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo make &amp;&amp; sudo make install</span></span><br></pre></td></tr></table></figure>
 
-$ cd qemu
-
-$ git submodule update --recursive
-$ sudo apt install libglib2.0 libglib2.0-dev
-$ sudo apt install autoconf automake libtoolcd 
-
-$ ./configure
-
-$ sudo make &amp;&amp; sudo make install</code></pre>
 <p>ubuntu14.04中用源码方式编译安装qemu时,执行configure步骤提示错误：“ERROR: pixman &gt;= 0.21.8 not present.” 安装如下依赖：</p>
-<pre><code class="shell">$ sudo apt-get install libpixman-1-dev</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install libpixman-1-dev</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="firmadyne"><a href="#firmadyne" class="headerlink" title="firmadyne"></a>firmadyne</h2><p>github : <a href="https://github.com/firmadyne/firmadyne" target="_blank" rel="noopener">https://github.com/firmadyne/firmadyne</a></p>
 <h2 id="Buildroot"><a href="#Buildroot" class="headerlink" title="Buildroot"></a>Buildroot</h2><p>下载地址 : <a href="https://buildroot.org/downloads/buildroot-2019.02.6.tar.gz" target="_blank" rel="noopener">https://buildroot.org/downloads/buildroot-2019.02.6.tar.gz</a></p>
-<pre><code class="shell">tar zxvf buildroot-2019.02.6.tar.gz
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf buildroot-2019.02.6.tar.gz</span><br><span class="line"></span><br><span class="line">cd buildroot-2019.02.6</span><br><span class="line"></span><br><span class="line">sudo apt-get install libncurses5-dev patch</span><br><span class="line"></span><br><span class="line">make clean</span><br><span class="line"></span><br><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
 
-cd buildroot-2019.02.6
-
-sudo apt-get install libncurses5-dev patch
-
-make clean
-
-make menuconfig</code></pre>
 <p>需要设置以下三个选项<br><img src="http://file.smilehacker.net/buildroot_set1.png" alt="buildroot安装选项"></p>
 <ul>
 <li>Target options -&gt; Target Architecture 设置为Mips (little endian)</li>
@@ -493,28 +466,20 @@ make menuconfig</code></pre>
 <li>Toolchain -&gt; Kernal Headers 设置成机器Kennal版本</li>
 </ul>
 <p>选择Save保存, 之后开始编译,</p>
-<pre><code class="shell">sudo make</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make</span><br></pre></td></tr></table></figure>
+
 <p>经过一个小时的编译，在目录下产生一个<code>output</code>的目录。编译产生的工具在<code>output/host/usr/bin</code>目录下</p>
 <h2 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h2><p>一般的Linux平台下自带了GDB</p>
 <p>调试MIPS平台的程序，需要安装gdb-multiarch</p>
-<pre><code class="shell">sudo apt install gdb-multiarch</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gdb-multiarch</span><br></pre></td></tr></table></figure>
+
 <p>然后按照正常的GDB使用即可</p>
 <h3 id="Pwndbg"><a href="#Pwndbg" class="headerlink" title="Pwndbg"></a>Pwndbg</h3><p>一个类似于 peda的gdb插件，支持多种架构，pwn最强gdb插件。</p>
-<pre><code class="shell">git clone https://github.com/pwndbg/pwndbg
-cd pwndbg
-./setup.sh</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
+
 <h2 id="IDA-Linux"><a href="#IDA-Linux" class="headerlink" title="IDA(Linux)"></a>IDA(Linux)</h2><p>链接：<a href="https://pan.baidu.com/s/1PIh-EK7UOqsWi5kDy5QgCw" target="_blank" rel="noopener">https://pan.baidu.com/s/1PIh-EK7UOqsWi5kDy5QgCw</a><br>提取码：076v </p>
-<pre><code class="shell">$ sudo dpkg --add-architecture i386
-$ sudo apt-get update
-$ sudo apt-get install libc6-i686:i386 libexpat1:i386 libffi6:i386 libfontconfig1:i386 libfreetype6:i386 libgcc1:i386 libglib2.0-0:i386 libice6:i386 libpcre3:i386 libpng12-0:i386 libsm6:i386 libstdc++6:i386 libuuid1:i386 libx11-6:i386 libxau6:i386 libxcb1:i386 libxdmcp6:i386 libxext6:i386 libxrender1:i386 zlib1g:i386 libx11-xcb1:i386 libdbus-1-3:i386 libxi6:i386 libsm6:i386 
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo dpkg --add-architecture i386</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install libc6-i686:i386 libexpat1:i386 libffi6:i386 libfontconfig1:i386 libfreetype6:i386 libgcc1:i386 libglib2.0-0:i386 libice6:i386 libpcre3:i386 libpng12-0:i386 libsm6:i386 libstdc++6:i386 libuuid1:i386 libx11-6:i386 libxau6:i386 libxcb1:i386 libxdmcp6:i386 libxext6:i386 libxrender1:i386 zlib1g:i386 libx11-xcb1:i386 libdbus-1-3:i386 libxi6:i386 libsm6:i386 </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装IDA插件:</span></span><br><span class="line">git clone https://github.com/devttys0/ida.git</span><br><span class="line"></span><br><span class="line">cd plugins</span><br><span class="line"></span><br><span class="line">python install.py /IDA PATH/ --install</span><br></pre></td></tr></table></figure>
 
-
-# 安装IDA插件:
-git clone https://github.com/devttys0/ida.git
-
-cd plugins
-
-python install.py /IDA PATH/ --install </code></pre>
 <h2 id="GDBServer"><a href="#GDBServer" class="headerlink" title="GDBServer"></a>GDBServer</h2><p>各个版本的GDBServer下载地址 <a href="https://github.com/rapid7/embedded-tools/tree/master/binaries/gdbserver" target="_blank" rel="noopener">https://github.com/rapid7/embedded-tools/tree/master/binaries/gdbserver</a></p>
 
       

