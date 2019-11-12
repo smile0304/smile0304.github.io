@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>AFL Fuzzing study notes</title>
-    <url>/2019/11/02/AFL-Fuzzing-study-notes/</url>
+    <url>/post/35374.html</url>
     <content><![CDATA[<h2 id="AFL-Fuzzing-study-notes"><a href="#AFL-Fuzzing-study-notes" class="headerlink" title="AFL Fuzzing study notes"></a>AFL Fuzzing study notes</h2><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>本文采用的测试环境是<code>ubuntu 16.04</code></p>
 <p><code>AFL</code>下载地址: <a href="http://lcamtuf.coredump.cx/afl/" target="_blank" rel="noopener">http://lcamtuf.coredump.cx/afl/</a> </p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar -zxvf afl-latest.tgz	# 解压代码</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 编译安装</span></span><br><span class="line">cd afl-2.52b</span><br><span class="line">make </span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
@@ -251,7 +251,7 @@
   </entry>
   <entry>
     <title>DNSRebind测试笔记</title>
-    <url>/2019/10/29/DNSRebind%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/</url>
+    <url>/post/15454.html</url>
     <content><![CDATA[<h4 id="DNS-Rebind原理"><a href="#DNS-Rebind原理" class="headerlink" title="DNS_Rebind原理"></a>DNS_Rebind原理</h4><p>为了保证<code>DNS</code>服务的可靠性，<code>DNS</code>响应记录<code>A</code>中包含一个<code>TTL（time to live）</code>值，表示当前解析结果的有效时间，客户端（浏览器）会在超过这个时间值后重新请求解析域名（取决于客户端是否遵循这个TTL值），得到的新响应中又会存在一个过期时间，客户端会再次去解析域名，如此保证获取到最新的域名解析结果。</p>
 <p>若DNS服务前后响应返回的<code>ip</code>地址不一样，浏览器并不会认为跨域。如果域名后续解析到的<code>ip</code>为<code>127.0.0.1</code>、<code>192.168.0.1</code>等不同于先前解析结果，浏览器依然认为符合同源策略，会将请求发送到<code>127.0.0.1</code>机器上。如此就产生了dns rebinding攻击，从而达到绕过同源策略的目的.</p>
 <p>浏览器和操作系统均会存在DNS缓存，缓存时间一般不按照DNS服务器响应中的TTL值。详细见<a href="https://dyn.com/blog/web-browser-dns-caching-bad-thing/" target="_blank" rel="noopener">WEB浏览器缓存问题</a></p>
@@ -358,7 +358,7 @@
   </entry>
   <entry>
     <title>Linux PWN</title>
-    <url>/2019/10/28/Linux-PWN/</url>
+    <url>/post/64819.html</url>
     <content><![CDATA[<h2 id="Linux-Pwn"><a href="#Linux-Pwn" class="headerlink" title="Linux Pwn"></a>Linux Pwn</h2><p>之前分析过一些<code>MIPS</code>平台下的二进制，对<code>Linux</code>平台下没怎么研究过。在网上看到一篇文章，写一下总结，比较基础。</p>
 <p>不说原理，只说思路跟解题方法</p>
 <h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn1" target="_blank" rel="noopener">pwn</a></p>
@@ -696,7 +696,7 @@
   </entry>
   <entry>
     <title>使用GDB调试MIPS架构的缓冲区溢出</title>
-    <url>/2019/10/23/%E4%BD%BF%E7%94%A8GDB%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
+    <url>/post/43075.html</url>
     <content><![CDATA[<h4 id="使用GDB调试MIPS架构的缓冲区溢出"><a href="#使用GDB调试MIPS架构的缓冲区溢出" class="headerlink" title="使用GDB调试MIPS架构的缓冲区溢出"></a>使用GDB调试MIPS架构的缓冲区溢出</h4><h4 id="环境介绍和准备工作"><a href="#环境介绍和准备工作" class="headerlink" title="环境介绍和准备工作"></a>环境介绍和准备工作</h4><p>测试的代码都是来自&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。</p>
 <p>测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：</p>
 <a id="more"></a>
@@ -770,8 +770,8 @@
         <category>IoT</category>
       </categories>
       <tags>
-        <tag>调试</tag>
         <tag>IoT</tag>
+        <tag>调试</tag>
         <tag>Debug</tag>
         <tag>Mips</tag>
         <tag>溢出</tag>
@@ -779,7 +779,7 @@
   </entry>
   <entry>
     <title>GDB调试命令--持续更新</title>
-    <url>/2019/10/20/GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</url>
+    <url>/post/25086.html</url>
     <content><![CDATA[<h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><p>记录一些GDB调试的命令,好记性不如烂笔头</p>
 <h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
@@ -891,14 +891,14 @@
         <category>调试</category>
       </categories>
       <tags>
+        <tag>调试</tag>
         <tag>安全</tag>
         <tag>GDB</tag>
-        <tag>调试</tag>
       </tags>
   </entry>
   <entry>
     <title>IoT测试环境搭建</title>
-    <url>/2019/10/18/IoT%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <url>/post/36656.html</url>
     <content><![CDATA[<h2 id="IoT分析环境搭建"><a href="#IoT分析环境搭建" class="headerlink" title="IoT分析环境搭建"></a>IoT分析环境搭建</h2><p>因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。</p>
 <h2 id="工具列表"><a href="#工具列表" class="headerlink" title="工具列表:"></a>工具列表:</h2><ul>
 <li>binwalk 固件提取</li>
@@ -954,8 +954,8 @@
         <category>安全</category>
       </categories>
       <tags>
-        <tag>安全</tag>
         <tag>IoT</tag>
+        <tag>安全</tag>
       </tags>
   </entry>
 </search>

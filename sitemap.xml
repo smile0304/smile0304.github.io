@@ -2,30 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://blog.pwntools.xyz/2019/11/02/AFL-Fuzzing-study-notes/</loc>
+    <loc>https://blog.pwntools.xyz/about/index.html</loc>
     
-    <lastmod>2019-11-02T10:25:51.346Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.pwntools.xyz/2019/10/29/DNSRebind%25E6%25B5%258B%25E8%25AF%2595%25E7%25AC%2594%25E8%25AE%25B0/</loc>
-    
-    <lastmod>2019-10-29T04:46:56.355Z</lastmod>
+    <lastmod>2019-11-08T11:29:40.713Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.pwntools.xyz/2019/10/28/Linux-PWN/</loc>
+    <loc>https://blog.pwntools.xyz/post/43075.html</loc>
     
-    <lastmod>2019-10-28T14:44:25.314Z</lastmod>
+    <lastmod>2019-11-06T08:34:40.553Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.pwntools.xyz/2019/10/23/%25E4%25BD%25BF%25E7%2594%25A8GDB%25E8%25B0%2583%25E8%25AF%2595MIPS%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E6%25BA%25A2%25E5%2587%25BA/</loc>
+    <loc>https://blog.pwntools.xyz/post/64819.html</loc>
     
-    <lastmod>2019-10-23T13:03:29.465Z</lastmod>
+    <lastmod>2019-11-06T08:34:40.547Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.pwntools.xyz/post/36656.html</loc>
+    
+    <lastmod>2019-11-06T08:34:40.542Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.pwntools.xyz/post/15454.html</loc>
+    
+    <lastmod>2019-11-06T08:34:40.536Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.pwntools.xyz/post/25086.html</loc>
+    
+    <lastmod>2019-11-06T08:34:40.476Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.pwntools.xyz/post/35374.html</loc>
+    
+    <lastmod>2019-11-06T08:34:40.474Z</lastmod>
     
   </url>
   
@@ -47,27 +68,6 @@
     <loc>https://blog.pwntools.xyz/archives/index.html</loc>
     
     <lastmod>2019-10-21T08:42:18.321Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.pwntools.xyz/about/index.html</loc>
-    
-    <lastmod>2019-10-21T08:42:08.375Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.pwntools.xyz/2019/10/18/IoT%25E6%25B5%258B%25E8%25AF%2595%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA/</loc>
-    
-    <lastmod>2019-10-21T08:41:53.922Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.pwntools.xyz/2019/10/20/GDB%25E8%25B0%2583%25E8%25AF%2595%25E5%2591%25BD%25E4%25BB%25A4-%25E6%258C%2581%25E7%25BB%25AD%25E6%259B%25B4%25E6%2596%25B0/</loc>
-    
-    <lastmod>2019-10-21T08:41:39.845Z</lastmod>
     
   </url>
   

