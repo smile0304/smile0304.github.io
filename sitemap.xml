@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.pwntools.xyz/post/704fc7a0.html</loc>
+    
+    <lastmod>2019-11-14T09:55:46.938Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.pwntools.xyz/about/index.html</loc>
     
     <lastmod>2019-11-08T11:29:40.713Z</lastmod>
