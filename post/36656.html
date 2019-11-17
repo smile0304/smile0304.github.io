@@ -29,6 +29,16 @@
 
 
 
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "096afc1e"
+    });
+  daovoice('update');
+  </script>
+
+
+
 
 
 
@@ -70,7 +80,7 @@
 
 
 
-  <meta name="keywords" content="IoT,安全," />
+  <meta name="keywords" content="安全,IoT," />
 
 
 
@@ -84,7 +94,7 @@
 
 
 <meta name="description" content="IoT分析环境搭建因为之前没有备份的好习惯，好不容易跑起来的虚拟机说没就没，所以写一篇文章，如果以后不小心又搞丢了虚拟机，也可以快速搭建测试环境需要的工具，不需要再次寻找各种资料。 工具列表: binwalk 固件提取 qemu 模拟执行 irmadyne 固件模拟工具(这里没有安装) buildroot Mips交叉编译环境 gdb 调试工具(可编译一个mips-linux-gdb) IDA g">
-<meta name="keywords" content="IoT,安全">
+<meta name="keywords" content="安全,IoT">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IoT测试环境搭建">
 <meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;36656.html">
@@ -104,7 +114,7 @@
     root: '/',
     scheme: 'Pisces',
     version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
     fancybox: true,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
@@ -498,9 +508,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/IoT/" rel="tag"># IoT</a>
-          
             <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
+          
+            <a href="/tags/IoT/" rel="tag"># IoT</a>
           
         </div>
       
@@ -766,6 +776,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     
@@ -1366,6 +1378,15 @@
   
 
   
+
+  <!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+
+<link rel="stylesheet" href="/dist/APlayer.min.css">
+<div id="aplayer"></div>
+<script type="text/javascript" src="/dist/APlayer.min.js"></script>
+<script type="text/javascript" src="/dist/music.js"></script>
 
 </body>
 </html>

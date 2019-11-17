@@ -29,6 +29,16 @@
 
 
 
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "096afc1e"
+    });
+  daovoice('update');
+  </script>
+
+
+
 
 
 
@@ -70,7 +80,7 @@
 
 
 
-  <meta name="keywords" content="调试,安全,GDB," />
+  <meta name="keywords" content="安全,GDB,调试," />
 
 
 
@@ -84,7 +94,7 @@
 
 
 <meta name="description" content="GDB调试命令记录(持续更新)记录一些GDB调试的命令,好记性不如烂笔头 插件安装pwndbg 123git clone https:&#x2F;&#x2F;github.com&#x2F;pwndbg&#x2F;pwndbgcd pwndbg.&#x2F;setup.sh  如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下">
-<meta name="keywords" content="调试,安全,GDB">
+<meta name="keywords" content="安全,GDB,调试">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GDB调试命令--持续更新">
 <meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;25086.html">
@@ -106,7 +116,7 @@
     root: '/',
     scheme: 'Pisces',
     version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
     fancybox: true,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
@@ -566,11 +576,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
-          
             <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
           
             <a href="/tags/GDB/" rel="tag"># GDB</a>
+          
+            <a href="/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
           
         </div>
       
@@ -840,6 +850,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     
@@ -1440,6 +1452,15 @@
   
 
   
+
+  <!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+
+<link rel="stylesheet" href="/dist/APlayer.min.css">
+<div id="aplayer"></div>
+<script type="text/javascript" src="/dist/APlayer.min.js"></script>
+<script type="text/javascript" src="/dist/music.js"></script>
 
 </body>
 </html>
