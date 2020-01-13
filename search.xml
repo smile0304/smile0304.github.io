@@ -37,7 +37,7 @@
 <p>使用<code>file</code>查看文件:</p>
 <p><img src="http://file.smilehacker.net/image-20191103194436077.png" alt="image-20191103194436077"></p>
 <p><code>file</code>没有发现符合的任何文件类型的匹配，但是不代表固件就是完全没接触过的格式。因为file是从首字节开始的，他会按照内部的数据进行比对。</p>
-<h3 id="手动判断文件类型"><a href="#手动判断文件类型" class="headerlink" title="手动判断文件类型"></a>手动判断文件类型</h3><p><code>file</code>没有发现符合的文件格式，我们就需要采用下面的方法分析.</p>
+<h3 id="手动判断文件类型"><a href="#手动判断文件类型" class="headerlink" title="手动判断文件类型"></a>手动判断文件类型</h3><p><code>file</code>没有发现符合的文件格式，就需要采用下面的方法分析.</p>
 <ol>
 <li>“strings|grep”检索文件系统的<code>magic</code>签名头</li>
 <li>“hexdumo|grep” 检索<code>magic</code>签名的偏移</li>
@@ -49,20 +49,20 @@
 <li><code>cramfs</code>文件系统头部特征为<code>0x28cd3d45</code></li>
 <li><code>squashfs</code>文件系统头部特征较多，其中一些是标准的<code>squashfs</code>头部,有些是老外研究发现的大概有<code>sqsh</code>,<code>hsqs</code>,<code>qshs</code>,<code>shsq</code>,<code>hsqt</code>,<code>tqsh</code>,<code>sqlz</code>这七种。</li>
 </ul>
-<p>先检查是否存在<code>cfamfs</code>文件系统头部特征。因为我们不知道文件系统时大端序还是小端序，我们需要执行两次</p>
+<p>先检查是否存在<code>cfamfs</code>文件系统头部特征。因为不知道文件系统时大端序还是小端序，需要执行两次</p>
 <pre><code class="shell">strings DIR_815.bin | grep `python -c &#39;print &quot;\x28\xcd\x3d\x45&quot;&#39;`
 strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#39;`</code></pre>
 <p><img src="http://file.smilehacker.net/image-20191103195839036.png" alt="image-20191103195839036"></p>
 <p>没有发现<code>cfamfs</code>的头部特征，然后使用相同的办法，去检查是否存在<code>squashfs</code>的头部特征</p>
 <p><img src="http://file.smilehacker.net/image-20191103200044122.png" alt="image-20191103200044122"></p>
-<p>找到了一个，但是我们不能确定该文件是不是一个<code>squashfs</code>文件系统，还需要进一步确定。</p>
+<p>找到了一个，但是不能确定该文件是不是一个<code>squashfs</code>文件系统，还需要进一步确定。</p>
 <h4 id="确定文件系统"><a href="#确定文件系统" class="headerlink" title="确定文件系统"></a>确定文件系统</h4><p>使用如下命令检测是否针对包含<code>squashfs</code>文件系统。</p>
 <pre><code class="shell">hexdump -C DIR_815.bin | grep -n &#39;hsqs&#39;
 
 # hexdump -C参数: 输出规范的十六进制和ASCII码。
 # grep -n参数: 在显示符合范本样式的那一列之前，标示出该列的编号。</code></pre>
 <p><img src="http://file.smilehacker.net/image-20191103200559319.png" alt="image-20191103200559319"></p>
-<p>在偏移<code>0x000f008C</code>处发现了<code>hsqs</code>,我们从<code>0x000f0080C</code>这个地方复制<code>100</code>字节数据，再使用<code>file</code>命令查看。使用<code>dd</code>命令</p>
+<p>在偏移<code>0x000f008C</code>处发现了<code>hsqs</code>,从<code>0x000f0080C</code>这个地方复制<code>100</code>字节数据，再使用<code>file</code>命令查看。使用<code>dd</code>命令</p>
 <p>为什么时100字节？因为<code>squashfs</code>文件系统的头部校验不会超过100字节</p>
 <pre><code class="shell">dd if=DIR_815.bin bs=1 count=100 skip=983180 of=test
 
@@ -73,14 +73,14 @@ strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#3
 # skip 用于跳过指向固件二进制映像中特定地址的指针</code></pre>
 <p><img src="http://file.smilehacker.net/image-20191103201356488.png" alt="image-20191103201356488"></p>
 <p>这次就识别出来了。一定注意这里的文件大小<code>2808054</code></p>
-<h3 id="手动提取固件"><a href="#手动提取固件" class="headerlink" title="手动提取固件"></a>手动提取固件</h3><p>我们知道了在固件偏移<code>983180(0x000f0080C)</code>的地方，我们继续用<code>dd</code>提取出文件文件，然后尝试手动提取。</p>
+<h3 id="手动提取固件"><a href="#手动提取固件" class="headerlink" title="手动提取固件"></a>手动提取固件</h3><p>知道了在固件偏移<code>983180(0x000f0080C)</code>的地方，继续用<code>dd</code>提取出文件文件，然后尝试手动提取。</p>
 <pre><code class="shell">dd if=DIR_815.bin bs=1 skip=983180 count=2808054 of=test </code></pre>
-<p>这里一定要指定<code>count</code>，直接提取到文件末尾。在这中间我们还需要检查<code>squashfs</code>使用的压缩算法。</p>
+<p>这里一定要指定<code>count</code>，直接提取到文件末尾。在这中间还需要检查<code>squashfs</code>使用的压缩算法。</p>
 <p><img src="http://file.smilehacker.net/image-20191103233812796.png" alt="image-20191103233812796"></p>
-<p>可以看到时<code>lzma</code>的格式，我们可以使用ubuntu自带的<code>unsquashfs</code>来解压，但是这个工具并不好用，我们可以使用<code>firmware-mod-kit</code>来解压。其实<code>firmware-mod-kit</code>也是调用<code>binwalk</code>来做的</p>
+<p>可以看到时<code>lzma</code>的格式，可以使用ubuntu自带的<code>unsquashfs</code>来解压，但是这个工具并不好用，可以使用<code>firmware-mod-kit</code>来解压。其实<code>firmware-mod-kit</code>也是调用<code>binwalk</code>来做的</p>
 <pre><code class="shell">./unsquashfs_all.sh ../Desktop/dir815_FW_101/_DIR_815.bin.extracted/F008C.squashfs</code></pre>
 <p><img src="http://file.smilehacker.net/image-20191105181148263.png" alt="image-20191105181148263"></p>
-<p>可以在目录下看到我们解压出来的文件</p>
+<p>可以在目录下看到解压出来的文件</p>
 <p><img src="http://file.smilehacker.net/image-20191105181232646.png" alt="image-20191105181232646"></p>
 <h2 id="自动解压固件"><a href="#自动解压固件" class="headerlink" title="自动解压固件"></a>自动解压固件</h2><p>自动解压固件就不多介绍了，<code>binwalk -Me</code>直接解压，在这里记录一下<code>binwalk</code>的几个用法</p>
 <h3 id="扫描文件头"><a href="#扫描文件头" class="headerlink" title="扫描文件头"></a>扫描文件头</h3><pre><code class="shell">binwalk DIR_815.bin</code></pre>
@@ -102,7 +102,7 @@ strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#3
 <p>TPlink基于<code>Vxworks</code>的路由器没有像<code>Linux</code>版本的根文件系统，整个系统就是一个大的bin文件，只要把bootloader加载到合适的位置就直接运行了。</p>
 <h3 id="使用Binwalk初步分析固件"><a href="#使用Binwalk初步分析固件" class="headerlink" title="使用Binwalk初步分析固件"></a>使用<code>Binwalk</code>初步分析固件</h3><p>先使用<code>binwalk</code>对文件进行扫描，看有没有什么敏感信息</p>
 <p><img src="http://file.smilehacker.net/image-20191105182511902.png" alt="image-20191105182511902"></p>
-<p>除了开头的<strong>uImage header</strong>之外其余全都是<code>LZMA</code>压缩之后的数据，但是注意红框内的数据，<code>Binwalk</code>显示出来的大小，一个为<code>-1</code>，另一个为<code>3580296</code>，这两个都不太寻常，我们先看大小为<code>3M</code>的这份数据，他比其他的<code>lzma</code>压缩之后的数据要大的多，其中有可能包含一些数据。我们直接用<code>binwalk</code>解压，尽量不要给自己找事(用<code>dd</code>解压)</p>
+<p>除了开头的<strong>uImage header</strong>之外其余全都是<code>LZMA</code>压缩之后的数据，但是注意红框内的数据，<code>Binwalk</code>显示出来的大小，一个为<code>-1</code>，另一个为<code>3580296</code>，这两个都不太寻常，先看大小为<code>3M</code>的这份数据，他比其他的<code>lzma</code>压缩之后的数据要大的多，其中有可能包含一些数据。直接用<code>binwalk</code>解压，尽量不要给自己找事(用<code>dd</code>解压)</p>
 <pre><code class="shell">binwalk -e firmware.bin
 
 # dd解压的方法
@@ -112,11 +112,11 @@ dd if=firmware.bin of=10400.lzma skip=66560 bs=1 count=1241152 # 1307712-66560
 lzma -d 10400.lzma</code></pre>
 <p>发现解压不出来。</p>
 <p><img src="http://file.smilehacker.net/image-20191106153809813.png" alt="image-20191106153809813"></p>
-<p>我们用winhex打开固件看看<code>0x13F440</code>处的到底是什么数据。</p>
+<p>用winhex打开固件看看<code>0x13F440</code>处的到底是什么数据。</p>
 <p><img src="http://file.smilehacker.net/image-20191106153957693.png" alt="image-20191106153957693"></p>
-<p>这里看上去明显不像是数据的结尾。我们往上翻一翻。</p>
+<p>这里看上去明显不像是数据的结尾。往上翻一翻。</p>
 <p><img src="http://file.smilehacker.net/image-20191106164741622.png" alt="image-20191106164741622"></p>
-<p><code>13E6F4</code>好像更像时数据的结尾，我们将数据复制出来，并用<code>lzma</code>解压</p>
+<p><code>13E6F4</code>好像更像时数据的结尾，将数据复制出来，并用<code>lzma</code>解压</p>
 <pre><code class="shell">dd if=WDR_7660_V1.0_2.0.16_190325.bin of=10400.lzma skip=66560 bs=1 count=1237748
 
 lzma -d 10400.lzma</code></pre>
@@ -127,8 +127,8 @@ lzma -d 10400.lzma</code></pre>
 <p> 在<code>uImage header</code>中有一个<code>Entry Point</code>地址<code>0x41C00000</code>，这个地址可能是<code>uBoo</code>t程序的加载基址，而不是<code>10400</code>文件的加载基址。采用该地址作为加载基址，虽然也能识别出<code>2000</code>多个函数，但在后续导入符号表时会对不上。 </p>
 <p>使用<code>Binwalk</code>识别程序是大端序还是小端序</p>
 <p><img src="http://file.smilehacker.net/image-20191106170029255.png" alt="image-20191106170029255"></p>
-<p>现在我们还是差一个入口地址，这个地址要怎么找到？</p>
-<h3 id="固件加载地址分析"><a href="#固件加载地址分析" class="headerlink" title="固件加载地址分析"></a>固件加载地址分析</h3><p>这里目前的文章并没有说清楚这个地址是怎么来的，给人更多的感觉像猜出来的。。但是能解决问题就行。我们使用<code>Winhex</code>加载固件后，来到地址<code>0x10400</code>，然后将数据往前翻，在不远处你会发现这个地址。两处地址同时指向<code>0x40205000</code>。</p>
+<p>现在还是差一个入口地址，这个地址要怎么找到？</p>
+<h3 id="固件加载地址分析"><a href="#固件加载地址分析" class="headerlink" title="固件加载地址分析"></a>固件加载地址分析</h3><p>这里目前的文章并没有说清楚这个地址是怎么来的，给人更多的感觉像猜出来的。。但是能解决问题就行。使用<code>Winhex</code>加载固件后，来到地址<code>0x10400</code>，然后将数据往前翻，在不远处你会发现这个地址。两处地址同时指向<code>0x40205000</code>。</p>
 <p><img src="http://file.smilehacker.net/image-20191105182421398.png" alt="image-20191105182421398"></p>
 <p>这里还有一些其他的方法，参见：</p>
 <ul>
@@ -146,15 +146,15 @@ lzma -d 10400.lzma</code></pre>
 <p><img src="http://file.smilehacker.net/image-20191106173315351.png" alt="image-20191106173315351"></p>
 <p>加载成功后你会发现识别出来的函数很少,<code>Import</code>和<code>export</code>都是空的，而且。。没有符号表</p>
 <p><img src="http://file.smilehacker.net/image-20191106173426913.png" alt="image-20191106173426913"></p>
-<p>接下来我们就要城市修复符号表了</p>
+<p>接下来就要修复符号表了</p>
 <h3 id="修复符号表"><a href="#修复符号表" class="headerlink" title="修复符号表"></a>修复符号表</h3><p> 使用<code>binwalk</code>直接提取该固件，在提取后的目录中搜索包含<code>VxWorks</code>中的某个关键函数如<code>bzero</code>的文件，如下 </p>
 <pre><code class="shell">grep -r bzero</code></pre>
 <p><img src="http://file.smilehacker.net/image-20191106173810837.png" alt="image-20191106173810837"></p>
-<p>发现<code>140B96</code>中发现了这个字符串，我们用strings查看下他内部的字符串</p>
+<p>发现<code>140B96</code>中发现了这个字符串，用strings查看下他内部的字符串</p>
 <p><img src="http://file.smilehacker.net/image-20191106175319206.png" alt="image-20191106175319206"></p>
 <p>可以看到有非常多的函数名，那他就是符号表无疑了。使用<code>hexdump</code>查看其内容,并计算字符串</p>
 <p><img src="http://file.smilehacker.net/image-20191106174558913.png" alt="image-20191106174558913"></p>
-<p>除了标记出来的，剩下的都是数据了，我们来计算一下符号名表的偏移。</p>
+<p>除了标记出来的，剩下的都是数据了，来计算一下符号名表的偏移。</p>
 <blockquote>
 <p>8(自身长度) + 8 (每组数据的长度) * 31ba(总共这么多个字符串)=18DD8</p>
 </blockquote>
@@ -215,7 +215,7 @@ if __name__ == &quot;__main__&quot;:
 <ul>
 <li>下载地址: <a href="https://github.com/PAGalaxyLab/vxhunter" target="_blank" rel="noopener">vxhunter</a></li>
 </ul>
-<p>只能字节写脚本了。这里不太方便放出。</p>
+<p>只能自己写脚本了。这里不太方便放出。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><p><a href="http://zeroyu.xyz/2019/08/15/How_to_start_IoT_Reverse/" target="_blank" rel="noopener">http://zeroyu.xyz/2019/08/15/How_to_start_IoT_Reverse/</a>   </p>
 </li>
@@ -1643,8 +1643,8 @@ run &lt; filename_with_input</code></pre>
         <category>调试</category>
       </categories>
       <tags>
-        <tag>安全</tag>
         <tag>调试</tag>
+        <tag>安全</tag>
         <tag>GDB</tag>
       </tags>
   </entry>
