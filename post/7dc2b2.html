@@ -101,36 +101,36 @@
 <meta property="og:site_name" content="TT">
 <meta property="og:description" content="整理一些基本的概念和一些固件解压的方法，不能太依赖binwalk，如果binwalk解压不出来，那岂不是一点招都没有了。 固件固件不是硬件，而是软件。在嵌入式设备中，通常是被固化在只读存储器中，所以被称为固件。 文件系统文件系统是操作系统的重要组成部分，是操作运行的基础。但是不同的嵌入式设备使用的文件系统都不一样。根文件系统会被打包成当前路由器所使用的文件系统格式，然后组装到固件中。 嵌入式设备中">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103194436077.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103195839036.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103200044122.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103200559319.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103201356488.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103233812796.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105181148263.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105181232646.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103205700709.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103205819179.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105174637703.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105182511902.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106153809813.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106153957693.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106164741622.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106165240644.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106165829158.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106170029255.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191105182421398.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173136394.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173315351.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173426913.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106173810837.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106175319206.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106174558913.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106175050303.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191106175803536.png">
-<meta property="og:updated_time" content="2020-01-13T15:59:24.577Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103194436077.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103195839036.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103200044122.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103200559319.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103201356488.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103233812796.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191105181148263.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191105181232646.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103205700709.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103205819179.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191105174637703.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191105182511902.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106153809813.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106153957693.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106164741622.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106165240644.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106165829158.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106170029255.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191105182421398.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106173136394.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106173315351.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106173426913.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106173810837.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106175319206.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106174558913.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106175050303.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191106175803536.png">
+<meta property="og:updated_time" content="2020-01-27T10:22:06.347Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;image-20191103194436077.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86&#x2F;image-20191103194436077.png">
 
 
 
@@ -499,7 +499,7 @@
 <p>关于工具的安装就不提了，详细参考<a href="https://blog.pwntools.xyz/2019/10/18/IoT测试环境搭建/#more">IoT测试环境搭建</a></p>
 <h2 id="手动解压固件"><a href="#手动解压固件" class="headerlink" title="手动解压固件"></a>手动解压固件</h2><p>这里随便找一款<code>Dlink</code>的路由器的固件来分析,型号是<code>Dlink dir-815</code>，<code>Binwalk</code>分以一下固件的熵，如果很高，作为练习就可以换一款了。</p>
 <p>使用<code>file</code>查看文件:</p>
-<p><img src="http://file.smilehacker.net/image-20191103194436077.png" alt="image-20191103194436077"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103194436077.png" alt="image-20191103194436077"></p>
 <p><code>file</code>没有发现符合的任何文件类型的匹配，但是不代表固件就是完全没接触过的格式。因为file是从首字节开始的，他会按照内部的数据进行比对。</p>
 <h3 id="手动判断文件类型"><a href="#手动判断文件类型" class="headerlink" title="手动判断文件类型"></a>手动判断文件类型</h3><p><code>file</code>没有发现符合的文件格式，就需要采用下面的方法分析.</p>
 <ol>
@@ -516,16 +516,16 @@
 <p>先检查是否存在<code>cfamfs</code>文件系统头部特征。因为不知道文件系统时大端序还是小端序，需要执行两次</p>
 <pre><code class="shell">strings DIR_815.bin | grep `python -c &#39;print &quot;\x28\xcd\x3d\x45&quot;&#39;`
 strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#39;`</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103195839036.png" alt="image-20191103195839036"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103195839036.png" alt="image-20191103195839036"></p>
 <p>没有发现<code>cfamfs</code>的头部特征，然后使用相同的办法，去检查是否存在<code>squashfs</code>的头部特征</p>
-<p><img src="http://file.smilehacker.net/image-20191103200044122.png" alt="image-20191103200044122"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103200044122.png" alt="image-20191103200044122"></p>
 <p>找到了一个，但是不能确定该文件是不是一个<code>squashfs</code>文件系统，还需要进一步确定。</p>
 <h4 id="确定文件系统"><a href="#确定文件系统" class="headerlink" title="确定文件系统"></a>确定文件系统</h4><p>使用如下命令检测是否针对包含<code>squashfs</code>文件系统。</p>
 <pre><code class="shell">hexdump -C DIR_815.bin | grep -n &#39;hsqs&#39;
 
 # hexdump -C参数: 输出规范的十六进制和ASCII码。
 # grep -n参数: 在显示符合范本样式的那一列之前，标示出该列的编号。</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103200559319.png" alt="image-20191103200559319"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103200559319.png" alt="image-20191103200559319"></p>
 <p>在偏移<code>0x000f008C</code>处发现了<code>hsqs</code>,从<code>0x000f0080C</code>这个地方复制<code>100</code>字节数据，再使用<code>file</code>命令查看。使用<code>dd</code>命令</p>
 <p>为什么时100字节？因为<code>squashfs</code>文件系统的头部校验不会超过100字节</p>
 <pre><code class="shell">dd if=DIR_815.bin bs=1 count=100 skip=983180 of=test
@@ -535,23 +535,23 @@ strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#3
 # of 标准文件输出
 # bs 块大小
 # skip 用于跳过指向固件二进制映像中特定地址的指针</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103201356488.png" alt="image-20191103201356488"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103201356488.png" alt="image-20191103201356488"></p>
 <p>这次就识别出来了。一定注意这里的文件大小<code>2808054</code></p>
 <h3 id="手动提取固件"><a href="#手动提取固件" class="headerlink" title="手动提取固件"></a>手动提取固件</h3><p>知道了在固件偏移<code>983180(0x000f0080C)</code>的地方，继续用<code>dd</code>提取出文件文件，然后尝试手动提取。</p>
 <pre><code class="shell">dd if=DIR_815.bin bs=1 skip=983180 count=2808054 of=test </code></pre>
 <p>这里一定要指定<code>count</code>，直接提取到文件末尾。在这中间还需要检查<code>squashfs</code>使用的压缩算法。</p>
-<p><img src="http://file.smilehacker.net/image-20191103233812796.png" alt="image-20191103233812796"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103233812796.png" alt="image-20191103233812796"></p>
 <p>可以看到时<code>lzma</code>的格式，可以使用ubuntu自带的<code>unsquashfs</code>来解压，但是这个工具并不好用，可以使用<code>firmware-mod-kit</code>来解压。其实<code>firmware-mod-kit</code>也是调用<code>binwalk</code>来做的</p>
 <pre><code class="shell">./unsquashfs_all.sh ../Desktop/dir815_FW_101/_DIR_815.bin.extracted/F008C.squashfs</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191105181148263.png" alt="image-20191105181148263"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105181148263.png" alt="image-20191105181148263"></p>
 <p>可以在目录下看到解压出来的文件</p>
-<p><img src="http://file.smilehacker.net/image-20191105181232646.png" alt="image-20191105181232646"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105181232646.png" alt="image-20191105181232646"></p>
 <h2 id="自动解压固件"><a href="#自动解压固件" class="headerlink" title="自动解压固件"></a>自动解压固件</h2><p>自动解压固件就不多介绍了，<code>binwalk -Me</code>直接解压，在这里记录一下<code>binwalk</code>的几个用法</p>
 <h3 id="扫描文件头"><a href="#扫描文件头" class="headerlink" title="扫描文件头"></a>扫描文件头</h3><pre><code class="shell">binwalk DIR_815.bin</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103205700709.png" alt="image-20191103205700709"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103205700709.png" alt="image-20191103205700709"></p>
 <h3 id="Binwalk递归解压固件"><a href="#Binwalk递归解压固件" class="headerlink" title="Binwalk递归解压固件"></a>Binwalk递归解压固件</h3><pre><code class="shell">binwalk -Me DIR_815.bin</code></pre>
 <p>解压的明明白白</p>
-<p><img src="http://file.smilehacker.net/image-20191103205819179.png" alt="image-20191103205819179"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103205819179.png" alt="image-20191103205819179"></p>
 <h3 id="Binwalk识别大端序小端序"><a href="#Binwalk识别大端序小端序" class="headerlink" title="Binwalk识别大端序小端序"></a>Binwalk识别大端序小端序</h3><pre><code class="shell">binwalk -A DIR_815.bin</code></pre>
 <p>不是很准确</p>
 <h3 id="Binwalk-熵值分析"><a href="#Binwalk-熵值分析" class="headerlink" title="Binwalk 熵值分析"></a>Binwalk 熵值分析</h3><pre><code class="shell">binwalk -E DIR_815.bin
@@ -559,13 +559,13 @@ strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#3
 # python2需要安装sudo apt-get install python-matplotlib
 # python3需要安装sudo apt-get install python3-matplotlib</code></pre>
 <p>根据熵值可以判断该固件是否加密。</p>
-<p><img src="http://file.smilehacker.net/image-20191105174637703.png" alt="image-20191105174637703"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105174637703.png" alt="image-20191105174637703"></p>
 <p>  简单地说，一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。 </p>
 <p><code>Binwalk</code>没什么好说的，看看官方文档就好了。</p>
 <h2 id="Vxworks固件解压及IDA修复过程-ghidra"><a href="#Vxworks固件解压及IDA修复过程-ghidra" class="headerlink" title="Vxworks固件解压及IDA修复过程(ghidra)"></a>Vxworks固件解压及IDA修复过程(ghidra)</h2><p>搞一个<code>TPLINK</code>的路由器，之前没搞过，跟普通的文件系统不太一样。但是网上的文章并不是很多，而且没有一个总结的非常清楚。这里记录一下，也不是非常清楚。</p>
 <p>TPlink基于<code>Vxworks</code>的路由器没有像<code>Linux</code>版本的根文件系统，整个系统就是一个大的bin文件，只要把bootloader加载到合适的位置就直接运行了。</p>
 <h3 id="使用Binwalk初步分析固件"><a href="#使用Binwalk初步分析固件" class="headerlink" title="使用Binwalk初步分析固件"></a>使用<code>Binwalk</code>初步分析固件</h3><p>先使用<code>binwalk</code>对文件进行扫描，看有没有什么敏感信息</p>
-<p><img src="http://file.smilehacker.net/image-20191105182511902.png" alt="image-20191105182511902"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105182511902.png" alt="image-20191105182511902"></p>
 <p>除了开头的<strong>uImage header</strong>之外其余全都是<code>LZMA</code>压缩之后的数据，但是注意红框内的数据，<code>Binwalk</code>显示出来的大小，一个为<code>-1</code>，另一个为<code>3580296</code>，这两个都不太寻常，先看大小为<code>3M</code>的这份数据，他比其他的<code>lzma</code>压缩之后的数据要大的多，其中有可能包含一些数据。直接用<code>binwalk</code>解压，尽量不要给自己找事(用<code>dd</code>解压)</p>
 <pre><code class="shell">binwalk -e firmware.bin
 
@@ -575,29 +575,29 @@ dd if=firmware.bin of=10400.lzma skip=66560 bs=1 count=1241152 # 1307712-66560
 # lzma 解压
 lzma -d 10400.lzma</code></pre>
 <p>发现解压不出来。</p>
-<p><img src="http://file.smilehacker.net/image-20191106153809813.png" alt="image-20191106153809813"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106153809813.png" alt="image-20191106153809813"></p>
 <p>用winhex打开固件看看<code>0x13F440</code>处的到底是什么数据。</p>
-<p><img src="http://file.smilehacker.net/image-20191106153957693.png" alt="image-20191106153957693"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106153957693.png" alt="image-20191106153957693"></p>
 <p>这里看上去明显不像是数据的结尾。往上翻一翻。</p>
-<p><img src="http://file.smilehacker.net/image-20191106164741622.png" alt="image-20191106164741622"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106164741622.png" alt="image-20191106164741622"></p>
 <p><code>13E6F4</code>好像更像时数据的结尾，将数据复制出来，并用<code>lzma</code>解压</p>
 <pre><code class="shell">dd if=WDR_7660_V1.0_2.0.16_190325.bin of=10400.lzma skip=66560 bs=1 count=1237748
 
 lzma -d 10400.lzma</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191106165240644.png" alt="image-20191106165240644"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106165240644.png" alt="image-20191106165240644"></p>
 <p>这个跟<code>binwalk -e</code>解压出来的结果一摸一样。这里记录以下一个解压的过程。</p>
 <h3 id="使用IDA分析10400"><a href="#使用IDA分析10400" class="headerlink" title="使用IDA分析10400"></a>使用IDA分析10400</h3><p> 由于IDA Pro无法识别该文件，提示为”Binary file”，因此需要确定CPU的架构及加载基址。在”uImage header”部分已经有一些信息，如下，可以看到CPU架构为<code>arm</code>。 </p>
-<p><img src="http://file.smilehacker.net/image-20191106165829158.png" alt="image-20191106165829158"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106165829158.png" alt="image-20191106165829158"></p>
 <p> 在<code>uImage header</code>中有一个<code>Entry Point</code>地址<code>0x41C00000</code>，这个地址可能是<code>uBoo</code>t程序的加载基址，而不是<code>10400</code>文件的加载基址。采用该地址作为加载基址，虽然也能识别出<code>2000</code>多个函数，但在后续导入符号表时会对不上。 </p>
 <p>使用<code>Binwalk</code>识别程序是大端序还是小端序</p>
-<p><img src="http://file.smilehacker.net/image-20191106170029255.png" alt="image-20191106170029255"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106170029255.png" alt="image-20191106170029255"></p>
 <p>现在还是差一个入口地址，这个地址要怎么找到？</p>
 <h3 id="固件加载地址分析"><a href="#固件加载地址分析" class="headerlink" title="固件加载地址分析"></a>固件加载地址分析</h3><p>这里目前的文章并没有说清楚这个地址是怎么来的，给人更多的感觉像猜出来的。。但是能解决问题就行。使用<code>Winhex</code>加载固件后，来到地址<code>0x10400</code>，然后将数据往前翻，在不远处你会发现这个地址。两处地址同时指向<code>0x40205000</code>。</p>
-<p><img src="http://file.smilehacker.net/image-20191105182421398.png" alt="image-20191105182421398"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105182421398.png" alt="image-20191105182421398"></p>
 <p>这里还有一些其他的方法，参见：</p>
 <ul>
 <li><a href="https://paper.seebug.org/771/" target="_blank" rel="noopener">https://paper.seebug.org/771/</a>  </li>
-<li><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></li>
+<li><a href="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></li>
 <li><a href="https://www.jianshu.com/p/12d8f509169c" target="_blank" rel="noopener">https://www.jianshu.com/p/12d8f509169c</a>  </li>
 </ul>
 <blockquote>
@@ -606,24 +606,24 @@ lzma -d 10400.lzma</code></pre>
 </blockquote>
 <p>IDA加载过程如下</p>
 <p>选择对应的架构平台，并设置加载地址</p>
-<p><img src="http://file.smilehacker.net/image-20191106173136394.png" alt="image-20191106173136394"></p>
-<p><img src="http://file.smilehacker.net/image-20191106173315351.png" alt="image-20191106173315351"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173136394.png" alt="image-20191106173136394"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173315351.png" alt="image-20191106173315351"></p>
 <p>加载成功后你会发现识别出来的函数很少,<code>Import</code>和<code>export</code>都是空的，而且。。没有符号表</p>
-<p><img src="http://file.smilehacker.net/image-20191106173426913.png" alt="image-20191106173426913"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173426913.png" alt="image-20191106173426913"></p>
 <p>接下来就要修复符号表了</p>
 <h3 id="修复符号表"><a href="#修复符号表" class="headerlink" title="修复符号表"></a>修复符号表</h3><p> 使用<code>binwalk</code>直接提取该固件，在提取后的目录中搜索包含<code>VxWorks</code>中的某个关键函数如<code>bzero</code>的文件，如下 </p>
 <pre><code class="shell">grep -r bzero</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191106173810837.png" alt="image-20191106173810837"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173810837.png" alt="image-20191106173810837"></p>
 <p>发现<code>140B96</code>中发现了这个字符串，用strings查看下他内部的字符串</p>
-<p><img src="http://file.smilehacker.net/image-20191106175319206.png" alt="image-20191106175319206"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106175319206.png" alt="image-20191106175319206"></p>
 <p>可以看到有非常多的函数名，那他就是符号表无疑了。使用<code>hexdump</code>查看其内容,并计算字符串</p>
-<p><img src="http://file.smilehacker.net/image-20191106174558913.png" alt="image-20191106174558913"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106174558913.png" alt="image-20191106174558913"></p>
 <p>除了标记出来的，剩下的都是数据了，来计算一下符号名表的偏移。</p>
 <blockquote>
 <p>8(自身长度) + 8 (每组数据的长度) * 31ba(总共这么多个字符串)=18DD8</p>
 </blockquote>
 <p>之后使用hexdump查看下<code>18DD8</code>处的数据</p>
-<p><img src="http://file.smilehacker.net/image-20191106175050303.png" alt="image-20191106175050303"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106175050303.png" alt="image-20191106175050303"></p>
 <p>可以看到计算无误，正好是符号名表的开始。加下来使用如下IDA脚本批量导入符号表。</p>
 <pre><code class="python">import idautils
 import idc
@@ -673,7 +673,7 @@ if __name__ == &quot;__main__&quot;:
     symbols_metadata = get_symbols_metadata()
     add_symbols(symbols_metadata)</code></pre>
 <p>使用IDA运行此脚本，结果如下。</p>
-<p><img src="http://file.smilehacker.net/image-20191106175803536.png" alt="image-20191106175803536"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106175803536.png" alt="image-20191106175803536"></p>
 <p>识别出来了大部分函数以及近8000个函数</p>
 <h3 id="Ghidra-加载符号表"><a href="#Ghidra-加载符号表" class="headerlink" title="Ghidra 加载符号表"></a>Ghidra 加载符号表</h3><p>银河实验室开发了一个<code>vxhunter</code>，专门用于<code>vxworks</code>，但是测试了一下实际效果并不好。</p>
 <ul>
@@ -693,7 +693,7 @@ if __name__ == &quot;__main__&quot;:
 </li>
 <li><p><a href="http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-路由器分析-固件初步分析/" target="_blank" rel="noopener">http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-%e8%b7%af%e7%94%b1%e5%99%a8%e5%88%86%e6%9e%90-%e5%9b%ba%e4%bb%b6%e5%88%9d%e6%ad%a5%e5%88%86%e6%9e%90/</a> </p>
 </li>
-<li><p><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></p>
+<li><p><a href="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></p>
 </li>
 </ul>
 

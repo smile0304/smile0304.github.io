@@ -80,7 +80,7 @@
 
 
 
-  <meta name="keywords" content="IoT,调试,Debug,Mips,溢出," />
+  <meta name="keywords" content="调试,IoT,Debug,Mips,溢出," />
 
 
 
@@ -94,28 +94,28 @@
 
 
 <meta name="description" content="使用GDB调试MIPS架构的缓冲区溢出环境介绍和准备工作测试的代码都是来自&amp;lt;&amp;lt;解密家用路由器0day挖掘技术&amp;gt;&amp;gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。 测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：">
-<meta name="keywords" content="IoT,调试,Debug,Mips,溢出">
+<meta name="keywords" content="调试,IoT,Debug,Mips,溢出">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用GDB调试MIPS架构的缓冲区溢出">
 <meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;43075.html">
 <meta property="og:site_name" content="TT">
 <meta property="og:description" content="使用GDB调试MIPS架构的缓冲区溢出环境介绍和准备工作测试的代码都是来自&amp;lt;&amp;lt;解密家用路由器0day挖掘技术&amp;gt;&amp;gt;一书,书上的调试使用的是QEMU + IDA来动态调试,由于最近在学习GDB的调试，所以尝试用QEMU + GDB来调试,权当练手了。 测试使用的代码(下面代码中存在明显的缓冲区溢出漏洞)：">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;info_1.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;Gdbset.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;info2.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;findoffest.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;gccbreaks.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;return.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;validate.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;ROPfinder.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;ROPchain.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;RAreturn.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;stackinfo.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;result.png">
-<meta property="og:updated_time" content="2019-11-06T08:34:40.553Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;info_1.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;Gdbset.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;info2.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;findoffest.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;gccbreaks.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;return.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;validate.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;ROPfinder.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;ROPchain.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;RAreturn.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;stackinfo.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;result.png">
+<meta property="og:updated_time" content="2020-01-27T10:12:57.989Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http:&#x2F;&#x2F;file.smilehacker.net&#x2F;info_1.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84&#x2F;info_1.png">
 
 
 
@@ -523,7 +523,7 @@ void main()
 <li>-o 输出文件的名称</li>
 <li>-static 静态编译</li>
 </ul>
-<p>编译完成后可尝试使用<code>qemu-mipsel</code>验证程序正确性<br><img src="http://file.smilehacker.net/info_1.png" alt="环境介绍"></p>
+<p>编译完成后可尝试使用<code>qemu-mipsel</code>验证程序正确性<br><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/info_1.png" alt="环境介绍"></p>
 <p>从上面图片可以看出,编译产生的程序为一个MIPS程序,在Linux下无法直接运行,生成<code>passwd</code>文件(一个正常的输入文件，并没有造成溢出),使用<code>qemu-mipsel</code>模拟程序获得执行结果。</p>
 <h4 id="使用GDB动态调试程序"><a href="#使用GDB动态调试程序" class="headerlink" title="使用GDB动态调试程序"></a>使用<code>GDB</code>动态调试程序</h4><p>启动<code>qemu</code>远程调试</p>
 <blockquote>
@@ -543,18 +543,18 @@ pwndbg&gt; set architecture mips #设置为Mips架构
 The target architecture is assumed to be mips
 pwndbg&gt; target remote localhost:1234 #设置远程端口
 </code></pre>
-<p><img src="http://file.smilehacker.net/Gdbset.png" alt="GDB调试设置"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/Gdbset.png" alt="GDB调试设置"></p>
 <p>现在重新生成<code>passwd</code>文件,使用python向文件中写入600个A</p>
 <blockquote>
 <p>python -c “print ‘A’*600 “&gt; passwd</p>
 </blockquote>
 <p>之后重新用gdb加载程序,直接输入<code>r</code>让程序直接运行。</p>
-<p><img src="http://file.smilehacker.net/info2.png" alt="Alt text"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/info2.png" alt="Alt text"></p>
 <p>可以看到程序直接崩溃，并且崩溃后的<code>PC</code>寄存器指向了<code>0x41414141</code>(A的16进制为0x41)</p>
 <h4 id="劫持执行流程"><a href="#劫持执行流程" class="headerlink" title="劫持执行流程"></a>劫持执行流程</h4><p>从上面可以看到,不仅程序崩溃了,而且完全劫持了函数流程,让<code>PC</code>指针指向0x41414141,现在尝试精准定位，究竟淹没多少个自己可以劫持程序的执行流程。</p>
 <h5 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h5><p>通过静态分析发现,如果要使缓冲区溢出,并控制到堆栈中的返回地址saved_ra,需要覆盖的数据大小应该达到0x1A0-0x04即0x19c字节;作者这里运用这个公式的依据是什么呢?让我们回顾一下X86架构下的情形:</p>
 <p>偏移不就是找buf和ra之间的偏移么,ra是存储于栈里面的(有点类似于x86里面的ret指令),buf指向栈里面,只要计算出buf的初始位置和ra之间的偏移,就可以计算出有多少个字节就可以溢出到ra了！</p>
-<h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://file.smilehacker.net/findoffest.png" alt="寻找偏移"></p>
+<h5 id="寻找偏移"><a href="#寻找偏移" class="headerlink" title="寻找偏移"></a>寻找偏移</h5><p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/findoffest.png" alt="寻找偏移"></p>
 <pre><code class="Mips">addiu   $sp, -0x1D0            //sp &lt;==sp-0x1D0
 sw      $ra, 0x1D0+var_4($sp)  //将ra里面的值存放于堆栈里面,其偏移值为                                            0x1D0+var_4
 sw      $fp, 0x1D0+var_8($sp)  //将fp里面的值存放于堆栈里面,其偏移为0x1D0+var_8
@@ -579,19 +579,19 @@ nop</code></pre>
 <pre><code class="shell">disassemble main # 查看main函数的汇编代码
 
 break *main+740 # 在main函数后740行处下断点</code></pre>
-<p><img src="http://file.smilehacker.net/gccbreaks.png" alt="汇编下断点"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/gccbreaks.png" alt="汇编下断点"></p>
 <p>断点下好后输入<code>c</code>,让程序运行到刚刚下的断点处</p>
-<p><img src="http://file.smilehacker.net/return.png" alt="继续运行"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/return.png" alt="继续运行"></p>
 <p>输入<code>n</code>,让函数运行到756行，如果<code>ra</code>被替换成<code>0x42424242</code>,就说明我们的猜想是正确的。</p>
-<p><img src="http://file.smilehacker.net/validate.png" alt="猜想成功"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/validate.png" alt="猜想成功"></p>
 <p>可以看到pc的值已经成功被劫持为<code>0x42424242</code>了</p>
 <h4 id="构造ROP-chain"><a href="#构造ROP-chain" class="headerlink" title="构造ROP chain"></a>构造ROP chain</h4><p>一般漏洞攻击的途径有两种:一是命令执行,另外一种方法是执行shellcode;<br>这里只谈命令执行的方法:<br>在源程序里面有一个函数do_system_0.虽然从代码里面可以看出，do_system_0函数只能执行“ls -l”命令,但是我们可以构造一条ROP链,通过溢出漏洞调用这个函数,使得这个函数能够执行任意命令.想要构造出ROP链,首先构造出do_system_0这个函数的两个参数,将两个参数分别 装入寄存器<br>a0和a1,这里只需要控制寄存器$a1即可,该参数是命令的字符串地址</p>
 <p>使用<code>IDA</code>脚本插件<code>mipsrop.py</code>搜索合适的<code>ROP Chain</code></p>
-<p><img src="http://file.smilehacker.net/ROPfinder.png" alt="寻找合适的rop链"></p>
-<p><img src="http://file.smilehacker.net/ROPchain.png" alt="ROP"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/ROPfinder.png" alt="寻找合适的rop链"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/ROPchain.png" alt="ROP"></p>
 <p>在缓冲区溢出时,直接让<code>ra</code>的值指向<code>0x00401FA0</code>,<strong>因为<code>ROP技术</code>使用的堆栈都是同一个堆栈</strong>，只要让<code>$sp+0x58+var_40</code>的值为想要执行的命令,并且在<code>$sp+0x58+var_4</code>处的值存放成跳转到<code>do_system_0</code>函数的地址(<code>0x00400678</code>),就可以达到目的。</p>
-<p><img src="http://file.smilehacker.net/RAreturn.png" alt="设置RA的值"></p>
-<p>现在整理一下当前栈帧:<br><img src="http://file.smilehacker.net/stackinfo.png" alt="当前栈帧"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/RAreturn.png" alt="设置RA的值"></p>
+<p>现在整理一下当前栈帧:<br><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/stackinfo.png" alt="当前栈帧"></p>
 <h4 id="整理POC"><a href="#整理POC" class="headerlink" title="整理POC"></a>整理POC</h4><pre><code class="python">&quot;&quot;&quot;
 struct.pack(&quot;&lt;L&quot;,&quot;xxx&quot;)为小端序
 struct.pack(&quot;&gt;L&quot;,&quot;xxx&quot;)为大端序
@@ -619,7 +619,7 @@ fw.write(shellcode)#&#39;A&#39;*300+&#39;\x00&#39;*10+&#39;BBBB&#39;)
 fw.close()
 print &#39; ok!&#39;</code></pre>
 <p>将上述代码保存为<code>poc.py</code>,运行结果如下</p>
-<p><img src="http://file.smilehacker.net/result.png" alt="result"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/%E4%BD%BF%E7%94%A8GBD%E8%B0%83%E8%AF%95MIPS%E6%9E%B6%E6%9E%84/result.png" alt="result"></p>
 <p>成功拿到shell</p>
 <h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><ul>
 <li><a href="https://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-arm-mips-elf-with-qemu-toolchain" target="_blank" rel="noopener">https://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-arm-mips-elf-with-qemu-toolchain</a></li>
@@ -641,9 +641,9 @@ print &#39; ok!&#39;</code></pre>
       
         <div class="post-tags">
           
-            <a href="/tags/IoT/" rel="tag"># IoT</a>
-          
             <a href="/tags/%E8%B0%83%E8%AF%95/" rel="tag"># 调试</a>
+          
+            <a href="/tags/IoT/" rel="tag"># IoT</a>
           
             <a href="/tags/Debug/" rel="tag"># Debug</a>
           
