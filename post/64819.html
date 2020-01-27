@@ -101,51 +101,51 @@
 <meta property="og:site_name" content="TT">
 <meta property="og:description" content="Linux Pwn之前分析过一些MIPS平台下的二进制，对Linux平台下没怎么研究过。在网上看到一篇文章，写一下总结，比较基础。 不说原理，只说思路跟解题方法 一下载题目:pwn 在分析这道题目之前先使用checksec查看一下该程序的保护情况:  checksec pwn1">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571474474731.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571474770735.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571475799729.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571476789765.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571476973841.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571477030249.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571477253129.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571477404317.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571478271475.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571496009275.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571497154238.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571551902372.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571552245667.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571496009275.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571553359527.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571553500352.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554078794.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554361586.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554491573.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554930443.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571555353609.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571555487359.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571556472396.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571556603660.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571556697767.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571557290759.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571558124555.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571558379470.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571558914053.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571559117913.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571559310062.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571559651228.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571560805846.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571561335922.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571561531179.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571571949860.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571572971883.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1572240054879.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1572242662913.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;v2-caa5320d0bb0101edad4b9127f6fe413_hd.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1572270342624.png">
-<meta property="og:updated_time" content="2020-01-27T10:20:17.137Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571474474731.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571474770735.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571475799729.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571476789765.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571476973841.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571477030249.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571477253129.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571477404317.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571478271475.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571496009275.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571497154238.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571551902372.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571552245667.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571496009275.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571553359527.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571553500352.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554078794.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554361586.png!blog_g">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554491573.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571554930443.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571555353609.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571555487359.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571556472396.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571556603660.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571556697767.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571557290759.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571558124555.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571558379470.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571558914053.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571559117913.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571559310062.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571559651228.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571560805846.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571561335922.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571561531179.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571571949860.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571572971883.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1572240054879.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1572242662913.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;v2-caa5320d0bb0101edad4b9127f6fe413_hd.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1572270342624.png!blog_">
+<meta property="og:updated_time" content="2020-01-27T10:47:38.634Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571474474731.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;Linux_PWN&#x2F;1571474474731.png!blog_">
 
 
 
@@ -490,9 +490,9 @@
 <p>checksec pwn1</p>
 </blockquote>
 <a id="more"></a>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571474474731.png" alt="checksec pwn1"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571474474731.png!blog_" alt="checksec pwn1"></p>
 <p>可以看到开启了<code>NX enabled</code>保护。使用<code>IDA</code>查看下程序的代码</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571474770735.png" alt="IDA加载程序"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571474770735.png!blog_" alt="IDA加载程序"></p>
 <p>发现程序调用了<code>gets</code>函数，并且没有做任何的处理，可以造成了缓冲区溢出。我们需要分析<code>&amp;s</code>到<code>EBP</code>的距离，因为<code>EBP</code>后存放的就是返回地址。 在32位的程序中，就是<code>ebp+4</code>。<code>Esp -&gt; ebp</code>, 地址从小到大。小地址栈顶，大地址栈底。 </p>
 <h3 id="手动计算返回地址的偏移"><a href="#手动计算返回地址的偏移" class="headerlink" title="手动计算返回地址的偏移"></a>手动计算返回地址的偏移</h3><p>工具用起来比较简单，就不介绍了，直接通过手动分析。</p>
 <p>工具 :  <a href="https://github.com/desword/shellcode_tools" target="_blank" rel="noopener">patternoffset</a> </p>
@@ -511,7 +511,7 @@ Breakpoint 1 at 0x80486ae: file ret2text.c, line 24.
 pwndbg&gt; r #运行程序
 </code></pre>
 <p>运行结果如下:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571475799729.png" alt="GDB运行后栈帧的情况"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571475799729.png!blog_" alt="GDB运行后栈帧的情况"></p>
 <p>结合<code>IDA</code>的反编译结果计算<code>ESP</code>到<code>&amp;s</code>的偏移:</p>
 <pre><code class="shell">ESP = 0xffffcfa0
 EBP = 0Xffffd028
@@ -529,10 +529,10 @@ python -c &quot;print &#39;A&#39;*112 + &#39;BBBB&#39; &quot; &gt; test
 # 在GDB中执行
 run &lt; test</code></pre>
 <p>结果如下,可以看到<code>EIP</code>已经被劫持为<code>0X424242(BBBB)</code>:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571476789765.png" alt="EIP已被劫持"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571476789765.png!blog_" alt="EIP已被劫持"></p>
 <h3 id="EXP编写"><a href="#EXP编写" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>接下来尝试在程序中寻找调用系统命令地地方,在<code>IDA</code>中按<code>ALT+T</code>搜索<code>/bin/sh</code>，正好看到有,并且调用了<code>system</code>函数</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571476973841.png" alt="IDA搜索结果"></p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477030249.png" alt="IDA搜索结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571476973841.png!blog_" alt="IDA搜索结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477030249.png!blog_" alt="IDA搜索结果"></p>
 <p>接下来使用<a href="https://github.com/Gallopsled/pwntools" target="_blank" rel="noopener"><code>pwntools</code></a>这个库来编写<code>EXP</code>:</p>
 <pre><code class="python">from pwn import *
 
@@ -541,12 +541,12 @@ sh = 0x804863a
 pwn1.sendline(&#39;A&#39; * (112) + p32(sh))
 pwn1.interactive()</code></pre>
 <p>运行后成功拿到<code>shell</code>,第一关很简单.</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477253129.png" alt="reverse shell"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477253129.png!blog_" alt="reverse shell"></p>
 <h2 id="二"><a href="#二" class="headerlink" title="二"></a>二</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn2" target="_blank" rel="noopener">pwn2</a></p>
 <p><code>cheksec</code>检查保护情况</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477404317.png" alt="checksec检查保护"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571477404317.png!blog_" alt="checksec检查保护"></p>
 <p><code>IDA</code>查看代码</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571478271475.png" alt="IDA查看代码"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571478271475.png!blog_" alt="IDA查看代码"></p>
 <p>跟第一关不同的是，这里没有<code>system</code>函数给我们调用了。</p>
 <h3 id="Linux系统调用"><a href="#Linux系统调用" class="headerlink" title="Linux系统调用"></a>Linux系统调用</h3><p>Linux 的系统调用通过 <code>int 80h</code>实现，用<a href="https://zh.wikipedia.org/w/index.php?title=系统调用号&action=edit&redlink=1" target="_blank" rel="noopener">系统调用号</a>来区分入口函数。操作系统实现系统调用的基本过程是：</p>
 <ul>
@@ -584,9 +584,9 @@ int 0x80,   # 执行系统调用</code></pre>
 <pre><code class="assembly">pop ebx; ret 
 pop ecx; ret</code></pre>
 <p>也是完全可以的，但是这里并没有单条<code>pop ecx; ret</code>。不过我们在下面可以用<code>0x0806eb90</code>处这条指令加深理解</p>
-<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571496009275.png" alt="搜索结果"></p>
+<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571496009275.png!blog_" alt="搜索结果"></p>
 <p>寻找系统调用和需要执行命令的字符串</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571497154238.png" alt="1571497154238"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571497154238.png!blog_" alt="1571497154238"></p>
 <p> 这里选择的每一个gadgets都含有<code>ret</code>是为了能够使得程序自动持续的选择堆栈中的指令依次执行。在构造这些gadgets之前，我们通过下面的堆栈指针移动图，来分析一下<code>eip</code>指针的移动，以及对应获取的数据内容。<code>ret</code>指令可以理解成去栈顶的数据作为下次跳转的位置。</p>
 <pre><code class="assembly">eip = [esp];
 
@@ -596,7 +596,7 @@ esp = esp+4;
 
 pop eip;</code></pre>
 <p>此时,我们的堆栈布置如下:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571551902372.png" alt="堆栈结构"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571551902372.png!blog_" alt="堆栈结构"></p>
 <p>整个堆栈的调用过程:</p>
 <ol>
 <li>执行<code>gets</code>函数，发生溢出，返回地址被淹没为<code>0x080bb196</code></li>
@@ -621,11 +621,11 @@ sh.interactive()
 
 </code></pre>
 <p>执行<code>EXP</code>，成功拿到<code>shell</code></p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571552245667.png" alt="success"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571552245667.png!blog_" alt="success"></p>
 <h3 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h3><p>我们用<code>0x0806eb90</code>处的指令重新布置栈帧,加深理解</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571496009275.png" alt="搜索结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571496009275.png!blog_" alt="搜索结果"></p>
 <p>那么此时的栈帧布局就是:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571553359527.png" alt="此时栈帧布局"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571553359527.png!blog_" alt="此时栈帧布局"></p>
 <p>写出POC：</p>
 <pre><code class="python">from pwn import *
 
@@ -642,19 +642,19 @@ sh.sendline(payload)
 sh.interactive()
 </code></pre>
 <p>成功执行:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571553500352.png" alt="成功"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571553500352.png!blog_" alt="成功"></p>
 <h2 id="三"><a href="#三" class="headerlink" title="三"></a>三</h2><p>下载题目:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn3" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查保护保护状态:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554078794.png" alt="check检查保护状态"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554078794.png!blog_" alt="check检查保护状态"></p>
 <p><code>IDA</code>查看汇编代码:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554361586.png" alt="反编译"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554361586.png!blog_g" alt="反编译"></p>
 <p>基本跟第二道题目一样，但是我们像第二道题目一样去寻找<code>ROP</code>链的时候发现并没有找到合适的指令</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554491573.png" alt="寻找指令失败"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554491573.png!blog_" alt="寻找指令失败"></p>
 <p>那也只能尝试其他的方法了,我们在<code>IDA</code>中查看下他的导入函数,发现其中有<code>system</code>函数,那我们直接调用这个函数即可</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554930443.png" alt="import导入函数"></p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571555353609.png" alt="SYSTEM函数调用"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571554930443.png!blog_" alt="import导入函数"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571555353609.png!blog_" alt="SYSTEM函数调用"></p>
 <p>有了<code>system</code>函数之后,用<code>ROPgadget</code>寻找一下<code>/bin/sh</code>这个字符串.</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571555487359.png" alt="寻找/bin/sh"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571555487359.png!blog_" alt="寻找/bin/sh"></p>
 <h3 id="EXP编写-1"><a href="#EXP编写-1" class="headerlink" title="EXP编写"></a>EXP编写</h3><pre><code class="python">from pwn import *
 
 sh = process(&quot;./pwn3&quot;)
@@ -671,27 +671,27 @@ sh.interactive()
 <p>在正常调用system函数的时候，堆栈位置的<code>system_addr</code>之后的内容为<code>system</code>函数的返回地址，在之后才是新的堆栈的栈顶位置，因此在<code>systetem_addr</code>和<code>sh_addr</code>之间增加了4个字符来进行填充。 </p>
 <h2 id="四"><a href="#四" class="headerlink" title="四"></a>四</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop/pwn4" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检测程序保护机制</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556472396.png" alt="check检测"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556472396.png!blog_" alt="check检测"></p>
 <p>还是一样的，我们再来看程序的导入表:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556603660.png" alt="查看导入表"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556603660.png!blog_" alt="查看导入表"></p>
 <p>发现是有<code>system</code>函数的，继续通过<code>ROPgadget</code>分析，发现没有<code>/bin/sh</code>字符串.</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556697767.png" alt="ROPgadgets分析"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571556697767.png!blog_" alt="ROPgadgets分析"></p>
 <h3 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h3><p>现在得想个法子。直观的想法是在<code>shellcode</code>中，在参数的位置直接放入字符串“/bin/sh”，比如下面这样： </p>
 <blockquote>
 <p> payload = flat([‘a’ * 112, system_plt, 0xabcdabcd, “/bin/sh”]) </p>
 </blockquote>
 <p>看着可行,但是放在堆栈中的是程序执行的路线图(都是通过指针调用的)，而不是实际的程序或者字符串 。而 ”/bin/sh”对应的4个字节的地址所指向的内存空间明显不合法。但是如果我们可以把<code>/bin/sh</code>塞到一个变量中，然后让<code>system</code>函数去调用他。我们就可以达到目的。可是这个变量哪里找了？我们可以去看<code>ELF</code>程序的<code>bss</code>段，<code>bss</code>段用于存放程序中未经初始化的全局变量和静态局部变量 。很巧，正好有一个。</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571557290759.png" alt="bss段"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571557290759.png!blog_" alt="bss段"></p>
 <p>有了地址之后,一个新的问题产生,我们要怎么把<code>/bin/sh</code>塞到<code>buf2</code>这个变量中? 看看导入函数,那个<code>gets</code> :kissing_heart:</p>
 <h3 id="EXP编写-2"><a href="#EXP编写-2" class="headerlink" title="EXP编写"></a>EXP编写</h3><p>下面这一段原文作者没有写，都是个人理解，有可能不对，可以看文末的链接</p>
 <p>在写<code>EXP</code>之前,我们需要分析一下我们现在的栈帧应该怎么布置:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558124555.png" alt="栈帧的布置"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558124555.png!blog_" alt="栈帧的布置"></p>
 <p>看上去还行，但是又有一个新的问题,<code>gets</code>函数执行完的返回地址我们要怎么填写?程序会被这个返回地址直接带跑，直接填成<code>system</code>的地址？那参数又怎么给到system？</p>
 <p>作者在这里的思路是很巧妙的<code>gets</code>函数的返回地址处存指向一条<code>pop x</code>,pop谁都可以，我们主要是利用<code>pop</code>的<code>esp+4</code>的功能。</p>
 <pre><code class="shell">ROPgadget --binary pwn4 --only &#39;pop|ret&#39;
 </code></pre>
 <p>用第一条第三条都可以。</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558379470.png" alt="ROPgadget运行结果"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558379470.png!blog_" alt="ROPgadget运行结果"></p>
 <p>整个运行过程如下:</p>
 <ol>
 <li>程序接收输入,缓冲区溢出,返回地址被淹没成<code>gets</code>函数,并从栈中获取参数</li>
@@ -722,10 +722,10 @@ sh.interactive()
 
 </code></pre>
 <p>成功获得<code>shell</code></p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558914053.png" alt="成功"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571558914053.png!blog_" alt="成功"></p>
 <h2 id="五"><a href="#五" class="headerlink" title="五"></a>五</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn5" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查保护情况:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559117913.png" alt="checksec"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559117913.png!blog_" alt="checksec"></p>
 <p>发现关闭了<code>NX</code>保护,也就是说可以在堆栈上执行代码了,但是开启了<code>PIE</code>保护,也就是地址随机化,而且程序也变成了64位程序。</p>
 <blockquote>
 <p>PS: 之前看逆向工程权威指南隐约记得传参不一样,这里刚好又出现了。</p>
@@ -745,11 +745,11 @@ sh.interactive()
 </ul>
 </blockquote>
 <p><code>IDA</code>分析程序:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559310062.png" alt="IDA分析pwn5"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559310062.png!blog_" alt="IDA分析pwn5"></p>
 <h3 id="确定漏洞位置"><a href="#确定漏洞位置" class="headerlink" title="确定漏洞位置"></a>确定漏洞位置</h3><p>一眼就看到了<code>read</code>函数,但是他只读了<code>0x40</code>个字节(64)字节</p>
 <h3 id="确定偏移"><a href="#确定偏移" class="headerlink" title="确定偏移"></a>确定偏移</h3><p>现在很熟练了,偏移<code>0x10h</code>个字节,也就是16个字节.然后16+8=24，也就是我们在输入到24个字节是就可以覆盖返回地址</p>
 <h3 id="查看可用函数"><a href="#查看可用函数" class="headerlink" title="查看可用函数"></a>查看可用函数</h3><p>看一下导入函数,发现啥也没</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559651228.png" alt="查看导入函数"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571559651228.png!blog_" alt="查看导入函数"></p>
 <p>但是堆栈可以执行,我们需要直接放<code>shellcode</code>放在栈中,在这之前我们要计算一下堆栈中可以存放多少字节的<code>shellcode</code>。</p>
 <blockquote>
 <p>64 - 24 -8 =32 （返回地址自身的8个自己要记得计算)</p>
@@ -764,7 +764,7 @@ shellcode_x64 = &quot;x31xf6x48xbbx2fx62x69x6ex2fx2fx73x68x56x53x54x5fx6ax3bx58x
 <p>无解了。再回去看一下程序的代码，这个<code>printf</code>函数干了什么。它把<code>buf</code>的地址给打印出来了:sweat:</p>
 <p>妙啊~</p>
 <p>然后整理一下，看缓冲区怎么布置</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571560805846.png" alt="缓冲区布置"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571560805846.png!blog_" alt="缓冲区布置"></p>
 <h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
 sh = process(&#39;./pwn5&#39;)
@@ -782,10 +782,10 @@ sh.interactive()
 <p>参考一下就好,代码并不能运行。没有细看过<code>pwntools</code>模块,也就不做调试了。</p>
 <h2 id="六"><a href="#六" class="headerlink" title="六"></a>六</h2><p>下载地址:<a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn6" target="_blank" rel="noopener">pwn</a></p>
 <p><code>checksec</code>检查程序:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571561335922.png" alt="checksec检查pwn6"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571561335922.png!blog_" alt="checksec检查pwn6"></p>
 <p>啥也没开,别激动,不好搞。</p>
 <p>IDA查看代码:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571561531179.png" alt="IDA分析pwn6"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571561531179.png!blog_" alt="IDA分析pwn6"></p>
 <h3 id="确认漏洞"><a href="#确认漏洞" class="headerlink" title="确认漏洞"></a>确认漏洞</h3><p>一眼就看到<code>gets</code>函数了,但是空间只有<code>0x32</code>即50字节</p>
 <h3 id="计算偏移"><a href="#计算偏移" class="headerlink" title="计算偏移"></a>计算偏移</h3><p>现在计算很快了,0x20 + 4 = 0x24 = 32个字节,即淹没32字节即可淹没返回地址</p>
 <h3 id="导入函数表"><a href="#导入函数表" class="headerlink" title="导入函数表"></a>导入函数表</h3><p>不截图了, 没有<code>system</code>函数</p>
@@ -805,14 +805,14 @@ sh.interactive()
 <p>在函数的返回地址，我们需要一段指令让程序可以跳转到跳转到<code>esp</code>,这样才能继续执行栈帧上的代码:</p>
 <pre><code class="shell">ROPgadget --binary stack_pivoting_1 --only &#39;jmp|ret&#39; | grep &#39;esp&#39;
 </code></pre>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571571949860.png" alt="寻找jmp esp"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571571949860.png!blog_" alt="寻找jmp esp"></p>
 <p>继续回到栈帧执行代码,我们在栈帧之后布置如下指令.</p>
 <pre><code class="assembly">sub esp 0x28; 
 jmp esp;
 </code></pre>
 <p><code>shellcode</code>得到执行。</p>
 <p>看一下当前栈帧的布局:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571572971883.png" alt="当前栈帧布局"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1571572971883.png!blog_" alt="当前栈帧布局"></p>
 <p>仔细想想,不太好懂。</p>
 <h3 id="EXP-2"><a href="#EXP-2" class="headerlink" title="EXP"></a>EXP</h3><pre><code class="python">from pwn import *
 
@@ -832,7 +832,7 @@ sh.interactive()
 <p>没办法成功执行,换了个<code>x86</code>平台的shell，我感觉这个<code>shellcode</code>有问题！！</p>
 <h2 id="七"><a href="#七" class="headerlink" title="七"></a>七</h2><p>下载地址: <a href="https://github.com/smile0304/pwn_execrise/raw/master/pwn_basic_rop_2/pwn7" target="_blank" rel="noopener">pwn7</a></p>
 <p>上来还老规矩,使用<code>checksec</code>检查程序保护情况:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572240054879.png" alt="checksec检查pwn7"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572240054879.png!blog_" alt="checksec检查pwn7"></p>
 <p>只开启了<code>DEP</code>保护。<code>IDA</code>查看掠过，漏洞函数还是一样的，但是没有导入函数,没有合适的<code>Gadget</code>语句。怎么办？</p>
 <p>劫持<code>GOT</code></p>
 <h3 id="Hijack-GOT"><a href="#Hijack-GOT" class="headerlink" title="Hijack GOT"></a>Hijack GOT</h3><blockquote>
@@ -859,7 +859,7 @@ sh.interactive()
 <p>那么<code>PLT</code>表内存储的入口点是什么?</p>
 <ul>
 <li><p>存储的是<code>GOT</code>表中对应条数的地址</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572242662913.png" alt="PLT存储"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572242662913.png!blog_" alt="PLT存储"></p>
 </li>
 </ul>
 <p>既然外部函数地址都存放在<code>GOT</code>中,而不是<code>PLT</code>，<code>PLT</code>存储的入口点又指向<code>GOT</code>的对应条目，那程序为什么选在<code>PLT</code>作为函数的入口点，而不是<code>GOT</code>? 在程序启动时确定所有外部函数的内存地址并写入<code>GOT</code>表，之后只使用<code>GOT</code>表不是更方便吗？ </p>
@@ -880,9 +880,9 @@ sh.interactive()
 </li>
 </ul>
 <p>第一次调用的示意图:</p>
-<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png" alt="第一次调用"> </p>
+<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/v2-b78288c5eb8bfd2568728f34fbbb0e9e_hd.png!blog_" alt="第一次调用"> </p>
 <p>不是第一次调用的示意图:</p>
-<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/v2-caa5320d0bb0101edad4b9127f6fe413_hd.png" alt="不是第一次调用"></p>
+<p> <img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/v2-caa5320d0bb0101edad4b9127f6fe413_hd.png!blog_" alt="不是第一次调用"></p>
 <p>上面的这个过程采用了<code>LAZY</code>设计思想, 它将需要完成的操作(解析外部函数的内存地址)留到调用实际发生时才进行，而非在程序一开始运行时就解析出全部函数地址。跟<code>python</code>中的生成器有点像，懒加载</p>
 <p>这个过程也启示了我们如何实现函数的伪装，那就是到<code>GOT</code>表中将函数<code>A</code>的地址修改为函数<code>B</code>的地址。这样在后面所有对函数<code>A</code>的调用都会执行函数<code>B</code>。我们可以将目标分解成以下几个步骤:</p>
 <ul>
@@ -946,7 +946,7 @@ sh.sendline(payload)
 
 sh.interactive()
 </code></pre>
-<h3 id="GET-SHELL"><a href="#GET-SHELL" class="headerlink" title="GET SHELL"></a>GET SHELL</h3><p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572270342624.png" alt="成功获取shell"></p>
+<h3 id="GET-SHELL"><a href="#GET-SHELL" class="headerlink" title="GET SHELL"></a>GET SHELL</h3><p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/Linux_PWN/1572270342624.png!blog_" alt="成功获取shell"></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
 <li><a href="https://www.anquanke.com/post/id/164530" target="_blank" rel="noopener">https://www.anquanke.com/post/id/164530</a></li>
 <li><a href="https://www.anquanke.com/post/id/168468" target="_blank" rel="noopener">https://www.anquanke.com/post/id/168468</a></li>

@@ -101,12 +101,12 @@
 <meta property="og:site_name" content="TT">
 <meta property="og:description" content="GDB调试命令记录(持续更新)记录一些GDB调试的命令,好记性不如烂笔头 插件安装pwndbg git clone https:&#x2F;&#x2F;github.com&#x2F;pwndbg&#x2F;pwndbg cd pwndbg .&#x2F;setup.sh 如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1570720622109.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1570722300144.png">
-<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1571206209216.png">
-<meta property="og:updated_time" content="2020-01-27T10:17:28.717Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1570720622109.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1570722300144.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1571206209216.png!blog_">
+<meta property="og:updated_time" content="2020-01-27T10:43:25.708Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1570720622109.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;GDB_DEBUG_COMMAND&#x2F;1570720622109.png!blog_">
 
 
 
@@ -462,7 +462,7 @@ cd pwndbg
 <p>如果安装了pwndbg,这样可以省调我们很多gdb的命令操作, 运行界面如下</p>
 <a id="more"></a>
 
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1570720622109.png" alt="pwndbg界面展示"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1570720622109.png!blog_" alt="pwndbg界面展示"></p>
 <h2 id="启动GDB"><a href="#启动GDB" class="headerlink" title="启动GDB"></a>启动GDB</h2><p>对C/C++程序的调试，需要在编译前就加上-g选项:</p>
 <pre><code class="bash">$g++ -g hello.cpp -o hello</code></pre>
 <p>调试可执行文件:</p>
@@ -550,13 +550,13 @@ $gdb hello 11127</code></pre>
 <li>b *func_name+n: 在func_name函数偏移n行的位置下断点</li>
 </ul>
 <p>例如:</p>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1570722300144.png" alt="汇编断点调试"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1570722300144.png!blog_" alt="汇编断点调试"></p>
 <h3 id="GDB中使用管道进行调试"><a href="#GDB中使用管道进行调试" class="headerlink" title="GDB中使用管道进行调试"></a>GDB中使用管道进行调试</h3><p>输入的不是参数，而是标准输入(stdin)</p>
 <pre><code class="shell">gdb ./vuln_prog
 run &lt; filename_with_input</code></pre>
 <h3 id="GDB-查看栈帧多行数据"><a href="#GDB-查看栈帧多行数据" class="headerlink" title="GDB 查看栈帧多行数据"></a>GDB 查看栈帧多行数据</h3><p>可以清楚看到栈帧里面的情况，一目了然，前面搞死人了</p>
 <pre><code class="shell">stack n[要查看具体多少]</code></pre>
-<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1571206209216.png" alt="查看堆栈"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/GDB_DEBUG_COMMAND/1571206209216.png!blog_" alt="查看堆栈"></p>
 
       
     </div>

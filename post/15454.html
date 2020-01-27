@@ -101,13 +101,13 @@
 <meta property="og:site_name" content="TT">
 <meta property="og:description" content="DNS_Rebind原理为了保证DNS服务的可靠性，DNS响应记录A中包含一个TTL（time to live）值，表示当前解析结果的有效时间，客户端（浏览器）会在超过这个时间值后重新请求解析域名（取决于客户端是否遵循这个TTL值），得到的新响应中又会存在一个过期时间，客户端会再次去解析域名，如此保证获取到最新的域名解析结果。 若DNS服务前后响应返回的ip地址不一样，浏览器并不会认为跨域。如果域">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;1111111111111111111111.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;1111111111111111111111.png!blog_">
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;22222222222222.gif">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;33333333333333.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;33333333333333.png!blog_">
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;DNS_Rebind_revershell.gif">
-<meta property="og:updated_time" content="2020-01-27T05:49:07.230Z">
+<meta property="og:updated_time" content="2020-01-27T10:48:00.044Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;1111111111111111111111.png">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0&#x2F;1111111111111111111111.png!blog_">
 
 
 
@@ -510,7 +510,7 @@
 <p>如果域名正常，应该就会返回 IP 地址，如果没有浏览器就会提示找不到服务器地址。</p>
 <h4 id="攻击演示"><a href="#攻击演示" class="headerlink" title="攻击演示"></a>攻击演示</h4><p>使用DNS Rebind利用<a href="https://github.com/leonW7/D-Link/blob/master/Vul_2.md" target="_blank" rel="noopener"><code>CVE-2019-7298</code></a>漏洞攻击<code>D-Link 823G</code>路由器</p>
 <p>首先，需要有一个域名,在域名下解析两条记录</p>
-<p><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/1111111111111111111111.png" alt="域名解析"></p>
+<p><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/1111111111111111111111.png!blog_" alt="域名解析"></p>
 <p>当访问<code>dns_rebind.smilehacker.net</code>的时候，去找负责解析他的<code>ns.smilehacker.net</code>，也就是<code>43.228.76.56</code>这台机器。</p>
 <p>DNS Server的代码如下:<br>使用前安装<code>twisted</code></p>
 <blockquote>
@@ -646,7 +646,7 @@ if __name__ == &#39;__main__&#39;:
 <p>firefox配置:</p>
 <ol>
 <li>在地址栏输入<code>about:config</code></li>
-<li>搜索<code>dns</code>，将network.dnsCacheExpiration、network.dnsCacheExpirationGracePeriod修改为0<br><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/33333333333333.png" alt="firefox配置"></li>
+<li>搜索<code>dns</code>，将network.dnsCacheExpiration、network.dnsCacheExpirationGracePeriod修改为0<br><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/33333333333333.png!blog_" alt="firefox配置"></li>
 </ol>
 <ul>
 <li>攻击场景2:</li>
