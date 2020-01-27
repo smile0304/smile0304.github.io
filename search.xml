@@ -713,7 +713,7 @@ run &lt; stackoverflow</code></pre>
 <p>如果域名正常，应该就会返回 IP 地址，如果没有浏览器就会提示找不到服务器地址。</p>
 <h4 id="攻击演示"><a href="#攻击演示" class="headerlink" title="攻击演示"></a>攻击演示</h4><p>使用DNS Rebind利用<a href="https://github.com/leonW7/D-Link/blob/master/Vul_2.md" target="_blank" rel="noopener"><code>CVE-2019-7298</code></a>漏洞攻击<code>D-Link 823G</code>路由器</p>
 <p>首先，需要有一个域名,在域名下解析两条记录</p>
-<p><img src="http://file.smilehacker.net/1111111111111111111111.png" alt="域名解析"></p>
+<p><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/1111111111111111111111.png" alt="域名解析"></p>
 <p>当访问<code>dns_rebind.smilehacker.net</code>的时候，去找负责解析他的<code>ns.smilehacker.net</code>，也就是<code>43.228.76.56</code>这台机器。</p>
 <p>DNS Server的代码如下:<br>使用前安装<code>twisted</code></p>
 <blockquote>
@@ -844,17 +844,17 @@ if __name__ == &#39;__main__&#39;:
 <h4 id="攻击展示图"><a href="#攻击展示图" class="headerlink" title="攻击展示图:"></a>攻击展示图:</h4><ul>
 <li>攻击场景1:<br>此处修改了Firefox的DNS缓存时间为0,比且修改了DNS Server中域名返回外网IP的次数</li>
 </ul>
-<p><img src="http://file.smilehacker.net/22222222222222.gif" alt="Rebind show"></p>
+<p><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/22222222222222.gif" alt="Rebind show"></p>
 <p>如果该测试放在Chrome下做，需要等待一分钟，等Chrome刷掉自己的DNS缓存</p>
 <p>firefox配置:</p>
 <ol>
 <li>在地址栏输入<code>about:config</code></li>
-<li>搜索<code>dns</code>，将network.dnsCacheExpiration、network.dnsCacheExpirationGracePeriod修改为0<br><img src="http://file.smilehacker.net/33333333333333.png" alt="firefox配置"></li>
+<li>搜索<code>dns</code>，将network.dnsCacheExpiration、network.dnsCacheExpirationGracePeriod修改为0<br><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/33333333333333.png" alt="firefox配置"></li>
 </ol>
 <ul>
 <li>攻击场景2:</li>
 </ul>
-<p>Windows 操作系统、DNS server 为 8.8.8.8、Chrome浏览器默认配置访问<code>URL</code>链接，直接获取路由器反弹shell，等待一分钟左右<br><img src="http://file.smilehacker.net/DNS_Rebind_revershell.gif" alt="Reverse_shell"></p>
+<p>Windows 操作系统、DNS server 为 8.8.8.8、Chrome浏览器默认配置访问<code>URL</code>链接，直接获取路由器反弹shell，等待一分钟左右<br><img src="https://blog-pwntools.oss-cn-beijing.aliyuncs.com/DnsRebing%E6%B5%8B%E8%AF%95%E7%AC%94%E8%AE%B0/DNS_Rebind_revershell.gif" alt="Reverse_shell"></p>
 <h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><ul>
 <li><a href="https://dyn.com/blog/web-browser-dns-caching-bad-thing/" target="_blank" rel="noopener">https://dyn.com/blog/web-browser-dns-caching-bad-thing/</a></li>
 <li><a href="https://blog.csdn.net/u014465934/article/details/83241097" target="_blank" rel="noopener">https://blog.csdn.net/u014465934/article/details/83241097</a></li>
