@@ -176,8 +176,8 @@ bundle install</code></pre>
         <category>工具</category>
       </categories>
       <tags>
-        <tag>工具</tag>
         <tag>内网</tag>
+        <tag>工具</tag>
         <tag>NC</tag>
         <tag>Powercat</tag>
       </tags>
@@ -544,9 +544,9 @@ if __name__ == &quot;__main__&quot;:
         <category>内网</category>
       </categories>
       <tags>
-        <tag>内网</tag>
         <tag>内网渗透</tag>
         <tag>渗透</tag>
+        <tag>内网</tag>
         <tag>环境搭建</tag>
       </tags>
   </entry>
